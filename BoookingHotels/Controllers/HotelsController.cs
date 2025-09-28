@@ -1,4 +1,4 @@
-﻿using BoookingHotels.Data;
+﻿    using BoookingHotels.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,9 +18,9 @@ namespace BoookingHotels.Controllers
             var hotels = _context.Hotels
                 .Include(h => h.Rooms)
                 .Include(h => h.Photoss)
+                .Where(h=>h.Status == true)
                 .AsQueryable();
 
-            // Tìm kiếm theo tên, địa chỉ, thành phố
             if (!string.IsNullOrWhiteSpace(search))
             {
                 hotels = hotels.Where(h =>
@@ -34,12 +34,11 @@ namespace BoookingHotels.Controllers
                 hotels = hotels.Where(h => h.Rooms.Any(r =>
                     !_context.Bookings.Any(b =>
                         b.RoomId == r.RoomId &&
-                        (checkIn < b.CheckOut && checkOut > b.CheckIn) // điều kiện overlap chuẩn
+                        (checkIn < b.CheckOut && checkOut > b.CheckIn)
                     )
                 ));
             }
 
-            // Sắp xếp
             hotels = sortBy switch
             {
                 "price" => hotels.OrderBy(h => h.Rooms.Min(r => r.Price)),
@@ -53,9 +52,9 @@ namespace BoookingHotels.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var hotel = await _context.Hotels
-              .Include(h => h.Photoss) // ảnh của khách sạn
+              .Include(h => h.Photoss) 
               .Include(h => h.Rooms)
-                  .ThenInclude(r => r.Photos) // ảnh của phòng
+                  .ThenInclude(r => r.Photos)
               .Include(h => h.Rooms)
                   .ThenInclude(r => r.RoomAmenities)
                       .ThenInclude(ra => ra.Amenity)
@@ -68,13 +67,12 @@ namespace BoookingHotels.Controllers
 
         public IActionResult Nearby(double latitude, double longitude, double radiusKm = 5)
         {
-            // Haversine formula
             var hotels = _context.Hotels
                 .Where(h => h.Latitude != null && h.Longitude != null)
                 .AsEnumerable()
                 .Where(h =>
                 {
-                    var R = 6371; // bán kính Trái đất km
+                    var R = 6371; 
                     var dLat = (Math.PI / 180) * (h.Latitude.Value - latitude);
                     var dLon = (Math.PI / 180) * (h.Longitude.Value - longitude);
                     var lat1 = (Math.PI / 180) * latitude;
@@ -89,7 +87,7 @@ namespace BoookingHotels.Controllers
                 })
                 .ToList();
 
-            return View("Index", hotels); // tái sử dụng view danh sách
+            return View("Index", hotels); 
         }
 
     }

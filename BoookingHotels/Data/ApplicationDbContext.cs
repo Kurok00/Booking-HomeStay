@@ -18,6 +18,7 @@ namespace BoookingHotels.Data
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<UserVoucher> UserVouchers { get; set; }
         public DbSet<Photos> Photoss { get; set; }
         public DbSet<RoomAmenitie> RoomAmenities { get; set; }
         public DbSet<Amenities> Amenities { get; set; }

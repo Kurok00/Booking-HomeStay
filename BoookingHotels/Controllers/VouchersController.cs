@@ -2,6 +2,7 @@
 using BoookingHotels.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace BoookingHotels.Controllers
@@ -27,10 +28,27 @@ namespace BoookingHotels.Controllers
                     (v.UserId == null || v.UserId == userId) &&
                     v.Quantity > 0
                 )
+                .Include(v => v.UsedVoucherIds) // Load navigation
                 .OrderBy(v => v.ExpiryDate)
                 .ToList();
 
-            return View(vouchers);
+            ViewData["Title"] = "My Vouchers";
+            return View("MyVouchers", vouchers);
         }
+
+        public IActionResult VoucherUsed()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var vouchers = _db.UserVouchers
+                .Where(uv => uv.UserId == userId)
+                .Select(uv => uv.Voucher)
+                .OrderByDescending(v => v.ExpiryDate)
+                .ToList();
+
+            ViewData["Title"] = "Voucher đã dùng";
+            return View("MyVouchers", vouchers);
+        }
+
     }
 }

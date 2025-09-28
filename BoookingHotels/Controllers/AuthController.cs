@@ -22,6 +22,7 @@ namespace BoookingHotels.Controllers
             _emailSender = emailSender;
         }
 
+        #region Auth
         public IActionResult Index() => View();
 
         public IActionResult Login() => View();
@@ -61,7 +62,6 @@ namespace BoookingHotels.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            // 🔹 Redirect tùy role
             if (roles.Contains("Admin"))
             {
                 return RedirectToAction("Index", "Admin");
@@ -153,7 +153,6 @@ namespace BoookingHotels.Controllers
             return RedirectToAction("Login");
         }
 
- 
         public IActionResult ForgotPassword() => View();
 
         [HttpPost]
@@ -243,6 +242,7 @@ namespace BoookingHotels.Controllers
             TempData["Success"] = "Cập nhật thông tin thành công!";
             return RedirectToAction("Profile");
         }
+        #endregion
     }
     public class TempUserOtpModel
     {

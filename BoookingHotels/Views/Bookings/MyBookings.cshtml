@@ -3,235 +3,92 @@
     ViewData["Title"] = "My Bookings";
 }
 
-<div class="container mt-5">
-    <h2 class="mb-4">Your Bookings</h2>
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-primary">
+        <i class="bi bi-calendar-check"></i> Your Bookings
+    </h2>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">You have no bookings yet.</div>
+        <div class="alert alert-info shadow-sm rounded">
+            <i class="bi bi-info-circle-fill me-2"></i> You have no bookings yet.
+        </div>
     }
     else
     {
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-primary">
-                <tr>
-                    <th>Hotel</th>
-                    <th>Room</th>
-                    <th>Check-in</th>
-                    <th>Check-out</th>
-                    <th>Status</th>
-                    <th>Total (VND)</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var booking in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle shadow-sm rounded">
+                <thead class="table-primary text-center">
                     <tr>
-                        <td>@booking.Hotel.Name</td>
-                        <td>@booking.Room?.Name</td>
-                        <td>@booking.CheckIn:dd/MM/yyyy</td>
-                        <td>@booking.CheckOut:dd/MM/yyyy</td>
-                        <td>
-                            <span class="badge bg-@GetBadgeColor(booking.Status.ToString())">
-                                @booking.Status
-                            </span>
-                        </td>
-                        <td>@booking.Total.ToString("N0")</td>
-                        <td>
-                            <a asp-action="Confirm" asp-route-id="@booking.BookingId"
-                               class="btn btn-sm btn-icon btn-outline-info"
-                               data-bs-toggle="tooltip" title="View">
-                                <i class="bi bi-eye"></i>
-                            </a>
-
-                            @if (booking.Status == BookingStatus.Pending || booking.Status == BookingStatus.Confirmed)
-                            {
-                                <form asp-action="Cancel" asp-route-id="@booking.BookingId" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-icon btn-outline-danger"
-                                            data-bs-toggle="tooltip" title="Cancel"
-                                            onclick="return confirm('Are you sure to cancel?');">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
-                                </form>
-
-                                <form asp-action="Pay" asp-route-id="@booking.BookingId" method="post" class="d-inline ms-1">
-                                    <button type="submit" class="btn btn-sm btn-icon btn-success"
-                                            data-bs-toggle="tooltip" title="Pay"
-                                            onclick="return confirm('Proceed to payment?');">
-                                        <i class="bi bi-credit-card"></i>
-                                    </button>
-                                </form>
-                            }
-
-                            @if (booking.Status == BookingStatus.Paid)
-                            {
-                                <button type="button"
-                                        class="btn btn-sm btn-icon btn-outline-primary ms-1"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#reviewModal"
-                                        data-booking-id="@booking.BookingId"
-                                        data-room-name="@booking.Room?.Name"
-                                        data-bs-toggle="tooltip" title="Review">
-                                    <i class="bi bi-star-fill"></i>
-                                </button>
-                                <a asp-action="ExportInvoice" asp-route-id="@booking.BookingId"
-                                   class="btn btn-sm btn-icon btn-outline-dark ms-1"
-                                   data-bs-toggle="tooltip" title="Invoice">
-                                    <i class="bi bi-file-earmark-pdf"></i>
-                                </a>
-                            }
-                        </td>
+                        <th>Hotel</th>
+                        <th>Room</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Status</th>
+                        <th>Total (VND)</th>
+                        <th>Action</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var booking in Model)
+                    {
+                        <tr>
+                            <td>@booking.Hotel.Name</td>
+                            <td>@booking.Room?.Name</td>
+                            <td>@booking.CheckIn.ToString("dd/MM/yyyy")</td>
+                            <td>@booking.CheckOut.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge bg-@GetBadgeColor(booking.Status.ToString()) px-3 py-2">
+                                    @booking.Status
+                                </span>
+                            </td>
+                            <td>@booking.Total.ToString("N0")</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                    <a asp-action="Confirm" asp-route-id="@booking.BookingId" class="btn btn-sm btn-outline-info btn-icon" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    @if (booking.Status == BookingStatus.Pending || booking.Status == BookingStatus.Confirmed)
+                                    {
+                                        <form asp-action="Cancel" asp-route-id="@booking.BookingId" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" title="Cancel"
+                                                    onclick="return confirm('Are you sure to cancel?');">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+
+                                        <form asp-action="Pay" asp-route-id="@booking.BookingId" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success btn-icon" title="Pay"
+                                                    onclick="return confirm('Proceed to payment?');">
+                                                <i class="bi bi-credit-card"></i>
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (booking.Status == BookingStatus.Paid)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-icon"
+                                                data-bs-toggle="modal" data-bs-target="#reviewModal"
+                                                data-booking-id="@booking.BookingId" data-room-name="@booking.Room?.Name" title="Review">
+                                            <i class="bi bi-star-fill"></i>
+                                        </button>
+                                        <a asp-action="ExportInvoice" asp-route-id="@booking.BookingId"
+                                           class="btn btn-sm btn-outline-dark btn-icon" title="Invoice">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </div>
 
-<!-- Modal Review -->
-<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header bg-gradient-primary text-white py-3 rounded-top-4">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-star-fill fs-3 text-warning"></i>
-                    <div>
-                        <h5 class="modal-title mb-0 fw-bold">Write a Review</h5>
-                        <small class="text-white-50">Share your experience with this room</small>
-                    </div>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form asp-controller="Reviews" asp-action="Create" method="post" enctype="multipart/form-data" class="p-0">
-                <div class="modal-body px-4 py-4">
-                    <input type="hidden" id="BookingId" name="BookingId" />
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Room</label>
-                        <input type="text" id="RoomName" class="form-control-plaintext fw-bold" disabled />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Your Rating</label>
-                        <div class="star-rating d-flex align-items-center gap-1" id="starRating">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                <i class="bi bi-star fs-3 text-warning star" data-value="@i" style="cursor:pointer;"></i>
-                            }
-                            <input type="hidden" name="Rating" id="Rating" value="5" required />
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Comment</label>
-                        <textarea name="Comment" rows="4" class="form-control" placeholder="Write your feedback..." required></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Upload Photos <span class="text-muted">(optional)</span></label>
-                        <input type="file" name="photos" multiple class="form-control" />
-                    </div>
-                </div>
-                <div class="modal-footer border-0 px-4 pb-4 pt-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                        <i class="bi bi-x-lg"></i> Close
-                    </button>
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-send-fill"></i> Submit Review
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        // Gán BookingId và RoomName khi mở modal
-        const reviewModal = document.getElementById('reviewModal');
-        reviewModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const bookingId = button.getAttribute('data-booking-id');
-            const roomName = button.getAttribute('data-room-name');
-            document.getElementById('BookingId').value = bookingId;
-            document.getElementById('RoomName').value = roomName;
-        });
-
-        // Star rating UI
-        document.querySelectorAll('#starRating .star').forEach(star => {
-            star.addEventListener('mouseenter', function () {
-                const val = parseInt(this.getAttribute('data-value'));
-                highlightStars(val);
-            });
-            star.addEventListener('mouseleave', function () {
-                const current = parseInt(document.getElementById('Rating').value);
-                highlightStars(current);
-            });
-            star.addEventListener('click', function () {
-                const val = parseInt(this.getAttribute('data-value'));
-                document.getElementById('Rating').value = val;
-                highlightStars(val);
-            });
-        });
-
-        function highlightStars(count) {
-            document.querySelectorAll('#starRating .star').forEach(star => {
-                const val = parseInt(star.getAttribute('data-value'));
-                star.classList.toggle('bi-star-fill', val <= count);
-                star.classList.toggle('bi-star', val > count);
-            });
-        }
-        // Khởi tạo mặc định 5 sao
-        highlightStars(5);
-
-        // Enable Bootstrap tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-            new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-    </script>
-    <style>
-        .modal-content {
-            border-radius: 1.5rem;
-        }
-
-        .modal-header.bg-gradient-primary {
-            background: linear-gradient(90deg, #0d6efd 60%, #0dcaf0 100%);
-        }
-
-        .star-rating .star {
-            transition: color 0.2s;
-        }
-
-            .star-rating .star.bi-star-fill {
-                color: #ffc107 !important;
-            }
-
-            .star-rating .star.bi-star {
-                color: #e4e5e9 !important;
-            }
-
-        .btn-icon {
-            width: 2.2rem;
-            height: 2.2rem;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-            .btn-icon i {
-                font-size: 1.2rem;
-            }
-
-        .table td, .table th {
-            vertical-align: middle;
-            text-align: center;
-        }
-    </style>
-}
 @functions {
     string GetBadgeColor(string status)
     {

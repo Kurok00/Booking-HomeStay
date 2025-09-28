@@ -26,7 +26,6 @@ public class BookingsController : Controller
             .FirstOrDefault(r => r.RoomId == roomId);
         if (room == null) return NotFound();
 
-        // Nếu chưa truyền ngày thì gán mặc định
         var defaultCheckIn = checkIn ?? DateTime.Today;
         var defaultCheckOut = checkOut ?? DateTime.Today.AddDays(1);
 
@@ -48,10 +47,12 @@ public class BookingsController : Controller
 
         ViewBag.Room = room;
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
         var vouchers = _context.Vouchers
-            .Where(v => v.IsActive && v.ExpiryDate > DateTime.Now &&
-                   (v.UserId == null || v.UserId == userId))
-            .ToList();
+         .Where(v => v.IsActive
+             && v.ExpiryDate > DateTime.Now
+             && !_context.UserVouchers.Any(uv => uv.UserId == userId && uv.VoucherId == v.VoucherId))
+         .ToList();
 
         ViewBag.Vouchers = vouchers;   
         return View(booking);
@@ -108,6 +109,7 @@ public class BookingsController : Controller
 
             if (voucher != null && (voucher.MinOrderValue == null || booking.SubTotal >= voucher.MinOrderValue))
             {
+
                 decimal discount = voucher.DiscountType == "Percent"
                     ? booking.SubTotal * (voucher.DiscountValue / 100)
                     : voucher.DiscountValue;
@@ -115,9 +117,14 @@ public class BookingsController : Controller
                 booking.Discount = discount;
                 booking.Total = booking.SubTotal - discount;
 
-                // Trừ số lượng voucher
                 voucher.Quantity -= 1;
                 if (voucher.Quantity <= 0) voucher.IsActive = false;
+
+                _context.UserVouchers.Add(new UserVoucher
+                {
+                    UserId = booking.UserId,
+                    VoucherId = voucher.VoucherId,
+                });
             }
         }
 
@@ -135,7 +142,6 @@ public class BookingsController : Controller
         return RedirectToAction("Confirm", new { id = booking.BookingId });
     }
 
-    // Xác nhận đặt phòng
     public IActionResult Confirm(int id)
     {
         var booking = _context.Bookings

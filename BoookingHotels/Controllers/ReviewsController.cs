@@ -17,13 +17,11 @@ namespace BoookingHotels.Controllers
             _db = db;
         }
 
-        // ================== Thêm Review ==================
         [HttpPost]
         public IActionResult Create(int bookingId, int roomId, int rating, string comment, List<IFormFile>? photos)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            // Chỉ cho review nếu booking đã Paid
             var booking = _db.Bookings
                 .FirstOrDefault(b => b.BookingId == bookingId && b.UserId == userId && b.Status == BookingStatus.Paid);
             if (booking == null)
@@ -34,8 +32,8 @@ namespace BoookingHotels.Controllers
             {
                 var review = new Review
                 {
-                    RoomId = booking.RoomId!.Value,   // lấy từ booking
-                    HotelId = booking.HotelId,        // lấy từ booking
+                    RoomId = booking.RoomId!.Value, 
+                    HotelId = booking.HotelId,       
                     UserId = userId,
                     Rating = rating,
                     Comment = comment,
@@ -123,7 +121,6 @@ namespace BoookingHotels.Controllers
             TempData["Success"] = "Review đã được xóa.";
             return RedirectToAction("MyBookings", "Bookings");
         }
-        // ================== Danh sách Review của chính User ==================
         public IActionResult MyReviews()
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -138,7 +135,6 @@ namespace BoookingHotels.Controllers
             return View(reviews);
         }
 
-        // ================== Sửa Review ==================
         public IActionResult Edit(int id)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -163,7 +159,6 @@ namespace BoookingHotels.Controllers
             review.Comment = model.Comment;
             review.CreatedAt = DateTime.Now;
 
-            // Upload ảnh mới (không xóa ảnh cũ)
             if (photos != null && photos.Any())
             {
                 var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Image", "reviews");
