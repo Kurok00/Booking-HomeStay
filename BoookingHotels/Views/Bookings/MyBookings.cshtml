@@ -102,3 +102,61 @@
         };
     }
 }
+<!-- Modal Review -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-controller="Reviews" asp-action="Create" method="post" enctype="multipart/form-data">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-star-fill"></i> Viết đánh giá</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="bookingId" id="reviewBookingId" />
+                    <input type="hidden" name="roomId" id="reviewRoomId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Đánh giá (1-5 sao)</label>
+                        <select name="rating" class="form-select" required>
+                            <option value="">-- Chọn số sao --</option>
+                            <option value="1">⭐</option>
+                            <option value="2">⭐⭐</option>
+                            <option value="3">⭐⭐⭐</option>
+                            <option value="4">⭐⭐⭐⭐</option>
+                            <option value="5">⭐⭐⭐⭐⭐</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Bình luận</label>
+                        <textarea name="comment" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ảnh (tuỳ chọn)</label>
+                        <input type="file" name="photos" multiple class="form-control" accept="image/*" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-success">Gửi đánh giá</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var reviewModal = document.getElementById('reviewModal');
+        reviewModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var bookingId = button.getAttribute('data-booking-id');
+            var roomName = button.getAttribute('data-room-name');
+
+            document.getElementById('reviewBookingId').value = bookingId;
+            document.getElementById('reviewRoomId').value = bookingId; 
+
+        });
+    </script>
+}
