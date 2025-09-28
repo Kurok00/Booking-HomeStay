@@ -1,0 +1,24 @@
+﻿@model BoookingHotels.Models.Amenities
+@{
+    ViewData["Title"] = "Sửa tiện ích";
+}
+
+<h2 class="mb-3">Sửa tiện ích</h2>
+
+<form asp-action="EditAmenity" method="post">
+    <input type="hidden" asp-for="AmenityId" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Tên tiện ích</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Icon" class="form-label">Icon (Bootstrap icon hoặc class)</label>
+        <input asp-for="Icon" class="form-control" placeholder="vd: bi bi-wifi" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <a asp-action="Amenities" class="btn btn-secondary">Hủy</a>
+</form>

@@ -1,0 +1,162 @@
+﻿@{
+    ViewData["Title"] = "Travel Blog & Quảng Cáo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+    .blog-hero {
+        background: linear-gradient(rgba(0,53,128,0.6), rgba(0,53,128,0.6)), url('/Image/blogs/hero-travel.jpg') center/cover no-repeat;
+        color: #fff;
+        padding: 4rem 2rem;
+        border-radius: 1rem;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+        .blog-hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+        }
+
+        .blog-hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 1rem auto 0;
+        }
+
+    .blog-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .blog-card img {
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .blog-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .blog-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+
+    .blog-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+        .blog-meta i {
+            color: #febb02;
+        }
+
+    .blog-title {
+        font-weight: 700;
+        margin: 0.75rem 0;
+    }
+
+    .blog-card .card-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+    }
+
+    .blog-card .card-content {
+        flex: 1 1 auto;
+    }
+
+    .blog-card .btn {
+        margin-top: auto;
+        align-self: flex-start;
+    }
+</style>
+
+<div class="container py-4">
+
+    <!-- Hero section -->
+    <div class="blog-hero shadow-lg">
+        <h1><i class="fa-solid fa-earth-americas"></i> Travel Blog & Quảng Cáo</h1>
+        <p>
+            Khám phá điểm đến tuyệt vời, resort sang trọng và những trải nghiệm đáng nhớ.
+            Chia sẻ cảm hứng du lịch cho chuyến đi của bạn!
+        </p>
+    </div>
+
+    <!-- Blog posts -->
+    <div class="row g-4">
+        <!-- Bài viết 1 -->
+        <div class="col-md-4">
+            <div class="card blog-card h-100 shadow-sm">
+                <img src="/Image/6.jpg" class="card-img-top" />
+                <div class="card-body">
+                    <div class="card-content">
+                        <div class="blog-meta mb-2">
+                            <i class="fa-regular fa-calendar"></i> 28/09/2025
+                            <span class="ms-2"><i class="fa-solid fa-user-pen"></i> Admin</span>
+                        </div>
+                        <h5 class="blog-title">Top 10 bãi biển đẹp nhất Việt Nam</h5>
+                        <p class="text-muted">
+                            Khám phá những bãi biển tuyệt đẹp từ Phú Quốc, Nha Trang, Đà Nẵng... lý tưởng cho kỳ nghỉ.
+                        </p>
+                    </div>
+                    <a asp-action="Detail" asp-route-id="1" class="btn btn-outline-primary btn-sm">
+                        <i class="fa-solid fa-arrow-right"></i> Đọc thêm
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bài viết 2 -->
+        <div class="col-md-4">
+            <div class="card blog-card h-100 shadow-sm">
+                <img src="/Image/5.jpg" class="card-img-top" />
+                <div class="card-body">
+                    <div class="card-content">
+                        <div class="blog-meta mb-2">
+                            <i class="fa-regular fa-calendar"></i> 15/09/2025
+                            <span class="ms-2"><i class="fa-solid fa-user-pen"></i> Admin</span>
+                        </div>
+                        <h5 class="blog-title">Resort 5 sao giá tốt mùa thu</h5>
+                        <p class="text-muted">
+                            Danh sách resort cao cấp với khuyến mãi đặc biệt cho bạn cùng gia đình nghỉ dưỡng sang trọng.
+                        </p>
+                    </div>
+                    <a asp-action="Detail" asp-route-id="2" class="btn btn-outline-primary btn-sm">
+                        <i class="fa-solid fa-arrow-right"></i> Đọc thêm
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bài viết 3 -->
+        <div class="col-md-4">
+            <div class="card blog-card h-100 shadow-sm">
+                <img src="/Image/4.jpg" class="card-img-top" />
+                <div class="card-body">
+                    <div class="card-content">
+                        <div class="blog-meta mb-2">
+                            <i class="fa-regular fa-calendar"></i> 05/09/2025
+                            <span class="ms-2"><i class="fa-solid fa-user-pen"></i> Admin</span>
+                        </div>
+                        <h5 class="blog-title">Ẩm thực đường phố Hà Nội</h5>
+                        <p class="text-muted">
+                            Thưởng thức phở, bún chả, nem rán, cùng nhiều món ăn vặt nổi tiếng không thể bỏ lỡ.
+                        </p>
+                    </div>
+                    <a asp-action="Detail" asp-route-id="3" class="btn btn-outline-primary btn-sm">
+                        <i class="fa-solid fa-arrow-right"></i> Đọc thêm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

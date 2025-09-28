@@ -1,0 +1,21 @@
+﻿@model BoookingHotels.Models.Voucher
+@{
+    ViewData["Title"] = "Xóa Voucher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold text-danger mb-4">
+        <i class="bi bi-trash"></i> Xóa Voucher
+    </h2>
+
+    <div class="alert alert-warning">
+        Bạn có chắc muốn xóa voucher <b>@Model.Code</b>?
+    </div>
+
+    <form asp-action="DeleteVoucher" method="post">
+        <input type="hidden" asp-for="VoucherId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Vouchers" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>

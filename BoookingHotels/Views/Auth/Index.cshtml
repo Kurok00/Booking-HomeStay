@@ -1,0 +1,135 @@
+﻿@{
+    ViewData["Title"] = "Welcome to Booking Hotels";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Hero Section -->
+<section class="booking-hero py-5 text-white" style="background: #003580;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <h1 class="display-4 fw-bold mb-3">Welcome to Booking Hotels</h1>
+                <p class="lead mb-4">
+                    Discover and book the best hotels, resorts, apartments, and more at unbeatable prices.
+                    Enjoy a seamless experience, exclusive deals, and 24/7 support for your perfect stay.
+                </p>
+                <a href="/Hotels/Index" class="btn btn-warning btn-lg fw-bold px-4">Start Booking</a>
+            </div>
+            <div class="col-md-5 d-none d-md-block">
+                <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Offers Section -->
+<section class="offers py-5 bg-light">
+    <div class="container">
+        <h2 class="fw-bold mb-4 text-center">Special Offers</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">Getaway Deals</h5>
+                        <p class="card-text">Save up to 20% on selected stays for your next adventure.</p>
+                        <a href="#" class="btn btn-outline-primary">View Deals</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">Last Minute Offers</h5>
+                        <p class="card-text">Book now and enjoy exclusive discounts for last-minute trips.</p>
+                        <a href="#" class="btn btn-outline-primary">Find Out More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Property Types Section -->
+<section class="property-types py-5">
+    <div class="container">
+        <h2 class="fw-bold mb-4 text-center">Browse by Property Type</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-0 shadow-sm">
+                    <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+                    <div class="card-body">
+                        <h6 class="card-title mb-0">Hotels</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-0 shadow-sm">
+                    <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+                    <div class="card-body">
+                        <h6 class="card-title mb-0">Apartments</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-0 shadow-sm">
+                    <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+                    <div class="card-body">
+                        <h6 class="card-title mb-0">Resorts</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-0 shadow-sm">
+                    <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+                    <div class="card-body">
+                        <h6 class="card-title mb-0">Villas</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-booking py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <h2 class="fw-bold mb-3">Why Choose Booking Hotels?</h2>
+                <ul class="list-unstyled fs-5">
+                    <li>✔️ Wide selection of properties worldwide</li>
+                    <li>✔️ Best price guarantee</li>
+                    <li>✔️ Easy and secure booking process</li>
+                    <li>✔️ 24/7 customer support</li>
+                </ul>
+            </div>
+            <div class="col-md-5 d-none d-md-block">
+                <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .booking-hero {
+        background: #003580;
+        border-radius: 0 0 2rem 2rem;
+    }
+
+        .booking-hero .btn-warning {
+            background: #febb02;
+            border: none;
+            color: #003580;
+        }
+
+            .booking-hero .btn-warning:hover {
+                background: #ffd700;
+                color: #003580;
+            }
+
+    .card-img-top {
+        height: 140px;
+        object-fit: cover;
+    }
+    
+</style>

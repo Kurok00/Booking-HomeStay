@@ -1,0 +1,63 @@
+﻿@model IEnumerable<BoookingHotels.Models.Hotel>
+@{
+    ViewData["Title"] = "Hotels Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-success"><i class="bi bi-building me-2"></i>Hotels</h2>
+        <a asp-action="CreateHotel" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add Hotel
+        </a>
+    </div>
+
+    <div class="card shadow-sm rounded-4">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var h in Model)
+                    {
+                        <tr>
+                            <td>@h.HotelId</td>
+                            <td>@h.Name</td>
+                            <td>@h.City</td>
+                            <td>@h.Country</td>
+                            <td>
+                                @if (h.Status == true)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="EditHotel" asp-route-id="@h.HotelId"
+                                   class="btn btn-sm btn-outline-warning rounded-circle me-1" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-action="DeleteHotel" asp-route-id="@h.HotelId"
+                                   class="btn btn-sm btn-outline-danger rounded-circle"
+                                   onclick="return confirm('Delete this hotel?');" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BoookingHotels.Models.Amenities>
+@{
+    ViewData["Title"] = "Danh sách tiện ích";
+}
+
+<h2 class="mb-3">Danh sách tiện ích</h2>
+
+<a asp-action="CreateAmenity" class="btn btn-primary mb-3">+ Thêm tiện ích</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên tiện ích</th>
+            <th>Icon</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.AmenityId</td>
+            <td>@item.Name</td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.Icon))
+                {
+                    <i class="@item.Icon"></i> <span>@item.Icon</span>
+                }
+                else
+                {
+                    <span class="text-muted">Không có icon</span>
+                }
+            </td>
+            <td>
+                <a asp-action="EditAmenity" asp-route-id="@item.AmenityId" class="btn btn-sm btn-warning">Sửa</a>
+                <a asp-action="DeleteAmenity" asp-route-id="@item.AmenityId" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Bạn có chắc muốn xóa tiện ích này?')">Xóa</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,82 @@
+﻿@model IEnumerable<BoookingHotels.Models.Booking>
+
+@{
+    ViewData["Title"] = "Manage Bookings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="bi bi-journal-check"></i> Manage Bookings
+    </h2>
+
+    <table class="table table-bordered table-hover shadow-sm align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Hotel</th>
+                <th>Room</th>
+                <th>Guest</th>
+                <th>CheckIn</th>
+                <th>CheckOut</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th style="width:150px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td>@b.BookingId</td>
+                    <td>@b.User?.UserName (@b.User?.Email)</td>
+                    <td>@b.Hotel?.Name</td>
+                    <td>@b.Room?.Name</td>
+                    <td>@b.GuestName</td>
+                    <td>@b.CheckIn.ToString("dd/MM/yyyy")</td>
+                    <td>@b.CheckOut.ToString("dd/MM/yyyy")</td>
+                    <td>@b.Total.ToString("N0") @b.Currency</td>
+                    <td>
+                        @if (b.Status == BookingStatus.Paid)
+                        {
+                            <span class="badge bg-success">Paid</span>
+                        }
+                        else if (b.Status == BookingStatus.Pending)
+                        {
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Canceled</span>
+                        }
+                    </td>
+                    <td>@b.CreatedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <a asp-action="EditBooking" asp-route-id="@b.BookingId"
+                           class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-action="DeleteBooking" asp-route-id="@b.BookingId"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure to delete this booking?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                        @if (b.Status == BookingStatus.Paid)
+                        {
+                            <form asp-action="AdminCancel" asp-route-id="@b.BookingId"
+                                  method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-warning"
+                                        onclick="return confirm('Bạn có chắc muốn hủy booking này?');">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

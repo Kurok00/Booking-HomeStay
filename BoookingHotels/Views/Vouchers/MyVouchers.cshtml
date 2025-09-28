@@ -1,0 +1,57 @@
+﻿@model IEnumerable<BoookingHotels.Models.Voucher>
+@{
+    ViewData["Title"] = "My Vouchers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="bi bi-ticket-perforated"></i> My Vouchers
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Bạn chưa có voucher nào.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var v in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="fw-bold text-dark">
+                                <i class="bi bi-ticket-detailed text-danger"></i> @v.Code
+                            </h5>
+                            <p class="text-muted mb-1">@v.Description</p>
+                            <p class="mb-1">
+                                <b>Loại:</b>
+                                @if (v.DiscountType == "Percent")
+                                {
+                                    @($"{v.DiscountValue}%")
+                                }
+                                else
+                                {
+                                    @($"{v.DiscountValue:N0} VND")
+                                }
+                            </p>
+                            @if (v.MinOrderValue.HasValue)
+                            {
+                                <p class="mb-1"><b>Đơn tối thiểu:</b> @v.MinOrderValue.Value.ToString("N0") VND</p>
+                            }
+                            <p class="mb-1"><b>Hết hạn:</b> @v.ExpiryDate.ToString("dd/MM/yyyy")</p>
+                            <p class="mb-1"><b>Số lượng còn lại:</b> @v.Quantity</p>
+
+                            <span class="badge bg-@(v.UserId == null ? "info" : "success") mt-auto align-self-start">
+                                @(v.UserId == null ? "Public" : "Của bạn")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

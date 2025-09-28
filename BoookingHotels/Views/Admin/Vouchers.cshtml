@@ -1,0 +1,72 @@
+﻿@model IEnumerable<BoookingHotels.Models.Voucher>
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="bi bi-ticket-perforated"></i> Danh sách Voucher
+    </h2>
+
+    <a asp-action="CreateVoucher" class="btn btn-success mb-3">
+        <i class="bi bi-plus-circle"></i> Tạo Voucher mới
+    </a>
+
+    <table class="table table-bordered table-hover shadow-sm align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>ID</th>
+                <th>Mã</th>
+                <th>Mô tả</th>
+                <th>Loại</th>
+                <th>Giá trị</th>
+                <th>Điều kiện</th>
+                <th>Hết hạn</th>
+                <th>Còn lại</th>
+                <th>Trạng thái</th>
+                <th>User</th>
+                <th style="width:150px;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var v in Model)
+            {
+                <tr>
+                    <td>@v.VoucherId</td>
+                    <td><span class="fw-bold text-primary">@v.Code</span></td>
+                    <td>@v.Description</td>
+                    <td>@v.DiscountType</td>
+                    <td>
+                        @(v.DiscountType == "Percent" ? v.DiscountValue + "%" : v.DiscountValue.ToString("N0") + " VND")
+                    </td>
+                    <td>@(v.MinOrderValue?.ToString("N0") ?? "-")</td>
+                    <td>@v.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                    <td>@v.Quantity</td>
+                    <td>
+                        @if (v.IsActive)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                    </td>
+                    <td>@(v.User?.UserName ?? "Public")</td>
+                    <td>
+                        <a asp-action="EditVoucher" asp-route-id="@v.VoucherId"
+                           class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-action="DeleteVoucher" asp-route-id="@v.VoucherId"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Bạn có chắc muốn xóa voucher này?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

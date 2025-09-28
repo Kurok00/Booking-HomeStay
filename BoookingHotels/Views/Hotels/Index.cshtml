@@ -1,0 +1,142 @@
+﻿@model IEnumerable<BoookingHotels.Models.Hotel>
+
+@{
+    ViewData["Title"] = "Hotel Listings";
+}
+
+<style>
+    .booking-hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #1a237e;
+    }
+
+    .booking-hero-desc {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 2rem;
+    }
+
+    .booking-searchbox {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .card.hotel-card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 4px 24px rgba(30, 34, 90, 0.08);
+        transition: transform 0.15s, box-shadow 0.15s;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+        .card.hotel-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 32px rgba(30, 34, 90, 0.16);
+        }
+
+    .hotel-img {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        height: 220px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .hotel-location {
+        font-size: 1rem;
+        color: #607d8b;
+        margin-bottom: 0.5rem;
+    }
+
+    .hotel-price {
+        font-weight: 600;
+        color: #388e3c;
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .view-details-btn {
+        margin-top: auto;
+        width: 100%;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container">
+    <section>
+        <div class="container">
+            <h1 class="booking-hero-title">Find your next stay</h1>
+            <p class="booking-hero-desc">Search low prices on hotels, homes and much more...</p>
+
+            <form asp-action="Index" method="get" class="booking-searchbox">
+                <div class="row g-2 align-items-end">
+                    <!-- Tìm kiếm theo tên/địa điểm -->
+                    <div class="col-md-3 col-12">
+                        <input type="text" name="search" value="@Context.Request.Query["search"]"
+                               class="form-control" placeholder="Where are you going?">
+                    </div>
+                    <!-- Ngày check-in -->
+                    <div class="col-md-2 col-6">
+                        <label class="form-label mb-1">Check-in</label>
+                        <input type="date" name="checkIn" value="@Context.Request.Query["checkIn"]"
+                               class="form-control">
+                    </div>
+                    <!-- Ngày check-out -->
+                    <div class="col-md-2 col-6">
+                        <label class="form-label mb-1">Check-out</label>
+                        <input type="date" name="checkOut" value="@Context.Request.Query["checkOut"]"
+                               class="form-control">
+                    </div>
+                    <!-- Sắp xếp -->
+                    <div class="col-md-3 col-12">
+                        <select name="sortBy" class="form-select">
+                            <option value="">Mới nhất</option>
+                            <option value="price" selected="@(Context.Request.Query["sortBy"] == "price")">Giá thấp nhất</option>
+                            <option value="location" selected="@(Context.Request.Query["sortBy"] == "location")">Địa điểm (A-Z)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <button class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <div class="row mt-4">
+        @foreach (var hotel in Model)
+        {
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card hotel-card w-100 h-100">
+                    <img src="@(hotel.Photoss.FirstOrDefault()?.Url ?? "/images/default-hotel.jpg")"
+                         class="hotel-img" alt="@hotel.Name" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-1">@hotel.Name</h5>
+                        <div class="hotel-location">@hotel.City, @hotel.Country</div>
+                        <div class="hotel-price">
+                            @if (hotel.Rooms != null && hotel.Rooms.Any())
+                            {
+                                @:From @hotel.Rooms.Min(r => r.Price).ToString("N0") VND/night
+                            }
+                        </div>
+                        <a asp-action="Details" asp-route-id="@hotel.HotelId" class="btn btn-outline-primary view-details-btn mt-auto">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

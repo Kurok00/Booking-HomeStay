@@ -1,0 +1,98 @@
+﻿@model BoookingHotels.Models.Hotel
+@{
+    ViewData["Title"] = "Thêm khách sạn";
+}
+
+<h2 class="mb-3">Thêm khách sạn</h2>
+
+<form asp-action="CreateHotel" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="City" class="form-label"></label>
+            <input asp-for="City" class="form-control" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Country" class="form-label"></label>
+            <input asp-for="Country" class="form-control" />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="Latitude" class="form-label">Latitude</label>
+            <input asp-for="Latitude" class="form-control" id="latitude" readonly />
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Longitude" class="form-label">Longitude</label>
+            <input asp-for="Longitude" class="form-control" id="longitude" readonly />
+        </div>
+    </div>
+
+    <div style="display:none" class="form-check form-switch mb-3">
+        <input asp-for="Status" class="form-check-input" />
+        <label asp-for="Status" class="form-check-label">Kích hoạt</label>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ngày tạo</label>
+        <input asp-for="CreatedAt" type="datetime-local" class="form-control"
+               value="@(Model.CreatedAt.HasValue? Model.CreatedAt.Value.ToString("yyyy-MM-ddTHH:mm") : DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))" />
+        <small class="text-muted">Có thể giữ mặc định là thời điểm hiện tại.</small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ảnh khách sạn</label>
+        <input type="file" name="images" class="form-control" multiple />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-action="Hotels" class="btn btn-secondary">Hủy</a>
+</form>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Bản đồ -->
+<div id="map" style="height: 400px;"></div>
+<script>
+
+    var map = L.map('map').setView([10.762622, 106.660172], 13); // Tọa độ mặc định HCM
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    var marker;
+
+    map.on('click', function (e) {
+        var lat = e.latlng.lat.toFixed(6);
+        var lng = e.latlng.lng.toFixed(6);
+
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng).addTo(map);
+        }
+
+         console.log("LAT:", lat, "LNG:", lng);
+        console.log("Input Latitude:", document.getElementById("Latitude"));
+        console.log("Input Longitude:", document.getElementById("Longitude"));
+
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lng;
+    });
+</script>

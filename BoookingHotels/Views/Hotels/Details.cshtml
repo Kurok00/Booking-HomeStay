@@ -1,0 +1,171 @@
+﻿@model BoookingHotels.Models.Hotel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<style>
+    .hotel-header {
+        background: #003580;
+        color: #fff;
+        border-radius: 16px;
+        padding: 32px 24px 24px 24px;
+        margin-bottom: 32px;
+        box-shadow: 0 4px 24px rgba(78,84,200,0.12);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hotel-header h2 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hotel-header .location {
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+
+    .hotel-gallery img {
+        transition: transform 0.3s;
+        cursor: pointer;
+    }
+
+        .hotel-gallery img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        }
+
+    .room-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        transition: box-shadow 0.2s;
+    }
+
+        .room-card:hover {
+            box-shadow: 0 6px 24px rgba(78,84,200,0.15);
+        }
+
+        .room-card .card-title {
+            font-weight: 600;
+            color: #4e54c8;
+        }
+
+    .room-amenities .badge {
+        background: #e0e4ff;
+        color: #4e54c8;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+
+    .btn-book {
+        background: linear-gradient(90deg, rgba(0,53,128,0.7), rgba(0,53,128,0.7));
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: background 0.2s;
+    }
+
+        .btn-book:hover {
+            background: linear-gradient(90deg, rgba(0,53,128,0.7), rgba(0,53,128,0.7));
+        }
+</style>
+
+<div class="container py-4">
+    <div class="hotel-header mb-4">
+        <h2>@Model.Name</h2>
+        <div class="location">
+            <i class="bi bi-geo-alt-fill"></i>
+            @Model.Address, @Model.City, @Model.Country
+        </div>
+    </div>
+
+    <div class="hotel-gallery row g-3 mb-5">
+        @foreach (var photo in Model.Photoss.Where(p => p.RoomId == null))
+        {
+            <div class="col-6 col-md-4 col-lg-3">
+                <img src="@photo.Url" alt="Hotel Photo"
+                     class="img-fluid rounded-3 shadow-sm"
+                     style="height:250px;object-fit:cover;width:100%;" />
+            </div>
+        }
+    </div>
+
+
+    <div class="mb-5">
+        <h4 class="fw-bold mb-2">Description</h4>
+        <p class="fs-5 text-secondary">@Model.Description</p>
+    </div>
+
+    <h4 class="fw-bold mb-4">Available Rooms</h4>
+    <div class="row g-4">
+        @foreach (var room in Model.Rooms)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card room-card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@room.Name</h5>
+                        <p class="card-text mb-2">
+                            <i class="bi bi-people-fill"></i> @room.Capacity people &nbsp;•&nbsp;
+                            <i class="bi bi-moon"></i> Bed: @room.BedType &nbsp;•&nbsp;
+                            <i class="bi bi-arrows-fullscreen"></i> @room.Size m²
+                        </p>
+                        <div class="room-amenities mb-2">
+                            @foreach (var amenity in room.RoomAmenities.Select(ra => ra.Amenity))
+                            {
+                                <span class="badge me-1">@amenity.Name</span>
+                            }
+                        </div>
+                        <div class="mt-auto">
+                            <div class="mb-2">
+                                <span class="fs-5 fw-bold text-primary">
+                                    <i class="bi bi-cash-coin"></i> @room.Price.ToString("N0") VND
+                                </span>
+                                <span class="text-muted fs-6">/night</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Bookings"
+                                   asp-action="Create"
+                                   asp-route-roomId="@room.RoomId"
+                                   class="btn btn-book w-100 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-calendar-check me-2"></i> Book
+                                </a>
+                                <a asp-controller="Rooms"
+                                   asp-action="Details"
+                                   asp-route-id="@room.RoomId"
+                                   class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-info-circle me-2"></i> Chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!-- Bản đồ hiển thị vị trí khách sạn -->
+<div id="hotelMap" style="height: 400px;" class="my-4 rounded shadow-sm"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+         var lat = @(Model.Latitude.HasValue? Model.Latitude.Value.ToString("F6", System.Globalization.CultureInfo.InvariantCulture) : "10.762622");
+    var lng = @(Model.Longitude.HasValue? Model.Longitude.Value.ToString("F6", System.Globalization.CultureInfo.InvariantCulture) : "106.660172");
+
+
+        var map = L.map('hotelMap').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([lat, lng]).addTo(map)
+            .bindPopup("<b>@Model.Name</b><br>@Model.Address")
+            .openPopup();
+    });
+</script>

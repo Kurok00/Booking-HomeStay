@@ -1,0 +1,77 @@
+﻿@model BoookingHotels.Models.Booking
+
+@{
+    ViewData["Title"] = "Xác nhận đặt phòng";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+<style>
+    .confirm-container {
+        max-width: 720px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 32px 36px;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .confirm-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: #0071c2;
+        text-align: center;
+    }
+
+    .confirm-details {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .btn-home {
+        margin-top: 24px;
+        display: block;
+        width: 100%;
+        background: #0071c2;
+        color: #fff;
+        font-size: 1.1rem;
+        padding: 12px;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+        .btn-home:hover {
+            background: #005fa3;
+        }
+</style>
+
+<div class="confirm-container">
+    <div class="confirm-title">
+        <i class="fa-solid fa-check-circle text-success"></i>
+        Đặt phòng thành công!
+    </div>
+
+    <div class="confirm-details">
+        <p><span class="detail-label">Khách sạn:</span> @Model.Hotel?.Name</p>
+        <p><span class="detail-label">Phòng:</span> @Model.Room?.Name</p>
+        <p><span class="detail-label">Khách hàng:</span> @Model.GuestName (@Model.GuestPhone)</p>
+        <p><span class="detail-label">Ngày nhận phòng:</span> @Model.CheckIn.ToString("dd/MM/yyyy")</p>
+        <p><span class="detail-label">Ngày trả phòng:</span> @Model.CheckOut.ToString("dd/MM/yyyy")</p>
+        <p><span class="detail-label">Số đêm:</span> @( (Model.CheckOut - Model.CheckIn).Days )</p>
+        <p><span class="detail-label">Tổng tiền:</span> <strong>@Model.Total.ToString("N0") VND</strong></p>
+        <p><span class="detail-label">Trạng thái:</span> <span class="text-success">@Model.Status</span></p>
+        <p><span class="detail-label">Thời gian đặt:</span> @Model.CreatedAt</p>
+    </div>
+
+    <a href="@Url.Action("Index", "Hotels")" class="btn-home">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại trang chính
+    </a>
+</div>

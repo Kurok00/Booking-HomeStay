@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết Blog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <img src="/Image/7.jpg" class="card-img-top rounded-top-4" style="max-height: 350px; object-fit: cover;" alt="Bãi biển đẹp Việt Nam" />
+                <div class="card-body p-4">
+                    <h1 class="card-title fw-bold text-primary mb-3">Top 10 bãi biển đẹp nhất Việt Nam</h1>
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="/Image/avatar-admin.png" alt="Admin" class="rounded-circle me-2" width="40" height="40" />
+                        <div>
+                            <span class="fw-semibold">Admin</span>
+                            <span class="text-muted ms-2 small"><i class="bi bi-calendar-event"></i> 28/09/2025</span>
+                        </div>
+                    </div>
+                    <p class="card-text fs-5 text-secondary mb-4">
+                        Việt Nam có đường bờ biển dài hơn 3.000 km với hàng trăm bãi biển tuyệt đẹp...
+                        (ở đây bạn viết nội dung quảng cáo/travel blog tùy thích).
+                    </p>
+                    <p class="card-text fs-5 text-secondary">
+                        Từ Phú Quốc với biển xanh, cát trắng, đến Nha Trang, Đà Nẵng với những resort đẳng cấp,
+                        chắc chắn sẽ mang lại kỳ nghỉ đáng nhớ cho du khách.
+                    </p>
+                    <a asp-action="Index" class="btn btn-outline-primary mt-4 px-4">
+                        <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

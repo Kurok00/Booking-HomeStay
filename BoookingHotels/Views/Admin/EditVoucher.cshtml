@@ -1,0 +1,77 @@
+﻿@model BoookingHotels.Models.Voucher
+@{
+    ViewData["Title"] = "Sửa Voucher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">
+        <i class="bi bi-pencil"></i> Sửa Voucher
+    </h2>
+
+    <form asp-action="EditVoucher" method="post">
+        <input type="hidden" asp-for="VoucherId" />
+
+        <div class="mb-3">
+            <label asp-for="Code" class="form-label">Mã Voucher</label>
+            <input asp-for="Code" class="form-control" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Mô tả</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DiscountType" class="form-label">Loại</label>
+            <select asp-for="DiscountType" class="form-select">
+                <option value="Percent" selected="@(Model.DiscountType == "Percent")">Percent (%)</option>
+                <option value="Amount" selected="@(Model.DiscountType == "Amount")">Amount (VND)</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DiscountValue" class="form-label">Giá trị</label>
+            <input asp-for="DiscountValue" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="MinOrderValue" class="form-label">Giá trị đơn tối thiểu</label>
+            <input asp-for="MinOrderValue" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ExpiryDate" class="form-label">Ngày hết hạn</label>
+            <input asp-for="ExpiryDate" type="date" class="form-control" value="@Model.ExpiryDate.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Quantity" class="form-label">Số lượng</label>
+            <input asp-for="Quantity" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">User (nếu chỉ định)</label>
+            <select asp-for="UserId" class="form-select">
+                <option value="">-- Public --</option>
+                @if (ViewBag.Users != null)
+                {
+                    foreach (var u in ViewBag.Users)
+                    {
+                        <option value="@u.UserId" selected="@(u.UserId == Model.UserId)">
+                            @u.UserName (@u.Email)
+                        </option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label asp-for="IsActive" class="form-check-label">Kích hoạt</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <a asp-action="Vouchers" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>

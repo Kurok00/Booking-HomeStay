@@ -1,0 +1,218 @@
+﻿@model BoookingHotels.Models.Booking
+@{
+    ViewData["Title"] = "Đặt phòng";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+<style>
+    .booking-form-container {
+        max-width: 520px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(60,60,60,0.12);
+        padding: 32px 36px 28px 36px;
+        border: 1px solid #e3e3e3;
+    }
+    .booking-form-title {
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 18px;
+        color: #2d3a4a;
+        text-align: center;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #2d3a4a;
+    }
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px #cce5ff;
+    }
+    .input-group-text {
+        background: #f8f9fa;
+        border-right: 0;
+    }
+    .form-control {
+        border-left: 0;
+    }
+    .price-box {
+        background: #f6f8fa;
+        border-radius: 8px;
+        padding: 14px 18px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #007bff;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .btn-primary {
+        width: 100%;
+        font-size: 1.1rem;
+        padding: 12px 0;
+        font-weight: 600;
+        border-radius: 8px;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="booking-form-container">
+    <div class="booking-form-title">
+        <i class="fa-solid fa-bed"></i>
+        Đặt phòng tại <span style="color:#007bff">@Model.Room?.Hotel?.Name</span>
+    </div>
+    <form asp-action="Create" method="post" autocomplete="off">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <input type="hidden" asp-for="RoomId" />
+        <input type="hidden" asp-for="HotelId" />
+
+        <div class="mb-3">
+            <label asp-for="GuestName" class="form-label"><i class="fa-solid fa-user"></i> Họ và tên</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
+                <input asp-for="GuestName" class="form-control" placeholder="Nhập họ tên khách" />
+
+            </div>
+            <span asp-validation-for="GuestName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="GuestPhone" class="form-label"><i class="fa-solid fa-phone"></i> Số điện thoại</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                <input asp-for="GuestPhone" class="form-control" placeholder="Nhập số điện thoại" />
+            </div>
+            <span asp-validation-for="GuestPhone" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="CheckIn" class="form-label"><i class="fa-solid fa-calendar-check"></i> Ngày nhận phòng</label>
+                <input asp-for="CheckIn" type="date" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="CheckOut" class="form-label"><i class="fa-solid fa-calendar-day"></i> Ngày trả phòng</label>
+                <input asp-for="CheckOut" type="date" class="form-control" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Voucher</label>
+            <select name="voucherCode" class="form-select">
+                <option value="">-- Không sử dụng --</option>
+                @if (ViewBag.Vouchers != null)
+                {
+                    foreach (var v in (IEnumerable<BoookingHotels.Models.Voucher>)ViewBag.Vouchers)
+                    {
+                <option value="@v.Code">
+                    @v.Code - @(v.DiscountType == "Percent"
+                                        ? v.DiscountValue + "%"
+                                        : v.DiscountValue.ToString("N0") + " VND")
+                    (HSD: @v.ExpiryDate.ToString("dd/MM/yyyy"))
+                </option>
+                                }
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Phương thức thanh toán</label>
+            <select name="paymentMethod" class="form-control">
+                <option value="COD">Thanh toán khi nhận phòng</option>
+                <option value="ONLINE">Thanh toán online </option>
+            </select>
+        </div>
+
+        <div class="price-box mb-3">
+            <i class="fa-solid fa-money-bill-wave"></i>
+            Giá phòng: <span>@Model.SubTotal.ToString("N0") VND</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-check-circle"></i> Xác nhận đặt phòng
+        </button>
+    </form>
+</div>
+<!-- Custom CSS for modal -->
+<style>
+    .custom-modal-header {
+        background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+        color: #fff;
+        border-top-left-radius: .5rem;
+        border-top-right-radius: .5rem;
+        border-bottom: none;
+        box-shadow: 0 2px 8px rgba(78,84,200,0.15);
+    }
+
+    .custom-modal-icon {
+        font-size: 2.5rem;
+        margin-right: 12px;
+        vertical-align: middle;
+    }
+
+    .custom-modal-body {
+        font-size: 1.1rem;
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+
+    .custom-alert {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        box-shadow: none;
+        font-weight: 500;
+    }
+
+    .custom-btn-close {
+        filter: invert(1);
+    }
+</style>
+
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-4">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title" id="feedbackModalLabel">
+                    <i class="fa-solid fa-bell"></i> Thông báo
+                </h5>
+                <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body custom-modal-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger custom-alert mb-0">
+                        <i class="fa-solid fa-triangle-exclamation custom-modal-icon text-danger"></i>
+                        @TempData["Error"]
+                    </div>
+                }
+                else if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success custom-alert mb-0">
+                        <i class="fa-solid fa-circle-check custom-modal-icon text-success"></i>
+                        @TempData["Success"]
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            var error = '@TempData["Error"]';
+            var success = '@TempData["Success"]';
+            if (error || success) {
+                var modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+                modal.show();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,134 @@
+﻿@model List<BoookingHotels.Models.Review>
+@{
+    ViewData["Title"] = "My Reviews";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .review-card {
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        transition: box-shadow 0.2s;
+        border: none;
+        background: #fff;
+    }
+
+        .review-card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .review-rating .fa-star {
+        font-size: 1.1rem;
+        margin-right: 2px;
+        transition: color 0.2s;
+    }
+
+    .review-rating .fas {
+        color: #ffc107;
+        text-shadow: 0 1px 2px #fff3;
+    }
+
+    .review-rating .far {
+        color: #e0e0e0;
+    }
+
+    .review-badge {
+        background: #f8f9fa;
+        color: #198754;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 2px 10px;
+        font-size: 0.95rem;
+        margin-left: 8px;
+    }
+
+    .review-photos img {
+        border-radius: 10px;
+        border: 1px solid #eee;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .review-photos img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            z-index: 2;
+        }
+
+    .review-actions .btn {
+        min-width: 80px;
+        font-weight: 500;
+        border-radius: 8px;
+    }
+
+    .review-comment {
+        font-size: 1.08rem;
+        color: #333;
+        margin-bottom: 0.7rem;
+    }
+</style>
+
+<div class="container py-5">
+    <h2 class="fw-bold mb-4">
+        <i class="fa-solid fa-user-pen text-success"></i> Đánh giá của tôi
+    </h2>
+
+    @if (Model != null && Model.Any())
+    {
+        foreach (var rv in Model)
+        {
+            <div class="card review-card mb-4">
+                <div class="card-body">
+                    <div class="review-header mb-2">
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                @rv.Room.Name
+                                <span class="review-badge">@rv.Room.Hotel.Name</span>
+                            </h5>
+                            <small class="text-muted">@rv.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                        </div>
+                        <div class="review-rating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fa-star @(i <= rv.Rating ? "fas" : "far")"></i>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="review-comment">@rv.Comment</div>
+
+                    @if (rv.Photos != null && rv.Photos.Any())
+                    {
+                        <div class="review-photos d-flex flex-wrap gap-2 mb-3">
+                            @foreach (var p in rv.Photos)
+                            {
+                                <img src="@p.Url" style="width:120px; height:90px; object-fit:cover;" />
+                            }
+                        </div>
+                    }
+
+                    <div class="review-actions d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@rv.ReviewId" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-pen"></i> Sửa
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@rv.ReviewId" method="post"
+                              onsubmit="return confirm('Bạn chắc chắn muốn xóa review này?');" style="display:inline;">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i> Xóa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info shadow-sm rounded-3">Bạn chưa viết review nào.</div>
+    }
+</div>

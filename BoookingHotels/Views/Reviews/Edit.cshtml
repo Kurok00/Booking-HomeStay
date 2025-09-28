@@ -1,0 +1,120 @@
+﻿@model BoookingHotels.Models.Review
+@{
+    ViewData["Title"] = "Edit Review";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .review-edit-card {
+        max-width: 600px;
+        margin: 0 auto;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        padding: 2.5rem 2rem;
+    }
+
+    .review-edit-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .star-select option {
+        font-size: 1.1rem;
+    }
+
+    .current-photos img {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 2px solid #f1f1f1;
+        margin-bottom: 0.5rem;
+    }
+
+        .current-photos img:hover {
+            transform: scale(1.07);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+            border-color: #ffc107;
+        }
+
+    .btn-success {
+        background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        color: #222;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+            color: #111;
+        }
+
+    .form-label {
+        color: #495057;
+        font-size: 1.05rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="review-edit-card">
+        <div class="review-edit-title">
+            <i class="fa-solid fa-pen text-warning"></i>
+            Chỉnh sửa đánh giá
+        </div>
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="ReviewId" />
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Chọn số sao</label>
+                <select asp-for="Rating" class="form-select w-auto star-select">
+                    <option value="5" selected="@(Model.Rating == 5)">★★★★★ - Tuyệt vời</option>
+                    <option value="4" selected="@(Model.Rating == 4)">★★★★☆ - Tốt</option>
+                    <option value="3" selected="@(Model.Rating == 3)">★★★☆☆ - Bình thường</option>
+                    <option value="2" selected="@(Model.Rating == 2)">★★☆☆☆ - Tệ</option>
+                    <option value="1" selected="@(Model.Rating == 1)">★☆☆☆☆ - Rất tệ</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Bình luận</label>
+                <textarea asp-for="Comment" class="form-control" rows="4" placeholder="Chia sẻ trải nghiệm của bạn..."></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Thêm ảnh mới</label>
+                <input type="file" name="photos" multiple class="form-control" />
+            </div>
+
+            @if (Model.Photos != null && Model.Photos.Any())
+            {
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Ảnh hiện tại</label>
+                    <div class="d-flex flex-wrap gap-3 current-photos">
+                        @foreach (var p in Model.Photos)
+                        {
+                            <img src="@p.Url" style="width:120px; height:90px; object-fit:cover;" class="rounded shadow-sm" />
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex align-items-center mt-4">
+                <button type="submit" class="btn btn-success px-4 py-2 me-2">
+                    <i class="fa-solid fa-save"></i> Cập nhật
+                </button>
+                <a asp-action="MyReviews" class="btn btn-secondary px-4 py-2">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

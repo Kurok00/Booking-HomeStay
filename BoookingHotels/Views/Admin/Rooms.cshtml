@@ -1,0 +1,79 @@
+﻿@model IEnumerable<BoookingHotels.Models.Room>
+@{
+    ViewData["Title"] = "Rooms Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary"><i class="bi bi-door-closed"></i> Rooms Management</h2>
+        <a asp-action="CreateRoom" class="btn btn-success fw-bold shadow-sm">
+            <i class="bi bi-plus-circle"></i> Add New Room
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <table class="table table-hover align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>Room ID</th>
+                        <th>Hotel</th>
+                        <th>Name</th>
+                        <th>Capacity</th>
+                        <th>Price</th>
+                        <th>Bed</th>
+                        <th>Size</th>
+                        <th>Status</th>
+                        <th>Images</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td>@r.RoomId</td>
+                            <td>@r.Hotel?.Name</td>
+                            <td>@r.Name</td>
+                            <td>@r.Capacity</td>
+                            <td>@r.Price.ToString("N0") VND</td>
+                            <td>@r.BedType</td>
+                            <td>@r.Size m²</td>
+                            <td>
+                                @if (r.Status == true)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                @if (r.Photos != null && r.Photos.Any())
+                                {
+                                    <img src="@r.Photos.First().Url" class="img-thumbnail" style="width:60px; height:40px; object-fit:cover;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No image</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="EditRoom" asp-route-id="@r.RoomId" class="btn btn-sm btn-warning me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-action="DeleteRoom" asp-route-id="@r.RoomId"
+                                   onclick="return confirm('Are you sure want to delete this room?');"
+                                   class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
