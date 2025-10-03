@@ -1,0 +1,85 @@
+﻿@model BoookingHotels.Models.Blog
+@{
+    ViewData["Title"] = "Đăng Blog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+    .create-blog-card {
+        max-width: 800px;
+        margin: 2rem auto;
+        border-radius: 1rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        border: none;
+    }
+
+        .create-blog-card .card-header {
+            background: #003580;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.4rem;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .create-blog-card .form-label {
+            font-weight: 600;
+        }
+
+        .create-blog-card .btn-primary {
+            background: #0071c2;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding: 0.6rem 1.4rem;
+        }
+
+        .create-blog-card .btn-secondary {
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+</style>
+
+<div class="container py-5">
+    <div class="card create-blog-card">
+        <div class="card-header">
+            <i class="fa-solid fa-pen-to-square"></i> Đăng Blog mới
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" enctype="multipart/form-data" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Tiêu đề</label>
+                    <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề bài viết..." />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nội dung</label>
+                    <textarea asp-for="Content" class="form-control" rows="6" placeholder="Viết nội dung chi tiết..."></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ảnh minh họa</label>
+                    <input type="file" name="imageFile" class="form-control" />
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-paper-plane"></i> Đăng Blog
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

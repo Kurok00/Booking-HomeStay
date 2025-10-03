@@ -66,10 +66,20 @@ namespace BoookingHotels.Controllers
             {
                 return RedirectToAction("Index", "Admin");
             }
+            else if (roles.Contains("Reviewer"))
+            {
+                return RedirectToAction("Create", "Blogs");
+            }
+            else if (roles.Contains("Host"))
+            {
+                return RedirectToAction("MyHotels", "Host");
+            }
             else
             {
-                return RedirectToAction("Index", "Hotels");
+                return RedirectToAction("Index", "Auth");
             }
+
+
         }
 
 
@@ -103,7 +113,6 @@ namespace BoookingHotels.Controllers
         public IActionResult VerifyOtp() => View();
 
         [HttpPost]
-        [HttpPost]
         public IActionResult VerifyOtp(string otp)
         {
             if (!TempData.TryGetValue("TempUser", out var raw))
@@ -120,10 +129,11 @@ namespace BoookingHotels.Controllers
             if (otp != tempUser.Otp)
             {
                 ModelState.AddModelError("", "Sai mã OTP");
-                TempData["TempUser"] = JsonSerializer.Serialize(tempUser); // giữ lại
+                TempData["TempUser"] = JsonSerializer.Serialize(tempUser); // giữ lại để nhập lại
                 return View();
             }
 
+            // Tạo user mới
             var user = new User
             {
                 UserName = tempUser.Email,
@@ -137,15 +147,26 @@ namespace BoookingHotels.Controllers
             _db.Users.Add(user);
             _db.SaveChanges();
 
+            // Kiểm tra role "User" đã có chưa, nếu chưa thì tạo
             var role = _db.Roles.FirstOrDefault(r => r.RoleName == "User");
-            if (role != null)
+            if (role == null)
             {
-                _db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = role.RoleId });
+                role = new Role { RoleName = "User" };
+                _db.Roles.Add(role);
                 _db.SaveChanges();
             }
 
+            // Gán mặc định role User cho tài khoản vừa tạo
+            _db.UserRoles.Add(new UserRole
+            {
+                UserId = user.UserId,
+                RoleId = role.RoleId
+            });
+            _db.SaveChanges();
+
             return RedirectToAction("Login");
         }
+
 
         public async Task<IActionResult> Logout()
         {

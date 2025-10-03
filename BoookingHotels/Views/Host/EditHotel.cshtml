@@ -1,0 +1,41 @@
+﻿@model BoookingHotels.Models.Hotel
+@{
+    ViewData["Title"] = "Chỉnh sửa khách sạn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <h2 class="mb-4">Chỉnh sửa khách sạn</h2>
+
+    <form asp-action="EditHotel" enctype="multipart/form-data" method="post">
+        <input type="hidden" asp-for="HotelId" />
+
+        <div class="mb-3">
+            <label class="form-label">Tên khách sạn</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mô tả</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Địa chỉ</label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Thành phố</label>
+            <input asp-for="City" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Quốc gia</label>
+            <input asp-for="Country" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ảnh mới (nếu muốn cập nhật)</label>
+            <input type="file" name="images" multiple class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <a asp-action="MyHotels" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>

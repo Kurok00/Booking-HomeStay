@@ -1,0 +1,50 @@
+﻿@model BoookingHotels.Models.Room
+@{
+    ViewData["Title"] = "Chỉnh sửa phòng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-success"><i class="bi bi-pencil-square"></i> Chỉnh sửa phòng</h2>
+
+    <form asp-action="EditRoom" enctype="multipart/form-data" method="post">
+        <input type="hidden" asp-for="RoomId" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Capacity" class="form-label"></label>
+            <input asp-for="Capacity" class="form-control" />
+        </div>
+
+
+        <div class="mb-3">
+            <label class="form-label">Tiện nghi</label>
+            @foreach (var amenity in ViewBag.Amenities)
+            {
+                <div class="form-check">
+                    <input type="checkbox" name="amenityIds" value="@amenity.AmenityId"
+                           class="form-check-input"
+                           @(ViewBag.SelectedAmenities.Contains(amenity.AmenityId) ? "checked" : "") />
+                    <label class="form-check-label">@amenity.Name</label>
+                </div>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Thêm ảnh mới</label>
+            <input type="file" name="images" multiple class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <a asp-action="MyRooms" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

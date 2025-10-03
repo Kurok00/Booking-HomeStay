@@ -25,12 +25,17 @@ namespace BoookingHotels.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<ReviewPhoto> ReviewPhotos { get; set; }
         public DbSet<AdminLog> AdminLogs { get; set; }
-
+        public DbSet<Blog> Blogs { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Hotel>()
+    .HasOne(h => h.Creator)
+    .WithMany()
+    .HasForeignKey(h => h.CreatedBy)
+    .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RoomAmenitie>()
                 .HasKey(ra => new { ra.RoomId, ra.AmenityId });

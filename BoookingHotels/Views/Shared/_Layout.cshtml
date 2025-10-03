@@ -259,72 +259,77 @@
                 font-weight: 600;
             }
 
-      
+        .toast {
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        }
     </style>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-lg booking-navbar">
             <div class="container">
-                  @if (User.Identity != null && User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
-                    {
-                           <a asp-controller="Auth" asp-action="Index" class="navbar-brand fw-bold fs-3">
-                            Booking.com
-                        </a>
-                    }
-                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin")){
-                <a asp-controller="Admin" asp-action="Index" class="navbar-brand fw-bold fs-3">
-                    Booking.com
-                </a>
-                    }
+                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Index" class="navbar-brand fw-bold fs-3">
+                        Booking.com
+                    </a>
+                }
+                else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Host"))
+                {
+                    <a asp-controller="Host" asp-action="MyHotels" class="navbar-brand fw-bold fs-3">
+                        Booking.com
+                    </a>
+                }
+                else if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Auth" asp-action="Index" class="navbar-brand fw-bold fs-3">
+                        Booking.com
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Home" asp-action="Index" class="navbar-brand fw-bold fs-3">
+                        Booking.com
+                    </a>
+                }
+
                 <div class="d-flex align-items-center gap-2 ms-auto">
-              
-                    @if (User.Identity != null && User.Identity.IsAuthenticated && !User.IsInRole("Admin"))
+
+                    @* ================= USER ================= *@
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("User"))
                     {
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                      
-                            <li class="nav-item">
-                                <a asp-controller="Home" asp-action="Index" class="nav-link">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Hotels" asp-action="Index" class="nav-link">Hotels</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Blogs" asp-action="Index" class="nav-link">Blogs</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Reviews" asp-action="MyReviews" class="nav-link">My Reviews</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Vouchers" asp-action="MyVouchers" class="nav-link">My Vouchers</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a asp-controller="Bookings" asp-action="MyBookings" class="nav-link">My Bookings</a>
-                            </li>
+                            <li class="nav-item"><a asp-controller="Home" asp-action="Index" class="nav-link">Home</a></li>
+                            <li class="nav-item"><a asp-controller="Hotels" asp-action="Index" class="nav-link">Hotels</a></li>
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Index" class="nav-link">Blogs</a></li>
+                            <li class="nav-item"><a asp-controller="Reviews" asp-action="MyReviews" class="nav-link">My Reviews</a></li>
+                            <li class="nav-item"><a asp-controller="Vouchers" asp-action="MyVouchers" class="nav-link">My Vouchers</a></li>
+                            <li class="nav-item"><a asp-controller="Bookings" asp-action="MyBookings" class="nav-link">My Bookings</a></li>
                         </ul>
-                      <div class="dropdown">
+                        <div class="dropdown">
                             <button class="btn user-menu dropdown-toggle" type="button" id="userMenu"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i> @User.Identity.Name
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenu">
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Auth" asp-action="Profile">
-                                        <i class="bi bi-person-lines-fill"></i> Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout">
-                                        <i class="bi bi-box-arrow-right"></i> Logout
-                                    </a>
-                                </li>
- 
-
+                                <li><a class="dropdown-item" asp-controller="Auth" asp-action="Profile"><i class="bi bi-person-lines-fill"></i> Profile</a></li>
+                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                             </ul>
-                        </div> 
+                        </div>
                     }
-                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+
+                    @* ================= ADMIN ================= *@
+                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                     {
                         <div class="dropdown">
                             <button class="btn user-menu dropdown-toggle" type="button" id="userMenu"
@@ -332,23 +337,57 @@
                                 <i class="bi bi-person-circle"></i> @User.Identity.Name
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenu">
-                    
-                                <li>
-                                    <a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout">
-                                        <i class="bi bi-box-arrow-right"></i> Logout
-                                    </a>
-                                </li>
-
-
+                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                             </ul>
                         </div>
                     }
-                    @if (User.Identity != null && !User.Identity.IsAuthenticated)
+
+                    @* ================= REVIEWER ================= *@
+                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Reviewer"))
+                    {
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Index" class="nav-link">Blogs</a></li>
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Create" class="nav-link">Create Blog</a></li>
+                        </ul>
+                        <div class="dropdown">
+                            <button class="btn user-menu dropdown-toggle" type="button" id="userMenu"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> @User.Identity.Name
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenu">
+                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    }
+
+                    @* ================= HOST ================= *@
+                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Host"))
+                    {
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <li class="nav-item"><a asp-controller="Host" asp-action="MyHotels" class="nav-link">My Hotels</a></li>
+                            <li class="nav-item"><a asp-controller="Host" asp-action="CreateHotel" class="nav-link">Create Hotel</a></li>
+                            <li class="nav-item"><a asp-controller="Host" asp-action="MyRooms" class="nav-link">My Rooms</a></li>
+                        </ul>
+                        <div class="dropdown">
+                            <button class="btn user-menu dropdown-toggle" type="button" id="userMenu"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> @User.Identity.Name
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenu">
+                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    }
+
+                    @* ================= CHƯA LOGIN ================= *@
+                    else
                     {
                         <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-primary me-2">Register</a>
                         <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary">Sign in</a>
                     }
+
                 </div>
+
             </div>
         </nav>
     </header>
@@ -361,33 +400,44 @@
     
         </main>
     </div>
-    <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div aria-live="polite" aria-atomic="true"
+         class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 1080; min-width: 300px;">
+
         @if (TempData["success"] != null)
         {
-            <div class="toast align-items-center text-white bg-success border-0 show" role="alert" id="successToast">
+            <div class="toast show border-0 shadow-sm" role="alert" id="successToast"
+                 style="background-color: #d1e7dd; color: #0f5132;">
                 <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["success"]
+                    <div class="toast-body d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                        <span>@TempData["success"]</span>
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                            data-bs-dismiss="toast" aria-label="Close"></button>
+                            data-bs-dismiss="toast" aria-label="Close"
+                            style="filter: invert(1);"></button>
                 </div>
             </div>
         }
 
         @if (TempData["error"] != null)
         {
-            <div class="toast align-items-center text-white bg-danger border-0 show" role="alert" id="errorToast">
+            <div class="toast show border-0 shadow-sm" role="alert" id="errorToast"
+                 style="background-color: #f8d7da; color: #842029;">
                 <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["error"]
+                    <div class="toast-body d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                        <span>@TempData["error"]</span>
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                            data-bs-dismiss="toast" aria-label="Close"></button>
+                            data-bs-dismiss="toast" aria-label="Close"
+                            style="filter: invert(1);"></button>
                 </div>
             </div>
         }
+
     </div>
+
 
     <footer class="footer mt-5">
         <div class="container">
@@ -462,6 +512,8 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const successToast = document.getElementById("successToast");

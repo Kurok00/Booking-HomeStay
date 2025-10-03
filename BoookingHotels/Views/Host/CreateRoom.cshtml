@@ -1,0 +1,50 @@
+﻿@model BoookingHotels.Models.Room
+@{
+    ViewData["Title"] = "Thêm phòng mới";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">Thêm phòng mới</h2>
+
+    <form asp-action="CreateRoom" enctype="multipart/form-data" method="post">
+        <input type="hidden" asp-for="HotelId" />
+
+        <div class="mb-3">
+            <label class="form-label">Tên phòng</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+   
+
+        <div class="mb-3">
+            <label class="form-label">Giá (VNĐ)</label>
+            <input asp-for="Price" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Sức chứa</label>
+            <input asp-for="Capacity" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ảnh phòng</label>
+            <input type="file" name="images" multiple class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tiện nghi</label>
+            @foreach (var amenity in ViewBag.Amenities as List<BoookingHotels.Models.Amenities>)
+            {
+                <div class="form-check">
+                    <input type="checkbox" name="amenityIds" value="@amenity.AmenityId" class="form-check-input" />
+                    <label class="form-check-label">@amenity.Name</label>
+                </div>
+            }
+        </div>
+
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a asp-action="MyRooms" asp-route-hotelId="@Model.HotelId" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>

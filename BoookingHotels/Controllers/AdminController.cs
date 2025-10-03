@@ -206,6 +206,45 @@ namespace BoookingHotels.Controllers
         #endregion
 
         #region Hotels
+        [HttpPost]
+        public IActionResult ToggleApproveHotel(int id)
+        {
+            var hotel = _context.Hotels.Find(id);
+            if (hotel == null) return NotFound();
+
+            hotel.IsApproved = !hotel.IsApproved;
+            _context.SaveChanges();
+
+            return Json(new
+            {
+                success = true,
+                isApproved = hotel.IsApproved,
+                message = hotel.IsApproved ? "Khách sạn đã được duyệt!" : "Khách sạn đã bị gỡ duyệt!"
+            });
+        }
+        [HttpPost]
+        public IActionResult ApproveHotel(int id)
+        {
+            var hotel = _context.Hotels.Find(id);
+            if (hotel == null) return NotFound();
+
+            hotel.IsApproved = true;
+            _context.SaveChanges();
+
+            TempData["success"] = "Khách sạn đã được duyệt!";
+            return RedirectToAction("Hotels");
+        }
+        [HttpPost]
+        public IActionResult UnapproveHotel(int id)
+        {
+            var hotel = _context.Hotels.FirstOrDefault(h => h.HotelId == id);
+            if (hotel == null) return NotFound();
+
+            hotel.IsApproved = false;
+            _context.SaveChanges();
+            TempData["info"] = $"Hotel {hotel.Name} đã chuyển về Pending.";
+            return RedirectToAction("Hotels");
+        }
         public IActionResult Hotels()
         {
             var hotels = _context.Hotels
@@ -227,8 +266,12 @@ namespace BoookingHotels.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            model.Status ??= true;
-            model.CreatedAt ??= DateTime.Now;
+            model.IsApproved = true;
+            model.IsUserHostCreated = null;
+            model.IsUserHostCreatedDate = null;
+            model.CreatedAt = DateTime.Now;
+            model.Status = true;
+
 
             _context.Hotels.Add(model);
             _context.SaveChanges();

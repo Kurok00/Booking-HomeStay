@@ -12,7 +12,7 @@ namespace BoookingHotels.Models
         public decimal Price { get; set; }
         public string? BedType { get; set; }
         public int? Size { get; set; }
-        public bool? Status { get; set; }
+        public bool Status { get; set; }
 
         public Hotel? Hotel { get; set; } = null!;
         public ICollection<RoomAmenitie>? RoomAmenities { get; set; } = new List<RoomAmenitie>();

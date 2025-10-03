@@ -22,6 +22,7 @@
                         <th>City</th>
                         <th>Country</th>
                         <th>Status</th>
+                        <th>Approved</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
@@ -43,17 +44,36 @@
                                     <span class="badge bg-danger">Inactive</span>
                                 }
                             </td>
+                            <td>
+                                @if (h.IsApproved)
+                                {
+                                    <span class="badge bg-primary">Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                            </td>
+                       
                             <td class="text-center">
                                 <a asp-action="EditHotel" asp-route-id="@h.HotelId"
                                    class="btn btn-sm btn-outline-warning rounded-circle me-1" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <a asp-action="DeleteHotel" asp-route-id="@h.HotelId"
-                                   class="btn btn-sm btn-outline-danger rounded-circle"
+                                   class="btn btn-sm btn-outline-danger rounded-circle me-1"
                                    onclick="return confirm('Delete this hotel?');" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </a>
+
+                                <button type="button"
+                                        class="btn btn-sm @(h.IsApproved ? "btn-outline-secondary" : "btn-outline-success") rounded-circle toggle-approve-btn"
+                                        data-id="@h.HotelId"
+                                        title="@(h.IsApproved ? "Unapprove" : "Approve")">
+                                    <i class="bi @(h.IsApproved ? "bi-x-circle" : "bi-check2-circle")"></i>
+                                </button>
                             </td>
+
                         </tr>
                     }
                 </tbody>
@@ -61,3 +81,34 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        $(document).on("click", ".toggle-approve-btn", function () {
+            var btn = $(this);
+            var id = btn.data("id");
+
+            $.ajax({
+                url: '@Url.Action("ToggleApproveHotel", "Admin")',
+                type: 'POST',
+                data: { id: id },
+                success: function (res) {
+                    if (res.success) {
+                        if (res.isApproved) {
+                            btn.removeClass("btn-outline-success")
+                               .addClass("btn-outline-secondary")
+                               .attr("title", "Unapprove")
+                               .html('<i class="bi bi-x-circle"></i>');
+                            btn.closest("tr").find("td:nth-child(6)").html('<span class="badge bg-primary">Approved</span>');
+                        } else {
+                            btn.removeClass("btn-outline-secondary")
+                               .addClass("btn-outline-success")
+                               .attr("title", "Approve")
+                               .html('<i class="bi bi-check2-circle"></i>');
+                            btn.closest("tr").find("td:nth-child(6)").html('<span class="badge bg-warning text-dark">Pending</span>');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

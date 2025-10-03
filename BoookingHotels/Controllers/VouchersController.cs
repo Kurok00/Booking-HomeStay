@@ -22,12 +22,7 @@ namespace BoookingHotels.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             var vouchers = _db.Vouchers
-                .Where(v =>
-                    v.IsActive &&
-                    v.ExpiryDate >= DateTime.Now &&
-                    (v.UserId == null || v.UserId == userId) &&
-                    v.Quantity > 0
-                )
+                .Where(v => v.IsActive && v.UserId == null || v.UserId == userId)
                 .Include(v => v.UsedVoucherIds) // Load navigation
                 .OrderBy(v => v.ExpiryDate)
                 .ToList();

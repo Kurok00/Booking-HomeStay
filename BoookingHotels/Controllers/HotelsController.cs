@@ -18,18 +18,18 @@ namespace BoookingHotels.Controllers
             var hotels = _context.Hotels
                 .Include(h => h.Rooms)
                 .Include(h => h.Photoss)
-                .Where(h=>h.Status == true)
+                .Where(h=>h.Status == true && h.IsApproved == true)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 hotels = hotels.Where(h =>
-                    h.Name.Contains(search) ||
+                    h.Name.Contains(search) || 
                     h.Address.Contains(search) ||
                     h.City.Contains(search));
             }
 
-            if (checkIn.HasValue && checkOut.HasValue)
+             if (checkIn.HasValue && checkOut.HasValue)
             {
                 hotels = hotels.Where(h => h.Rooms.Any(r =>
                     !_context.Bookings.Any(b =>

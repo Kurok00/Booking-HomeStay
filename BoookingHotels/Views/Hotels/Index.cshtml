@@ -120,7 +120,7 @@
     <div class="row mt-4">
         @foreach (var hotel in Model)
         {
-            <div class="col-md-4 mb-4 d-flex">
+            <div class="col-md-4 mb-4 d-flex" style=" max-width:384px">
                 <div class="card hotel-card w-100 h-100">
                     <img src="@(hotel.Photoss.FirstOrDefault()?.Url ?? "/images/default-hotel.jpg")"
                          class="hotel-img" alt="@hotel.Name" />

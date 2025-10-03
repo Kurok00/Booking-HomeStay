@@ -1,0 +1,83 @@
+﻿@model IEnumerable<BoookingHotels.Models.Hotel>
+@{
+    ViewData["Title"] = "My Hotels";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary"><i class="bi bi-building me-2"></i>My Hotels</h2>
+        <a asp-action="CreateHotel" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add Hotel
+        </a>
+    </div>
+
+    <div class="card shadow-sm rounded-4">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Status</th>
+                        <th>Approval</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var h in Model)
+                    {
+                        <tr>
+                            <td>@h.HotelId</td>
+                            <td>@h.Name</td>
+                            <td>@h.City</td>
+                            <td>@h.Country</td>
+                            <td>
+                                @if (h.Status == true)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                @if (h.IsApproved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="EditHotel" asp-route-id="@h.HotelId"
+                                   class="btn btn-sm btn-outline-warning rounded-circle me-1" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                @* Chỉ cho phép thêm phòng khi đã duyệt *@
+                                @if (h.IsApproved)
+                                {
+                                    <a asp-action="CreateRoom" asp-controller="Host"
+                                       asp-route-hotelId="@h.HotelId"
+                                       class="btn btn-sm btn-outline-success rounded-circle" title="Add Room">
+                                        <i class="bi bi-door-open"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Chờ duyệt...</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

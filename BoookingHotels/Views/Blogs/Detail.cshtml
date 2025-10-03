@@ -1,32 +1,107 @@
-﻿@{
+﻿@model BoookingHotels.Models.Blog
+@{
     ViewData["Title"] = "Chi tiết Blog";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+    .blog-detail-card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        background: #fff;
+    }
+
+        .blog-detail-card img {
+            max-height: 400px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+    .blog-detail-title {
+        font-weight: 800;
+        font-size: 2rem;
+        color: #003580;
+        margin-bottom: 1rem;
+    }
+
+    .blog-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+        .blog-meta i {
+            color: #febb02;
+            margin-right: 0.3rem;
+        }
+
+    .blog-content {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #444;
+    }
+
+    .blog-author {
+        display: flex;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+
+        .blog-author img {
+            border-radius: 50%;
+            margin-right: 0.75rem;
+        }
+
+    .btn-back {
+        margin-top: 2rem;
+        border-radius: 0.5rem;
+    }
+</style>
+
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-lg border-0 rounded-4">
-                <img src="/Image/7.jpg" class="card-img-top rounded-top-4" style="max-height: 350px; object-fit: cover;" alt="Bãi biển đẹp Việt Nam" />
+        <div class="col-lg-9">
+            <div class="card blog-detail-card">
+                <!-- Thumbnail -->
+                <img src="@Model.Thumbnail" alt="@Model.Title" class="card-img-top" />
+
                 <div class="card-body p-4">
-                    <h1 class="card-title fw-bold text-primary mb-3">Top 10 bãi biển đẹp nhất Việt Nam</h1>
-                    <div class="d-flex align-items-center mb-4">
-                        <img src="/Image/avatar-admin.png" alt="Admin" class="rounded-circle me-2" width="40" height="40" />
+                    <!-- Title -->
+                    <h1 class="blog-detail-title">@Model.Title</h1>
+
+                    <!-- Meta -->
+                    <div class="blog-meta d-flex align-items-center">
+                        <span class="me-3">
+                            <i class="fa-regular fa-calendar"></i> @Model.CreatedDate.ToString("dd/MM/yyyy")
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-user-pen"></i> @Model.Author
+                        </span>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="blog-content">
+                        @Html.Raw(Model.Content?.Replace("\n", "<br/>"))
+                    </div>
+
+                    <!-- Author -->
+                    <div class="blog-author">
+                        <img src="/Image/avatar-admin.png" alt="@Model.Author" width="45" height="45" />
                         <div>
-                            <span class="fw-semibold">Admin</span>
-                            <span class="text-muted ms-2 small"><i class="bi bi-calendar-event"></i> 28/09/2025</span>
+                            <div class="fw-semibold">@Model.Author</div>
+                            <div class="text-muted small">Tác giả bài viết</div>
                         </div>
                     </div>
-                    <p class="card-text fs-5 text-secondary mb-4">
-                        Việt Nam có đường bờ biển dài hơn 3.000 km với hàng trăm bãi biển tuyệt đẹp...
-                        (ở đây bạn viết nội dung quảng cáo/travel blog tùy thích).
-                    </p>
-                    <p class="card-text fs-5 text-secondary">
-                        Từ Phú Quốc với biển xanh, cát trắng, đến Nha Trang, Đà Nẵng với những resort đẳng cấp,
-                        chắc chắn sẽ mang lại kỳ nghỉ đáng nhớ cho du khách.
-                    </p>
-                    <a asp-action="Index" class="btn btn-outline-primary mt-4 px-4">
-                        <i class="bi bi-arrow-left"></i> Quay lại danh sách
+
+                    <!-- Back button -->
+                    <a asp-action="Index" class="btn btn-outline-primary btn-back px-4">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
                     </a>
                 </div>
             </div>
