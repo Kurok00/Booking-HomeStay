@@ -222,16 +222,40 @@
             <button class="scroll-btn left" id="scrollLeft"><i class="bi bi-chevron-left"></i></button>
 
             <div class="destination-scroll" id="destinationScroll">
-                @foreach (var item in (IEnumerable<dynamic>)ViewBag.TopCities)
+                @{
+                    var topCities = ViewBag.TopCities as IEnumerable<dynamic>;
+                }
+                @if (topCities != null)
                 {
-                    var imageUrl = item.Photo ?? "/images/default-destination.jpg";
-                    <div class="destination-card" data-city="@item.City">
-                        <img src="@imageUrl" alt="@item.City" />
-                        <div class="destination-info">
-                            <h5>@item.City</h5>
-                            <small>@item.HotelCount khách sạn</small>
+                    foreach (dynamic item in topCities)
+                    {
+                        var city = "";
+                        var hotelCount = "";
+                        var photo = "";
+                        
+                        try 
+                        {
+                            city = item.City?.ToString() ?? "";
+                            hotelCount = item.HotelCount?.ToString() ?? "0";
+                            photo = item.Photo?.ToString() ?? "";
+                        }
+                        catch 
+                        {
+                            city = "Unknown City";
+                            hotelCount = "0";
+                            photo = "";
+                        }
+                        
+                        var imageUrl = !string.IsNullOrEmpty(photo) ? photo : "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400";
+                        
+                        <div class="destination-card" data-city="@city">
+                            <img src="@imageUrl" alt="@city" />
+                            <div class="destination-info">
+                                <h5>@city</h5>
+                                <small>@hotelCount khách sạn</small>
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
             </div>
 

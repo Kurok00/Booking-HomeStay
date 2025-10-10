@@ -8,7 +8,13 @@ using static BoookingHotels.Controllers.AuthController;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
-builder.Services.AddControllersWithViews();
+var mvcBuilder = builder.Services.AddControllersWithViews();
+
+// Enable hot reload for Razor views in Development mode only
+if (builder.Environment.IsDevelopment())
+{
+    mvcBuilder.AddRazorRuntimeCompilation();
+}
 
 // EF Core SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -62,11 +68,15 @@ using (var scope = app.Services.CreateScope())
             // await HotelNameUpdater.UpdateHotelNamesAsync(context); // Already updated!
             
             // Cập nhật tên và giá phòng theo khách sạn
-            // await RoomNameUpdater.UpdateRoomNamesAsync(context); // Run once
-            // await RoomNameUpdater.UpdateRoomPricesAsync(context); // Run once
+            // await RoomNameUpdater.UpdateRoomNamesAsync(context); // Already updated!
+            // await RoomNameUpdater.UpdateRoomPricesAsync(context); // Already updated!
             
             // Cập nhật hình ảnh cho hotels và rooms
-            // await PhotoUpdater.UpdateAllPhotosAsync(context); // Run once
+            // await PhotoUpdater.UpdateAllPhotosAsync(context); // Already updated!
+            
+            // Thêm rooms cho các hotels chưa có rooms
+            var missingRoomsUpdater = new MissingRoomsUpdater(context);
+            await missingRoomsUpdater.AddMissingRoomsAsync();
             
             Console.WriteLine("✅ Database connected successfully!");
         }
