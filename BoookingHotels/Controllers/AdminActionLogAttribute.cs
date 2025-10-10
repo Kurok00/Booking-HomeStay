@@ -1,5 +1,6 @@
 ﻿using BoookingHotels.Data;
 using BoookingHotels.Models;
+using BoookingHotels.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 
@@ -14,12 +15,24 @@ public class AdminActionLogAttribute : ActionFilterAttribute
 
     public override void OnActionExecuted(ActionExecutedContext context)
     {
+        // Kiểm tra xem action có skip logging không
+        var skipLogging = context.ActionDescriptor.EndpointMetadata
+            .Any(m => m is SkipAdminLogAttribute);
+        
+        if (skipLogging)
+            return;
+
         var httpContext = context.HttpContext;
         var user = httpContext.User;
 
         if (user.Identity != null && user.Identity.IsAuthenticated && user.IsInRole("Admin"))
         {
-            var adminId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim?.Value == null)
+                return;
+                
+            if (!int.TryParse(userIdClaim.Value, out int adminId))
+                return;
 
             var action = context.ActionDescriptor.DisplayName;
             var controller = context.ActionDescriptor.RouteValues["controller"];

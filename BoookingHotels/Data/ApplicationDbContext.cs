@@ -49,6 +49,13 @@ namespace BoookingHotels.Data
             modelBuilder.Entity<Photos>()
              .HasKey(p => p.PhotoId);
 
+            // Cấu hình relationship cho AdminLog
+            modelBuilder.Entity<AdminLog>()
+                .HasOne(al => al.Admin)
+                .WithMany()
+                .HasForeignKey(al => al.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
 
     }

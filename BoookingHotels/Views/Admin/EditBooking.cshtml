@@ -1,0 +1,284 @@
+@model Booking
+@{
+    ViewData["Title"] = "Chỉnh sửa Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-edit mr-2"></i>
+                        Chỉnh sửa Booking #@Model.BookingId
+                    </h3>
+                    <div class="card-tools">
+                        <a asp-action="ManageBookings" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+
+                <form asp-action="EditBooking" method="post">
+                    <div class="card-body">
+                        <input asp-for="BookingId" type="hidden" />
+
+                        <div class="row">
+                            <!-- Thông tin khách hàng -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-user"></i> Thông tin khách hàng</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label asp-for="UserId">Khách hàng</label>
+                                            <select asp-for="UserId" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- Chọn khách hàng --</option>
+                                                @foreach (var user in ViewBag.Users as List<User>)
+                                                {
+                                                    <option value="@user.UserId" selected="@(user.UserId == Model.UserId)">
+                                                        @user.FullName (@user.Email)
+                                                    </option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="UserId" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="GuestName">Tên khách</label>
+                                            <input asp-for="GuestName" class="form-control" placeholder="Nhập tên khách" />
+                                            <span asp-validation-for="GuestName" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="GuestPhone">Số điện thoại</label>
+                                            <input asp-for="GuestPhone" class="form-control" placeholder="Nhập số điện thoại" />
+                                            <span asp-validation-for="GuestPhone" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Thông tin booking -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-calendar"></i> Thông tin đặt phòng</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label asp-for="HotelId">Khách sạn</label>
+                                            <select asp-for="HotelId" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- Chọn khách sạn --</option>
+                                                @foreach (var hotel in ViewBag.Hotels as List<Hotel>)
+                                                {
+                                                    <option value="@hotel.HotelId" selected="@(hotel.HotelId == Model.HotelId)">
+                                                        @hotel.Name - @hotel.City
+                                                    </option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="HotelId" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="RoomId">Phòng</label>
+                                            <select asp-for="RoomId" class="form-control select2" style="width: 100%;">
+                                                <option value="">-- Chọn phòng --</option>
+                                                @foreach (var room in ViewBag.Rooms as List<Room>)
+                                                {
+                                                    <option value="@room.RoomId" selected="@(room.RoomId == Model.RoomId)">
+                                                        @room.Name (Capacity: @room.Capacity) - @room.Price.ToString("C0")
+                                                    </option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="RoomId" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label asp-for="CheckIn">Check-in</label>
+                                                    <input asp-for="CheckIn" type="date" class="form-control" />
+                                                    <span asp-validation-for="CheckIn" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label asp-for="CheckOut">Check-out</label>
+                                                    <input asp-for="CheckOut" type="date" class="form-control" />
+                                                    <span asp-validation-for="CheckOut" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin thanh toán -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-money-bill"></i> Thông tin thanh toán</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label asp-for="SubTotal">Tạm tính</label>
+                                            <div class="input-group">
+                                                <input asp-for="SubTotal" class="form-control" placeholder="0" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">VND</span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="SubTotal" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Discount">Giảm giá</label>
+                                            <div class="input-group">
+                                                <input asp-for="Discount" class="form-control" placeholder="0" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">VND</span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="Discount" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Total">Tổng cộng</label>
+                                            <div class="input-group">
+                                                <input asp-for="Total" class="form-control" placeholder="0" />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">VND</span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="Total" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label asp-for="Currency">Loại tiền</label>
+                                            <select asp-for="Currency" class="form-control">
+                                                <option value="VND" selected="@(Model.Currency == "VND")">VND - Việt Nam Đồng</option>
+                                                <option value="USD" selected="@(Model.Currency == "USD")">USD - US Dollar</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-info-circle"></i> Trạng thái</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label asp-for="Status">Trạng thái booking</label>
+                                            <select asp-for="Status" class="form-control">
+                                                <option value="@BookingStatus.Pending" selected="@(Model.Status == BookingStatus.Pending)">
+                                                    Chờ xử lý
+                                                </option>
+                                                <option value="@BookingStatus.Confirmed" selected="@(Model.Status == BookingStatus.Confirmed)">
+                                                    Đã xác nhận
+                                                </option>
+                                                <option value="@BookingStatus.Paid" selected="@(Model.Status == BookingStatus.Paid)">
+                                                    Đã thanh toán
+                                                </option>
+                                                <option value="@BookingStatus.Canceled" selected="@(Model.Status == BookingStatus.Canceled)">
+                                                    Đã hủy
+                                                </option>
+                                            </select>
+                                            <span asp-validation-for="Status" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Ngày tạo booking</label>
+                                            <input value="@Model.CreatedAt?.ToString("dd/MM/yyyy HH:mm")" class="form-control" readonly />
+                                        </div>
+
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle"></i>
+                                            <strong>Lưu ý:</strong> Việc thay đổi thông tin booking có thể ảnh hưởng đến khách hàng. Hãy cân nhắc kỹ trước khi lưu.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu thay đổi
+                        </button>
+                        <a asp-action="ManageBookings" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy bỏ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(function () {
+            // Initialize Select2
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            });
+
+            // Auto calculate total
+            $('#SubTotal, #Discount').on('input', function () {
+                var subtotal = parseFloat($('#SubTotal').val()) || 0;
+                var discount = parseFloat($('#Discount').val()) || 0;
+                var total = subtotal - discount;
+                $('#Total').val(total);
+            });
+
+            // Room filter based on hotel selection
+            $('#HotelId').change(function () {
+                var hotelId = $(this).val();
+                var roomSelect = $('#RoomId');
+                
+                if (hotelId) {
+                    // Filter rooms by selected hotel
+                    roomSelect.find('option').each(function () {
+                        var option = $(this);
+                        if (option.val() && option.data('hotel-id') != hotelId) {
+                            option.hide();
+                        } else {
+                            option.show();
+                        }
+                    });
+                } else {
+                    roomSelect.find('option').show();
+                }
+                
+                roomSelect.val('').trigger('change');
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .card {
+            box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+            margin-bottom: 1rem;
+        }
+        
+        .select2-container--bootstrap4 .select2-selection {
+            height: calc(2.25rem + 2px);
+        }
+        
+        .alert {
+            border-radius: 0.375rem;
+        }
+    </style>
+}

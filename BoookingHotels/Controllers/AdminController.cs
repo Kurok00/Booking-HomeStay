@@ -28,8 +28,8 @@ namespace BoookingHotels.Controllers
 
             var last7days = DateTime.Today.AddDays(-6);
             var bookingByDay = _context.Bookings
-                .Where(b => b.CreatedAt >= last7days)
-                .GroupBy(b => b.CreatedAt.Value.Date)
+                .Where(b => b.CreatedAt.HasValue && b.CreatedAt >= last7days)
+                .GroupBy(b => b.CreatedAt!.Value.Date)
                 .Select(g => new {
                     Date = g.Key,
                     Count = g.Count(),
@@ -97,6 +97,7 @@ namespace BoookingHotels.Controllers
             return RedirectToAction("Users");
         }
 
+        [SkipAdminLog]
         public IActionResult DeleteUser(int id)
         {
             var user = _context.Users
@@ -104,7 +105,17 @@ namespace BoookingHotels.Controllers
                 .FirstOrDefault(u => u.UserId == id);
             if (user != null)
             {
+                // Xóa các AdminLog records trước nếu user này là admin
+                var adminLogs = _context.AdminLogs.Where(al => al.AdminId == id).ToList();
+                if (adminLogs.Any())
+                {
+                    _context.AdminLogs.RemoveRange(adminLogs);
+                }
+                
+                // Xóa user roles
                 _context.UserRoles.RemoveRange(user.UserRoles);
+                
+                // Xóa user
                 _context.Users.Remove(user);
                 _context.SaveChanges();
                 TempData["success"] = "User deleted!";
@@ -202,6 +213,75 @@ namespace BoookingHotels.Controllers
             }
 
             return RedirectToAction("ManageBookings");
+        }
+
+        [HttpGet]
+        public IActionResult EditBooking(int id)
+        {
+            var booking = _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.Hotel)
+                .Include(b => b.Room)
+                .FirstOrDefault(b => b.BookingId == id);
+
+            if (booking == null)
+            {
+                TempData["Error"] = "Không tìm thấy booking!";
+                return RedirectToAction("ManageBookings");
+            }
+
+            // Load dropdown data
+            ViewBag.Hotels = _context.Hotels.Where(h => h.Status == true).ToList();
+            ViewBag.Rooms = _context.Rooms.Where(r => r.Status == true).ToList();
+            ViewBag.Users = _context.Users.Where(u => u.Status == true).ToList();
+
+            return View(booking);
+        }
+
+        [HttpPost]
+        public IActionResult EditBooking(Booking booking)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existingBooking = _context.Bookings.Find(booking.BookingId);
+                    if (existingBooking == null)
+                    {
+                        TempData["Error"] = "Không tìm thấy booking!";
+                        return RedirectToAction("ManageBookings");
+                    }
+
+                    // Update booking properties
+                    existingBooking.UserId = booking.UserId;
+                    existingBooking.HotelId = booking.HotelId;
+                    existingBooking.RoomId = booking.RoomId;
+                    existingBooking.CheckIn = booking.CheckIn;
+                    existingBooking.CheckOut = booking.CheckOut;
+                    existingBooking.GuestName = booking.GuestName;
+                    existingBooking.GuestPhone = booking.GuestPhone;
+                    existingBooking.SubTotal = booking.SubTotal;
+                    existingBooking.Discount = booking.Discount;
+                    existingBooking.Total = booking.Total;
+                    existingBooking.Status = booking.Status;
+                    existingBooking.Currency = booking.Currency;
+
+                    _context.SaveChanges();
+                    TempData["Success"] = $"Cập nhật booking #{booking.BookingId} thành công!";
+                    return RedirectToAction("ManageBookings");
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "Có lỗi xảy ra: " + ex.Message;
+                }
+            }
+
+            // Reload dropdown data if validation fails
+            ViewBag.Hotels = _context.Hotels.Where(h => h.Status == true).ToList();
+            ViewBag.Rooms = _context.Rooms.Where(r => r.Status == true).ToList();
+            ViewBag.Users = _context.Users.Where(u => u.Status == true).ToList();
+
+            return View(booking);
         }
         #endregion
 
