@@ -1,133 +1,191 @@
-﻿@{
-    ViewData["Title"] = "Welcome to Booking Hotels";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿﻿@{
+ViewData["Title"] = "Welcome to Booking Hotels";
+Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Hero Section -->
-<section class="booking-hero py-5 text-white" style="background: #003580;">
-    <div class="container">
+<!-- HERO SECTION -->
+<section class="booking-hero text-white py-5">
+    <div class="container py-4">
         <div class="row align-items-center">
-            <div class="col-md-7">
-                <h1 class="display-4 fw-bold mb-3">Welcome to Booking Hotels</h1>
-                <p class="lead mb-4">
-                    Discover and book the best hotels, resorts, apartments, and more at unbeatable prices.
-                    Enjoy a seamless experience, exclusive deals, and 24/7 support for your perfect stay.
+            <div class="col-lg-7 text-center text-lg-start">
+                <h1 class="display-4 fw-bold mb-3 fade-in">Find Your Perfect Stay</h1>
+                <p class="lead mb-4 text-light">
+                    Explore top-rated hotels, villas, and apartments worldwide.
+                    Enjoy exclusive deals, seamless booking, and 24/7 customer care.
                 </p>
-                <a href="/Hotels/Index" class="btn btn-warning btn-lg fw-bold px-4">Start Booking</a>
+                <a href="/Hotels/Index" class="btn btn-warning btn-lg fw-bold shadow px-4 py-2 hover-scale">Start Booking</a>
             </div>
-            <div class="col-md-5 d-none d-md-block">
-                <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+            <div class="col-lg-5 mt-4 mt-lg-0 text-center">
+                <img src="/Image/1.jpg" class="hero-img rounded-4 shadow-lg" alt="Hotels">
             </div>
         </div>
     </div>
 </section>
 
-<!-- Offers Section -->
-<section class="offers py-5 bg-light">
+<!-- OFFERS -->
+<section class="offers-section py-5 bg-light">
     <div class="container">
-        <h2 class="fw-bold mb-4 text-center">Special Offers</h2>
+        <h2 class="fw-bold mb-4 text-center text-primary">🔥 Special Offers</h2>
         <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">Getaway Deals</h5>
-                        <p class="card-text">Save up to 20% on selected stays for your next adventure.</p>
-                    </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="offer-card card border-0 shadow-sm h-100 text-center p-4 hover-rise">
+                    <img src="/Image/2.jpg" class="rounded-3 mb-3 offer-img" alt="Deal">
+                    <h5 class="fw-bold text-dark">Getaway Deals</h5>
+                    <p class="text-muted">Save up to <b>20%</b> on selected stays for your next trip.</p>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">Last Minute Offers</h5>
-                        <p class="card-text">Book now and enjoy exclusive discounts for last-minute trips.</p>
-                    </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="offer-card card border-0 shadow-sm h-100 text-center p-4 hover-rise">
+                    <img src="/Image/3.jpg" class="rounded-3 mb-3 offer-img" alt="Last Minute">
+                    <h5 class="fw-bold text-dark">Last Minute Offers</h5>
+                    <p class="text-muted">Book now and enjoy exclusive discounts for spontaneous trips.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="offer-card card border-0 shadow-sm h-100 text-center p-4 hover-rise">
+                    <img src="/Image/4.jpg" class="rounded-3 mb-3 offer-img" alt="VIP">
+                    <h5 class="fw-bold text-dark">VIP Member Rewards</h5>
+                    <p class="text-muted">Sign in and get up to <b>15% extra discount</b> as a member.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Property Types Section -->
+<!-- PROPERTY TYPES -->
 <section class="property-types py-5">
     <div class="container">
-        <h2 class="fw-bold mb-4 text-center">Browse by Property Type</h2>
+        <h2 class="fw-bold mb-5 text-center text-primary">🏡 Browse by Property Type</h2>
         <div class="row g-4 justify-content-center">
             <div class="col-6 col-md-3">
-                <div class="card text-center border-0 shadow-sm">
-                    <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
-                    <div class="card-body">
-                        <h6 class="card-title mb-0">Hotels</h6>
+                <a href="/Hotels/Index" class="text-decoration-none">
+                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
+                        <img src="/Image/1.jpg" class="card-img-top rounded-top" alt="Hotels">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0">Hotels</h6>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card text-center border-0 shadow-sm">
-                    <img src="/Image/2.jpg" class="card-img-top" alt="Hotels">
-                    <div class="card-body">
-                        <h6 class="card-title mb-0">Apartments</h6>
+                <a href="/Hotels/Index" class="text-decoration-none">
+                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
+                        <img src="/Image/2.jpg" class="card-img-top rounded-top" alt="Apartments">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0">Apartments</h6>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card text-center border-0 shadow-sm">
-                    <img src="/Image/3.jpg" class="card-img-top" alt="Hotels">
-                    <div class="card-body">
-                        <h6 class="card-title mb-0">Resorts</h6>
+                <a href="/Hotels/Index" class="text-decoration-none">
+                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
+                        <img src="/Image/3.jpg" class="card-img-top rounded-top" alt="Resorts">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0">Resorts</h6>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card text-center border-0 shadow-sm">
-                    <img src="/Image/4.jpg" class="card-img-top" alt="Hotels">
-                    <div class="card-body">
-                        <h6 class="card-title mb-0">Villas</h6>
+                <a href="/Hotels/Index" class="text-decoration-none">
+                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
+                        <img src="/Image/4.jpg" class="card-img-top rounded-top" alt="Villas">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-0">Villas</h6>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- About Section -->
+<!-- ABOUT -->
 <section class="about-booking py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-md-7">
-                <h2 class="fw-bold mb-3">Why Choose Booking Hotels?</h2>
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h2 class="fw-bold mb-4 text-primary">Why Choose Booking Hotels?</h2>
                 <ul class="list-unstyled fs-5">
-                    <li>✔️ Wide selection of properties worldwide</li>
-                    <li>✔️ Best price guarantee</li>
-                    <li>✔️ Easy and secure booking process</li>
-                    <li>✔️ 24/7 customer support</li>
+                    <li>✅ Over 500,000 properties worldwide</li>
+                    <li>✅ Best Price Guarantee</li>
+                    <li>✅ Secure and Fast Booking</li>
+                    <li>✅ 24/7 Multilingual Support</li>
                 </ul>
             </div>
-            <div class="col-md-5 d-none d-md-block">
-                <img src="/Image/1.jpg" class="card-img-top" alt="Hotels">
+            <div class="col-md-6 text-center">
+                <img src="/Image/5.jpg" class="img-fluid rounded-4 shadow-lg about-img" alt="Why Choose Us">
             </div>
         </div>
     </div>
 </section>
 
+<!-- CUSTOM STYLE -->
 <style>
+    /* --- HERO --- */
     .booking-hero {
-        background: #003580;
+        background: linear-gradient(135deg, #00275e, #0047b3);
         border-radius: 0 0 2rem 2rem;
+        overflow: hidden;
     }
 
-        .booking-hero .btn-warning {
-            background: #febb02;
-            border: none;
-            color: #003580;
+    .hero-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 1.5rem;
+        transition: transform 0.4s ease;
+    }
+
+        .hero-img:hover {
+            transform: scale(1.03);
         }
 
-            .booking-hero .btn-warning:hover {
-                background: #ffd700;
-                color: #003580;
-            }
+    .hover-scale:hover {
+        transform: scale(1.05);
+        transition: 0.3s ease;
+    }
 
-    .card-img-top {
-        height: 140px;
+    /* --- OFFERS --- */
+    .offer-img {
+        height: 160px;
         object-fit: cover;
     }
-    
+
+    .hover-rise {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-rise:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+    /* --- PROPERTY --- */
+    .property-card img {
+        height: 150px;
+        object-fit: cover;
+    }
+
+    /* --- ABOUT --- */
+    .about-img {
+        border-radius: 1.5rem;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    /* --- TEXT / EFFECT --- */
+    h1, h2, h5, h6 {
+        letter-spacing: 0.5px;
+    }
+
+    .fade-in {
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 </style>

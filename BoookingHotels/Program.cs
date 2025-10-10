@@ -42,7 +42,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();   // ph?i ©¢?t tr??c UseAuthorization
+app.UseAuthentication();   // ph?i ï¿½ï¿½?t tr??c UseAuthorization
 app.UseAuthorization();
 
 app.MapControllerRoute(
