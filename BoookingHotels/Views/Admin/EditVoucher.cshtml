@@ -51,19 +51,25 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">User (nếu chỉ định)</label>
+            <label class="form-label">Chỉ định User</label>
             <select asp-for="UserId" class="form-select">
-                <option value="">-- Public --</option>
+                <option value="">🎁 Tất cả User (Public)</option>
                 @if (ViewBag.Users != null)
                 {
-                    foreach (var u in ViewBag.Users)
-                    {
-                        <option value="@u.UserId" selected="@(u.UserId == Model.UserId)">
-                            @u.UserName (@u.Email)
-                        </option>
-                    }
+                    <optgroup label="Chỉ định cho User cụ thể:">
+                        @foreach (var u in ViewBag.Users)
+                        {
+                            <option value="@u.UserId" selected="@(u.UserId == Model.UserId)">
+                                @u.UserName (@u.Email)
+                            </option>
+                        }
+                    </optgroup>
                 }
             </select>
+            <small class="form-text text-muted">
+                Chọn "Tất cả User" để voucher có thể dùng cho mọi người, 
+                hoặc chỉ định cho một user cụ thể.
+            </small>
         </div>
 
         <div class="form-check mb-3">

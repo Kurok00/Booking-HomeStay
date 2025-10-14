@@ -72,11 +72,17 @@ using (var scope = app.Services.CreateScope())
             // await RoomNameUpdater.UpdateRoomPricesAsync(context); // Already updated!
             
             // Cập nhật hình ảnh cho hotels và rooms
-            // await PhotoUpdater.UpdateAllPhotosAsync(context); // Already updated!
+            //await PhotoUpdater.UpdateAllPhotosAsync(context); // Enable real photos from Unsplash!
+            
+            // Seed amenities cho tất cả rooms
+            //await AmenitySeeder.SeedAmenitiesAndRoomAmenitiesAsync(context);
+            
+            // Seed reviews cho tất cả rooms (5 reviews mỗi room)
+            //await ReviewSeeder.SeedReviewsAsync(context);
             
             // Thêm rooms cho các hotels chưa có rooms
-            var missingRoomsUpdater = new MissingRoomsUpdater(context);
-            await missingRoomsUpdater.AddMissingRoomsAsync();
+            //var missingRoomsUpdater = new MissingRoomsUpdater(context);
+            //await missingRoomsUpdater.AddMissingRoomsAsync();
             
             Console.WriteLine("✅ Database connected successfully!");
         }

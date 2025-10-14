@@ -1,0 +1,275 @@
+@model List<BoookingHotels.Models.Review>
+@{
+    ViewData["Title"] = "Manage Reviews";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary"><i class="bi bi-star-fill"></i> Manage Reviews</h2>
+    </div>
+
+    @if (TempData["success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th style="width: 120px;">User</th>
+                            <th style="width: 180px;">Hotel</th>
+                            <th style="width: 150px;">Room</th>
+                            <th style="width: 100px;">Rating</th>
+                            <th style="min-width: 200px;">Comment</th>
+                            <th style="width: 130px;">Date</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 85px; min-width: 85px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var review in Model)
+                            {
+                                <tr>
+                                    <td>@review.ReviewId</td>
+                                    <td>
+                                        @if (review.User != null)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(review.User.AvatarUrl))
+                                                {
+                                                    <img src="@review.User.AvatarUrl" alt="Avatar" class="rounded-circle me-1" style="width:28px; height:28px; object-fit:cover;">
+                                                }
+                                                <span class="text-truncate" style="max-width: 85px;" title="@review.User.UserName">@review.User.UserName</span>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (review.Room?.Hotel != null)
+                                        {
+                                            <a asp-controller="Hotels" asp-action="Details" asp-route-id="@review.Room.Hotel.HotelId" 
+                                               class="text-decoration-none text-truncate d-block" 
+                                               style="max-width: 170px;" 
+                                               title="@review.Room.Hotel.Name">
+                                                @review.Room.Hotel.Name
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (review.Room != null)
+                                        {
+                                            <a asp-controller="Room" asp-action="Details" asp-route-id="@review.Room.RoomId" 
+                                               class="text-decoration-none text-truncate d-block" 
+                                               style="max-width: 140px;" 
+                                               title="@review.Room.Name">
+                                                @review.Room.Name
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center flex-nowrap">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= review.Rating)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning" style="font-size: 0.85rem;"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-muted" style="font-size: 0.85rem;"></i>
+                                                }
+                                            }
+                                            <span class="ms-1 fw-bold small">(@review.Rating)</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 250px;" title="@review.Comment">
+                                            @review.Comment
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted text-nowrap">
+                                            @review.CreatedAt.ToString("dd/MM/yyyy")<br />
+                                            <small>@review.CreatedAt.ToString("HH:mm")</small>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        @if (review.IsVisible)
+                                        {
+                                            <span class="badge bg-success" style="font-size: 0.75rem;">
+                                                <i class="bi bi-eye"></i> Hiển thị
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary" style="font-size: 0.75rem;">
+                                                <i class="bi bi-eye-slash"></i> Ẩn
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 flex-nowrap">
+                                            <form asp-action="ToggleReviewVisibility" method="post" class="m-0">
+                                                <input type="hidden" name="id" value="@review.ReviewId" />
+                                                @if (review.IsVisible)
+                                                {
+                                                    <button type="submit" class="btn btn-sm btn-warning p-1" title="Ẩn review" style="width: 32px; height: 32px;">
+                                                        <i class="bi bi-eye-slash"></i>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="submit" class="btn btn-sm btn-success p-1" title="Hiển thị review" style="width: 32px; height: 32px;">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                }
+                                            </form>
+                                            <form asp-action="DeleteReview" method="post" class="m-0"
+                                                  onsubmit="return confirm('Bạn có chắc muốn xóa review này?');">
+                                                <input type="hidden" name="id" value="@review.ReviewId" />
+                                                <button type="submit" class="btn btn-sm btn-danger p-1" title="Xóa review" style="width: 32px; height: 32px;">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-1"></i>
+                                    <p class="mt-2">No reviews found</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="text-muted">
+                Hiển thị trang @ViewBag.CurrentPage / @ViewBag.TotalPages 
+                (Tổng: @ViewBag.TotalReviews reviews)
+            </div>
+            <nav>
+                <ul class="pagination mb-0">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Reviews" asp-route-page="1">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Reviews" asp-route-page="@(ViewBag.CurrentPage - 1)">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                    }
+
+                    @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Reviews" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Reviews" asp-route-page="@(ViewBag.CurrentPage + 1)">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Reviews" asp-route-page="@ViewBag.TotalPages">Last</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
+
+<style>
+    .table th {
+        font-weight: 600;
+        color: #495057;
+        white-space: nowrap;
+        font-size: 0.875rem;
+        padding: 0.75rem 0.5rem;
+    }
+
+    .table td {
+        vertical-align: middle;
+        font-size: 0.875rem;
+        padding: 0.75rem 0.5rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .btn-sm {
+        padding: 0.25rem;
+        font-size: 0.875rem;
+        line-height: 1;
+        border-radius: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-sm i {
+        font-size: 1rem;
+    }
+
+    .d-flex.gap-1 {
+        gap: 0.25rem;
+    }
+
+    .d-flex.flex-nowrap {
+        flex-wrap: nowrap !important;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.35em 0.6em;
+        white-space: nowrap;
+    }
+
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .pagination .page-link {
+        color: #6366f1;
+        border-color: #e0e7ff;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #6366f1;
+        border-color: #6366f1;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #e0e7ff;
+        color: #4338ca;
+    }
+</style>

@@ -94,6 +94,10 @@
         background: linear-gradient(135deg, #f472b6, #db2777);
     }
 
+    .dashboard-card.bg-gradient-reviews .dashboard-icon {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
     .dashboard-card.bg-gradient-vouchers .dashboard-icon {
         background: linear-gradient(135deg, #ec4899, #be185d);
     }
@@ -112,18 +116,50 @@
         margin-top: 0.2rem;
     }
 
-        .dashboard-booking-status strong {
-            color: #22223b;
+    .dashboard-booking-status strong {
+        color: #22223b;
+    }
+
+    /* Responsive cho laptop 15.6 inch (1366px - 1920px) */
+    @@media (min-width: 1200px) and (max-width: 1599px) {
+        .dashboard-card {
+            min-height: 160px;
+            padding: 1.5rem 1rem 1rem 1rem;
         }
+        
+        .dashboard-icon {
+            font-size: 2rem;
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .dashboard-label {
+            font-size: 0.95rem;
+        }
+        
+        .dashboard-value {
+            font-size: 1.8rem;
+        }
+    }
+
+    /* Responsive cho màn hình nhỏ hơn */
+    @@media (max-width: 991px) {
+        .dashboard-card {
+            min-height: 150px;
+        }
+        
+        .dashboard-value {
+            font-size: 1.6rem;
+        }
+    }
 
     .card {
         border-radius: 1.25rem !important;
         border: none;
         background: #fff;
         box-shadow: 0 2px 16px rgba(60,72,88,0.07);
-    }
-
-        .card h5 {
+    }        .card h5 {
             font-weight: 700;
             color: #374151;
             letter-spacing: 0.2px;
@@ -204,8 +240,8 @@
     </div>
 
     <!-- Cards -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-2 col-6">
+    <div class="row g-3 mb-5">
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
             <div class="dashboard-card bg-gradient-users text-center">
                 <div class="dashboard-icon"><i class="bi bi-people-fill"></i></div>
                 <div class="dashboard-label">Users</div>
@@ -213,7 +249,7 @@
                 <a asp-action="Users" class="btn">Manage</a>
             </div>
         </div>
-        <div class="col-md-2 col-6">
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
             <div class="dashboard-card bg-gradient-hotels text-center">
                 <div class="dashboard-icon"><i class="bi bi-building"></i></div>
                 <div class="dashboard-label">Hotels</div>
@@ -221,7 +257,7 @@
                 <a asp-action="Hotels" class="btn">Manage</a>
             </div>
         </div>
-        <div class="col-md-2 col-6">
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
             <div class="dashboard-card bg-gradient-rooms text-center">
                 <div class="dashboard-icon"><i class="bi bi-door-closed"></i></div>
                 <div class="dashboard-label">Rooms</div>
@@ -229,7 +265,7 @@
                 <a asp-action="Rooms" class="btn">Manage</a>
             </div>
         </div>
-        <div class="col-md-2 col-6">
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
             <div class="dashboard-card bg-gradient-amenities text-center">
                 <div class="dashboard-icon"><i class="bi bi-gem"></i></div>
                 <div class="dashboard-label">Amenities</div>
@@ -237,7 +273,15 @@
                 <a asp-action="Amenities" class="btn">Manage</a>
             </div>
         </div>
-        <div class="col-md-2 col-6">
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <div class="dashboard-card bg-gradient-reviews text-center">
+                <div class="dashboard-icon"><i class="bi bi-star-fill"></i></div>
+                <div class="dashboard-label">Reviews</div>
+                <div class="dashboard-value">@ViewBag.TotalReviews</div>
+                <a asp-action="Reviews" class="btn">Manage</a>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
             <div class="dashboard-card bg-gradient-vouchers text-center">
                 <div class="dashboard-icon"><i class="bi bi-ticket-perforated"></i></div>
                 <div class="dashboard-label">Vouchers</div>
@@ -245,7 +289,7 @@
                 <a asp-action="Vouchers" class="btn">Manage</a>
             </div>
         </div>
-        <div class="col-md-2 col-6">
+        <div class="col-12">
             <div class="dashboard-card bg-gradient-bookings text-center">
                 <div class="dashboard-icon"><i class="bi bi-journal-check"></i></div>
                 <div class="dashboard-label">Bookings</div>
@@ -328,19 +372,20 @@
     var overviewChart = new Chart(ctxOverview, {
         type: 'doughnut', // có thể đổi sang 'bar' / 'pie'
         data: {
-            labels: ['Users', 'Hotels', 'Rooms', 'Amenities', 'Vouchers', 'Bookings'],
+            labels: ['Users', 'Hotels', 'Rooms', 'Amenities', 'Reviews', 'Vouchers', 'Bookings'],
             datasets: [{
                 data: [
                     @ViewBag.TotalUsers,
                     @ViewBag.TotalHotels,
                     @ViewBag.TotalRooms,
                     @ViewBag.TotalAmenities,
+                    @ViewBag.TotalReviews,
                     @ViewBag.TotalVouchers,
                     @ViewBag.TotalBookings
                 ],
                 backgroundColor: [
                     '#6366f1', '#34d399', '#fbbf24',
-                    '#f472b6', '#ec4899', '#3b82f6'
+                    '#f472b6', '#f59e0b', '#ec4899', '#3b82f6'
                 ]
             }]
         },

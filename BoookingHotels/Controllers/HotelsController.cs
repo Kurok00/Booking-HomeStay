@@ -125,8 +125,11 @@ namespace BoookingHotels.Controllers
               .Include(h => h.Rooms)
                   .ThenInclude(r => r.Photos)
               .Include(h => h.Rooms)
-                  .ThenInclude(r => r.RoomAmenities)
+                  .ThenInclude(r => r.RoomAmenities!)
                       .ThenInclude(ra => ra.Amenity)
+              .Include(h => h.Rooms)
+                  .ThenInclude(r => r.Reviews!)
+                      .ThenInclude(rv => rv.User)
               .FirstOrDefaultAsync(h => h.HotelId == id);
 
             if (hotel == null) return NotFound();
@@ -145,8 +148,8 @@ namespace BoookingHotels.Controllers
                 .Where(h =>
                 {
                     const double R = 6371; // bán kính trái đất km
-                    var dLat = (Math.PI / 180) * (h.Latitude.Value - latitude);
-                    var dLon = (Math.PI / 180) * (h.Longitude.Value - longitude);
+                    var dLat = (Math.PI / 180) * (h.Latitude!.Value - latitude);
+                    var dLon = (Math.PI / 180) * (h.Longitude!.Value - longitude);
                     var lat1 = (Math.PI / 180) * latitude;
                     var lat2 = (Math.PI / 180) * h.Latitude.Value;
 

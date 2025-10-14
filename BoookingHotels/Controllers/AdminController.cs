@@ -21,6 +21,7 @@ namespace BoookingHotels.Controllers
             ViewBag.TotalAmenities = _context.Amenities.Count();
             ViewBag.TotalBookings = _context.Bookings.Count();
             ViewBag.TotalVouchers = _context.Vouchers.Count();
+            ViewBag.TotalReviews = _context.Reviews.Count();
 
             ViewBag.PaidBookings = _context.Bookings.Count(b => b.Status == BookingStatus.Paid);
             ViewBag.PendingBookings = _context.Bookings.Count(b => b.Status == BookingStatus.Pending);
@@ -62,15 +63,63 @@ namespace BoookingHotels.Controllers
             return View(users);
         }
 
-        public IActionResult CreateUser() => View();
+        public IActionResult CreateUser()
+        {
+            ViewBag.Roles = _context.Roles.ToList();
+            return View();
+        }
 
         [HttpPost]
-        public IActionResult CreateUser(User model)
+        public IActionResult CreateUser(User model, List<int> selectedRoles, IFormFile? avatarFile)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Roles = _context.Roles.ToList();
+                return View(model);
+            }
+
+            // Upload avatar if file is provided
+            if (avatarFile != null && avatarFile.Length > 0)
+            {
+                var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Image", "avatars");
+                if (!Directory.Exists(uploadFolder))
+                {
+                    Directory.CreateDirectory(uploadFolder);
+                }
+
+                var fileName = Guid.NewGuid() + Path.GetExtension(avatarFile.FileName);
+                var filePath = Path.Combine(uploadFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    avatarFile.CopyTo(stream);
+                }
+
+                model.AvatarUrl = "/Image/avatars/" + fileName;
+            }
+
+            // Hash password before saving
+            model.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
+            model.CreatedAt = DateTime.Now;
+
             _context.Users.Add(model);
             _context.SaveChanges();
-            TempData["success"] = "User created successfully!";
+
+            // Add selected roles
+            if (selectedRoles != null && selectedRoles.Any())
+            {
+                foreach (var roleId in selectedRoles)
+                {
+                    _context.UserRoles.Add(new UserRole
+                    {
+                        UserId = model.UserId,
+                        RoleId = roleId
+                    });
+                }
+                _context.SaveChanges();
+            }
+
+            TempData["success"] = "Tạo người dùng thành công!";
             return RedirectToAction("Users");
         }
 
@@ -78,11 +127,19 @@ namespace BoookingHotels.Controllers
         {
             var user = _context.Users.Find(id);
             if (user == null) return NotFound();
+
+            // Get all roles and user's current roles
+            ViewBag.Roles = _context.Roles.ToList();
+            ViewBag.UserRoles = _context.UserRoles
+                .Where(ur => ur.UserId == id)
+                .Select(ur => ur.RoleId)
+                .ToList();
+
             return View(user);
         }
 
         [HttpPost]
-        public IActionResult EditUser(User model)
+        public IActionResult EditUser(User model, List<int> selectedRoles)
         {
             var user = _context.Users.FirstOrDefault(u => u.UserId == model.UserId);
             if (user == null) return NotFound();
@@ -91,6 +148,25 @@ namespace BoookingHotels.Controllers
             user.FullName = model.FullName;
             user.Phone = model.Phone;
             user.Status = model.Status;
+
+            // Update user roles
+            // Remove old roles
+            var existingRoles = _context.UserRoles.Where(ur => ur.UserId == model.UserId).ToList();
+            _context.UserRoles.RemoveRange(existingRoles);
+
+            // Add new roles
+            if (selectedRoles != null && selectedRoles.Any())
+            {
+                foreach (var roleId in selectedRoles)
+                {
+                    _context.UserRoles.Add(new UserRole
+                    {
+                        UserId = model.UserId,
+                        RoleId = roleId
+                    });
+                }
+            }
+
             _context.SaveChanges();
 
             TempData["success"] = "User updated!";
@@ -518,7 +594,7 @@ namespace BoookingHotels.Controllers
         {
             var room = _context.Rooms
                 .Include(r => r.Hotel)
-                .Include(r => r.RoomAmenities).ThenInclude(ra => ra.Amenity)
+                .Include(r => r.RoomAmenities!).ThenInclude(ra => ra.Amenity)
                 .Include(r => r.Photos)
                 .FirstOrDefault(r => r.RoomId == id);
 
@@ -636,6 +712,57 @@ namespace BoookingHotels.Controllers
                 _context.SaveChanges();
             }
             return RedirectToAction("Amenities");
+        }
+        #endregion
+
+        #region Reviews
+        public IActionResult Reviews(int page = 1, int pageSize = 20)
+        {
+            var totalReviews = _context.Reviews.Count();
+            var totalPages = (int)Math.Ceiling(totalReviews / (double)pageSize);
+            
+            var reviews = _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Room)
+                .ThenInclude(r => r!.Hotel)
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalReviews = totalReviews;
+            
+            return View(reviews);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteReview(int id)
+        {
+            var review = _context.Reviews.Find(id);
+            if (review != null)
+            {
+                _context.Reviews.Remove(review);
+                _context.SaveChanges();
+                TempData["success"] = "Review deleted successfully!";
+            }
+            return RedirectToAction("Reviews");
+        }
+
+        [HttpPost]
+        public IActionResult ToggleReviewVisibility(int id)
+        {
+            var review = _context.Reviews.Find(id);
+            if (review != null)
+            {
+                review.IsVisible = !review.IsVisible;
+                _context.SaveChanges();
+                
+                var status = review.IsVisible ? "hiển thị" : "ẩn";
+                TempData["success"] = $"Review đã được {status} thành công!";
+            }
+            return RedirectToAction("Reviews");
         }
         #endregion
 

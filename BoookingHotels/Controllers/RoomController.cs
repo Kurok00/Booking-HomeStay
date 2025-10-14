@@ -18,11 +18,11 @@ namespace BoookingHotels.Controllers
         {
             var room = _context.Rooms
                 .Include(r => r.Hotel)
-                .Include(r => r.RoomAmenities).ThenInclude(ra => ra.Amenity)
+                .Include(r => r.RoomAmenities!).ThenInclude(ra => ra.Amenity)
                 .Include(r => r.Photos)
-                .Include(r => r.Reviews)
+                .Include(r => r.Reviews!)
                     .ThenInclude(rv => rv.User)
-                .Include(r => r.Reviews)
+                .Include(r => r.Reviews!)
                     .ThenInclude(rv => rv.Photos)
                 .FirstOrDefault(r => r.RoomId == id);
 

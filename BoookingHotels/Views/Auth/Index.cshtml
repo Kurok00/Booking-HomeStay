@@ -1,101 +1,323 @@
 ﻿﻿@{
-ViewData["Title"] = "Welcome to Booking Hotels";
+ViewData["Title"] = "Đặt phòng khách sạn, homestay giá tốt";
 Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- HERO SECTION -->
-<section class="booking-hero text-white py-5">
-    <div class="container py-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7 text-center text-lg-start">
-                <h1 class="display-4 fw-bold mb-3 fade-in">Find Your Perfect Stay</h1>
-                <p class="lead mb-4 text-light">
-                    Explore top-rated hotels, villas, and apartments worldwide.
-                    Enjoy exclusive deals, seamless booking, and 24/7 customer care.
-                </p>
-                <a href="/Hotels/Index" class="btn btn-warning btn-lg fw-bold shadow px-4 py-2 hover-scale">Start Booking</a>
-            </div>
-            <div class="col-lg-5 mt-4 mt-lg-0 text-center">
-                <img src="/Image/1.jpg" class="hero-img rounded-4 shadow-lg" alt="Hotels">
+<!-- HERO BANNER WITH SEARCH -->
+<section class="ivivu-hero">
+    <div class="hero-background">
+        <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=1920" alt="Beautiful destination" class="hero-bg-img">
+        <div class="hero-overlay"></div>
+    </div>
+    
+    <div class="container hero-content">
+        <div class="text-center text-white mb-5">
+            <h1 class="hero-title">Khám phá thế giới cùng chúng tôi</h1>
+            <p class="hero-subtitle">Tìm kiếm và đặt phòng khách sạn, resort, homestay với giá tốt nhất</p>
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-container">
+            <div class="search-box">
+                <form action="/Hotels/Index" method="get" class="row g-3 align-items-end">
+                    <div class="col-lg-4 col-md-12">
+                        <label class="form-label text-muted small fw-medium">Điểm đến</label>
+                        <div class="destination-dropdown-wrapper position-relative">
+                            <input type="text" 
+                                   name="search" 
+                                   id="destinationInput"
+                                   class="form-control form-control-lg border-0 bg-light rounded-3" 
+                                   placeholder="Bạn muốn đi đâu?" 
+                                   style="height: 50px;"
+                                   autocomplete="off" />
+                            <div id="destinationDropdown" class="destination-dropdown" style="display: none;">
+                                <div class="dropdown-header">
+                                    <h6 class="mb-0">Điểm đến phổ biến</h6>
+                                </div>
+                                <div class="destination-list">
+                                    <div class="destination-item-dropdown" data-city="Hà Nội">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Hà Nội</div>
+                                            <div class="hotel-count-small">15 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Nha Trang">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Nha Trang</div>
+                                            <div class="hotel-count-small">15 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Hạ Long">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Hạ Long</div>
+                                            <div class="hotel-count-small">12 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="TP.HCM">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">TP. Hồ Chí Minh</div>
+                                            <div class="hotel-count-small">11 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Huế">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Huế</div>
+                                            <div class="hotel-count-small">10 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Phú Quốc">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Phú Quốc</div>
+                                            <div class="hotel-count-small">10 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Hội An">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Hội An</div>
+                                            <div class="hotel-count-small">9 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Đà Nẵng">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Đà Nẵng</div>
+                                            <div class="hotel-count-small">8 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Sa Pa">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Sa Pa</div>
+                                            <div class="hotel-count-small">7 khách sạn</div>
+                                        </div>
+                                    </div>
+                                    <div class="destination-item-dropdown" data-city="Cần Thơ">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>
+                                        <div class="destination-details">
+                                            <div class="city-name">Cần Thơ</div>
+                                            <div class="hotel-count-small">6 khách sạn</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label text-muted small fw-medium">Nhận phòng</label>
+                        <input type="date" name="checkin" class="form-control form-control-lg border-0 bg-light rounded-3" style="height: 50px;" />
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label text-muted small fw-medium">Trả phòng</label>
+                        <input type="date" name="checkout" class="form-control form-control-lg border-0 bg-light rounded-3" style="height: 50px;" />
+                    </div>
+                    <div class="col-lg-2 col-md-12">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-3 search-btn">
+                            <i class="bi bi-search me-2"></i>Tìm kiếm
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </section>
 
-<!-- OFFERS -->
-<section class="offers-section py-5 bg-light">
+<!-- ĐIỂM ĐẾN YÊU THÍCH TRONG NƯỚC -->
+<section class="favorite-destinations py-5">
     <div class="container">
-        <h2 class="fw-bold mb-4 text-center text-primary">🔥 Special Offers</h2>
+        <div class="section-header mb-5">
+            <h2 class="section-title">Điểm đến yêu thích trong nước</h2>
+            <p class="section-subtitle text-muted">Lên rừng xuống biển. Trọn vẹn Việt Nam</p>
+        </div>
+
+        <div class="destinations-grid">
+            <!-- Phú Quốc - Large Card -->
+            <div class="destination-item large-card">
+                <a href="/Hotels/Index?search=Phú Quốc" class="destination-link">
+                    <div class="destination-image">
+                        <img src="data:image/jpeg;base64,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" alt="Phú Quốc">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Phú Quốc</h3>
+                                <p class="hotel-count">732 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Đà Lạt -->
+            <div class="destination-item medium-card">
+                <a href="/Hotels/Index?search=Đà Lạt" class="destination-link">
+                    <div class="destination-image">
+                        <img src="https://booking.muongthanh.com/upload_images/images/H%60/thanh-pho-da-lat.jpg" alt="Đà Lạt">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Đà Lạt</h3>
+                                <p class="hotel-count">923 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Quy Nhon -->
+            <div class="destination-item medium-card">
+                <a href="/Hotels/Index?search=Quy Nhon" class="destination-link">
+                    <div class="destination-image">
+                        <img src="https://quynhongo.vn/wp-content/uploads/2021/05/du-lich-quy-nhon-hap-dan-voi-quy-nhon-tourist.jpg" alt="Quy Nhon">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Quy Nhon</h3>
+                                <p class="hotel-count">299 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Vũng Tàu -->
+            <div class="destination-item tall-card">
+                <a href="/Hotels/Index?search=Vũng Tàu" class="destination-link">
+                    <div class="destination-image">
+                        <img src="https://homepage.momocdn.net/blogscontents/momo-upload-api-221013140622-638012667825895595.jpeg" alt="Vũng Tàu">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Vũng Tàu</h3>
+                                <p class="hotel-count">585 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Nha Trang -->
+            <div class="destination-item wide-card">
+                <a href="/Hotels/Index?search=Nha Trang" class="destination-link">
+                    <div class="destination-image">
+                        <img src="https://booking.muongthanh.com/upload_images/images/kham-pha-hon-tam-nha-trang.jpg" alt="Nha Trang">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Nha Trang</h3>
+                                <p class="hotel-count">877 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Đà Nẵng -->
+            <div class="destination-item extra-wide-card">
+                <a href="/Hotels/Index?search=Đà Nẵng" class="destination-link">
+                    <div class="destination-image">
+                        <img src="https://images.unsplash.com/photo-1587474260584-136574528ed5?w=900&fit=crop&q=80" alt="Đà Nẵng">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Đà Nẵng</h3>
+                                <p class="hotel-count">1149 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Phan Thiết -->
+            <div class="destination-item medium-card">
+                <a href="/Hotels/Index?search=Phan Thiết" class="destination-link">
+                    <div class="destination-image">
+                        <img src="https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&fit=crop&q=80" alt="Phan Thiết">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Phan Thiết</h3>
+                                <p class="hotel-count">314 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Phú Yên -->
+            <div class="destination-item medium-card">
+                <a href="/Hotels/Index?search=Phú Yên" class="destination-link">
+                    <div class="destination-image">
+                        <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&fit=crop&q=80" alt="Phú Yên">
+                        <div class="destination-overlay">
+                            <div class="destination-info">
+                                <h3 class="destination-name">Phú Yên</h3>
+                                <p class="hotel-count">18 khách sạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SPECIAL OFFERS & PROMOTIONS -->
+<section class="special-offers py-5 bg-light">
+    <div class="container">
+        <div class="section-header mb-5 text-center">
+            <h2 class="section-title">Ưu đãi đặc biệt</h2>
+            <p class="section-subtitle text-muted">Khám phá những deal hot nhất hiện tại</p>
+        </div>
+
         <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="offer-card card border-0 shadow-sm h-100 text-center p-4 hover-rise">
-                    <img src="/Image/2.jpg" class="rounded-3 mb-3 offer-img" alt="Deal">
-                    <h5 class="fw-bold text-dark">Getaway Deals</h5>
-                    <p class="text-muted">Save up to <b>20%</b> on selected stays for your next trip.</p>
+            <div class="col-lg-4 col-md-6">
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500" alt="Resort Deal">
+                        <div class="offer-badge">Giảm 25%</div>
+                    </div>
+                    <div class="offer-content p-4">
+                        <h5 class="offer-title">Flash Sale Resort</h5>
+                        <p class="offer-desc text-muted">Đặt ngay hôm nay để nhận ưu đãi lên đến 25% cho các resort cao cấp</p>
+                        <div class="offer-cta">
+                            <a href="/Hotels/Index" class="btn btn-primary">Xem ngay</a>
+                            <span class="offer-time text-muted small">Còn 2 ngày</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="offer-card card border-0 shadow-sm h-100 text-center p-4 hover-rise">
-                    <img src="/Image/3.jpg" class="rounded-3 mb-3 offer-img" alt="Last Minute">
-                    <h5 class="fw-bold text-dark">Last Minute Offers</h5>
-                    <p class="text-muted">Book now and enjoy exclusive discounts for spontaneous trips.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="offer-card card border-0 shadow-sm h-100 text-center p-4 hover-rise">
-                    <img src="/Image/4.jpg" class="rounded-3 mb-3 offer-img" alt="VIP">
-                    <h5 class="fw-bold text-dark">VIP Member Rewards</h5>
-                    <p class="text-muted">Sign in and get up to <b>15% extra discount</b> as a member.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- PROPERTY TYPES -->
-<section class="property-types py-5">
-    <div class="container">
-        <h2 class="fw-bold mb-5 text-center text-primary">🏡 Browse by Property Type</h2>
-        <div class="row g-4 justify-content-center">
-            <div class="col-6 col-md-3">
-                <a href="/Hotels/Index" class="text-decoration-none">
-                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
-                        <img src="/Image/1.jpg" class="card-img-top rounded-top" alt="Hotels">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-0">Hotels</h6>
+            <div class="col-lg-4 col-md-6">
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500" alt="Beach Hotel">
+                        <div class="offer-badge">Miễn phí</div>
+                    </div>
+                    <div class="offer-content p-4">
+                        <h5 class="offer-title">Khách sạn biển</h5>
+                        <p class="offer-desc text-muted">Miễn phí bữa sáng và đưa đón sân bay khi đặt phòng khách sạn gần biển</p>
+                        <div class="offer-cta">
+                            <a href="/Hotels/Index" class="btn btn-primary">Khám phá</a>
+                            <span class="offer-time text-muted small">Áp dụng cả tuần</span>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
-            <div class="col-6 col-md-3">
-                <a href="/Hotels/Index" class="text-decoration-none">
-                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
-                        <img src="/Image/2.jpg" class="card-img-top rounded-top" alt="Apartments">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-0">Apartments</h6>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500" alt="City Hotel">
+                        <div class="offer-badge">Combo</div>
+                    </div>
+                    <div class="offer-content p-4">
+                        <h5 class="offer-title">Combo Thành phố</h5>
+                        <p class="offer-desc text-muted">Đặt 3 đêm tặng 1 đêm miễn phí tại các khách sạn trung tâm thành phố</p>
+                        <div class="offer-cta">
+                            <a href="/Hotels/Index" class="btn btn-primary">Đặt ngay</a>
+                            <span class="offer-time text-muted small">Số lượng có hạn</span>
                         </div>
                     </div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="/Hotels/Index" class="text-decoration-none">
-                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
-                        <img src="/Image/3.jpg" class="card-img-top rounded-top" alt="Resorts">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-0">Resorts</h6>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-md-3">
-                <a href="/Hotels/Index" class="text-decoration-none">
-                    <div class="property-card card border-0 text-center shadow-sm hover-rise">
-                        <img src="/Image/4.jpg" class="card-img-top rounded-top" alt="Villas">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-0">Villas</h6>
-                        </div>
-                    </div>
-                </a>
+                </div>
             </div>
         </div>
     </div>
@@ -121,71 +343,788 @@ Layout = "~/Views/Shared/_Layout.cshtml";
     </div>
 </section>
 
-<!-- CUSTOM STYLE -->
+<!-- OPTIMIZED UI/UX FOR 15.6" LAPTOPS -->
 <style>
-    /* --- HERO --- */
-    .booking-hero {
-        background: linear-gradient(135deg, #00275e, #0047b3);
-        border-radius: 0 0 2rem 2rem;
+    /* === GENERAL OPTIMIZATION === */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* === HERO SECTION === */
+    .ivivu-hero {
+        position: relative;
+        min-height: 65vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        padding: 2rem 0;
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+
+    .hero-bg-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.7);
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(0, 123, 255, 0.75), rgba(40, 167, 69, 0.55));
+        z-index: -1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.15rem;
+        opacity: 0.95;
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .search-container {
+        max-width: 950px;
+        margin: 0 auto;
+        overflow: visible !important;
+    }
+
+    .search-box {
+        backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        padding: 1.5rem !important;
+        overflow: visible !important;
+    }
+
+    .search-box form {
+        overflow: visible !important;
+    }
+
+    .search-box .row {
+        overflow: visible !important;
+    }
+
+    .search-box .col-lg-4,
+    .search-box .col-md-12 {
+        overflow: visible !important;
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #007bff, #0056b3) !important;
+        border: none !important;
+        height: 50px !important;
+        font-size: 0.95rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .search-btn:hover {
+        background: linear-gradient(135deg, #0056b3, #004085) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3) !important;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+        border-color: #007bff !important;
+    }
+
+    /* === DESTINATION DROPDOWN === */
+    .destination-dropdown-wrapper {
+        position: relative;
+        z-index: 1050 !important;
+    }
+
+    .destination-dropdown {
+        position: fixed;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        z-index: 99999 !important;
+        max-height: 400px;
+        overflow-y: auto;
+        animation: slideDown 0.3s ease-out;
+        min-width: 300px;
+        display: none;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dropdown-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px 12px 0 0;
+    }
+
+    .dropdown-header h6 {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .destination-list {
+        padding: 8px 0;
+    }
+
+    .destination-item-dropdown {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+    }
+
+    .destination-item-dropdown:hover {
+        background: linear-gradient(90deg, rgba(0, 123, 255, 0.08), rgba(0, 123, 255, 0.02));
+        border-left-color: #007bff;
+    }
+
+    .destination-item-dropdown i {
+        color: #007bff;
+        font-size: 1.2rem;
+        width: 24px;
+    }
+
+    .destination-details {
+        flex: 1;
+    }
+
+    .city-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+
+    .hotel-count-small {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    /* Scrollbar styling for dropdown */
+    .destination-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .destination-dropdown::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .destination-dropdown::-webkit-scrollbar-thumb {
+        background: #007bff;
+        border-radius: 10px;
+    }
+
+    .destination-dropdown::-webkit-scrollbar-thumb:hover {
+        background: #0056b3;
+    }
+
+    /* === FAVORITE DESTINATIONS === */
+    .favorite-destinations {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 3rem 0 !important;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 2.5rem !important;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.8rem;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #007bff, #28a745);
+        border-radius: 2px;
+    }
+
+    .section-subtitle {
+        font-size: 1.05rem;
+        color: #6c757d;
+        margin-top: 1rem;
+    }
+
+    .destinations-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: repeat(3, 180px);
+        gap: 12px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Optimized Grid Layout for 15.6" Laptops */
+    .large-card {
+        grid-column: 1 / 6;
+        grid-row: 1 / 3;
+    }
+
+    .medium-card:nth-of-type(2) {
+        grid-column: 6 / 9;
+        grid-row: 1 / 2;
+    }
+
+    .medium-card:nth-of-type(3) {
+        grid-column: 9 / 13;
+        grid-row: 1 / 2;
+    }
+
+    .tall-card {
+        grid-column: 6 / 9;
+        grid-row: 2 / 4;
+    }
+
+    .wide-card {
+        grid-column: 1 / 6;
+        grid-row: 3 / 4;
+    }
+
+    .extra-wide-card {
+        grid-column: 9 / 13;
+        grid-row: 2 / 4;
+    }
+
+    .medium-card:nth-of-type(7) {
+        grid-column: 1 / 5;
+        grid-row: 4 / 5;
+    }
+
+    .medium-card:nth-of-type(8) {
+        grid-column: 5 / 9;
+        grid-row: 4 / 5;
+    }
+
+    .destination-item {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .destination-item:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .destination-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+
+    .destination-image {
+        position: relative;
+        height: 100%;
         overflow: hidden;
     }
 
-    .hero-img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 1.5rem;
-        transition: transform 0.4s ease;
+    .destination-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-        .hero-img:hover {
-            transform: scale(1.03);
+    .destination-item:hover .destination-image img {
+        transform: scale(1.08);
+    }
+
+    .destination-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.75));
+        padding: 1.8rem 1.2rem 1.2rem;
+        color: white;
+    }
+
+    .destination-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0 0 0.3rem 0;
+        text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        line-height: 1.2;
+    }
+
+    .hotel-count {
+        margin: 0;
+        opacity: 0.95;
+        font-size: 0.9rem;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* === SPECIAL OFFERS === */
+    .special-offers {
+        padding: 3rem 0;
+        background: #ffffff;
+    }
+
+    .offer-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .offer-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+    }
+
+    .offer-image {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+    }
+
+    .offer-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .offer-card:hover .offer-image img {
+        transform: scale(1.08);
+    }
+
+    .offer-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: linear-gradient(135deg, #ff6b6b, #ff5252);
+        color: white;
+        padding: 0.4rem 0.9rem;
+        border-radius: 18px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        box-shadow: 0 2px 8px rgba(255,107,107,0.3);
+    }
+
+    .offer-content {
+        padding: 1.3rem !important;
+    }
+
+    .offer-title {
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.8rem;
+        font-size: 1.1rem;
+    }
+
+    .offer-desc {
+        line-height: 1.5;
+        margin-bottom: 1.3rem;
+        color: #6c757d;
+        font-size: 0.95rem;
+    }
+
+    .offer-cta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .offer-cta .btn {
+        border-radius: 20px;
+        padding: 0.5rem 1.2rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .offer-time {
+        font-style: italic;
+        font-size: 0.8rem;
+        color: #868e96;
+    }
+
+    /* === RESPONSIVE DESIGN FOR 15.6" LAPTOPS === */
+    
+    /* Large Laptops (1920px+) */
+    @@media (min-width: 1920px) {
+        .destinations-grid {
+            max-width: 1400px;
+            gap: 16px;
+        }
+        .hero-title {
+            font-size: 3.2rem;
+        }
+    }
+
+    /* Standard 15.6" Laptops (1366px - 1600px) */
+    @@media (max-width: 1600px) and (min-width: 1366px) {
+        .destinations-grid {
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(3, 160px);
+            gap: 10px;
+        }
+        
+        .large-card {
+            grid-column: 1 / 5;
+            grid-row: 1 / 3;
+        }
+        
+        .medium-card:nth-of-type(2) {
+            grid-column: 5 / 8;
+            grid-row: 1 / 2;
+        }
+        
+        .medium-card:nth-of-type(3) {
+            grid-column: 8 / 11;
+            grid-row: 1 / 2;
+        }
+        
+        .tall-card {
+            grid-column: 5 / 8;
+            grid-row: 2 / 4;
+        }
+        
+        .wide-card {
+            grid-column: 1 / 5;
+            grid-row: 3 / 4;
+        }
+        
+        .extra-wide-card {
+            grid-column: 8 / 11;
+            grid-row: 2 / 4;
         }
 
-    .hover-scale:hover {
-        transform: scale(1.05);
-        transition: 0.3s ease;
-    }
-
-    /* --- OFFERS --- */
-    .offer-img {
-        height: 160px;
-        object-fit: cover;
-    }
-
-    .hover-rise {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .hover-rise:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        .hero-title {
+            font-size: 2.6rem;
         }
 
-    /* --- PROPERTY --- */
-    .property-card img {
-        height: 150px;
-        object-fit: cover;
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
     }
 
-    /* --- ABOUT --- */
-    .about-img {
-        border-radius: 1.5rem;
-        height: 300px;
-        object-fit: cover;
+    /* Smaller Laptops (1024px - 1365px) */
+    @@media (max-width: 1365px) and (min-width: 1024px) {
+        .destinations-grid {
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(4, 150px);
+            gap: 8px;
+        }
+        
+        .large-card {
+            grid-column: 1 / 5;
+            grid-row: 1 / 3;
+        }
+        
+        .medium-card:nth-of-type(2) {
+            grid-column: 5 / 9;
+            grid-row: 1 / 2;
+        }
+        
+        .medium-card:nth-of-type(3) {
+            grid-column: 5 / 9;
+            grid-row: 2 / 3;
+        }
+        
+        .tall-card {
+            grid-column: 1 / 3;
+            grid-row: 3 / 5;
+        }
+        
+        .wide-card {
+            grid-column: 3 / 9;
+            grid-row: 3 / 4;
+        }
+        
+        .extra-wide-card {
+            grid-column: 3 / 9;
+            grid-row: 4 / 5;
+        }
+
+        .hero-title {
+            font-size: 2.4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
     }
 
-    /* --- TEXT / EFFECT --- */
-    h1, h2, h5, h6 {
-        letter-spacing: 0.5px;
+    /* Tablets and Small Laptops (768px - 1023px) */
+    @@media (max-width: 1023px) and (min-width: 768px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .destinations-grid {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(5, 140px);
+            gap: 8px;
+        }
+        
+        .large-card {
+            grid-column: 1 / 4;
+            grid-row: 1 / 3;
+        }
+        
+        .medium-card:nth-of-type(2) {
+            grid-column: 4 / 7;
+            grid-row: 1 / 2;
+        }
+        
+        .medium-card:nth-of-type(3) {
+            grid-column: 4 / 7;
+            grid-row: 2 / 3;
+        }
+        
+        .tall-card {
+            grid-column: 1 / 3;
+            grid-row: 3 / 5;
+        }
+        
+        .wide-card {
+            grid-column: 3 / 7;
+            grid-row: 3 / 4;
+        }
+        
+        .extra-wide-card {
+            grid-column: 3 / 7;
+            grid-row: 4 / 5;
+        }
+
+        .search-box .row > div {
+            margin-bottom: 0.8rem;
+        }
     }
 
-    .fade-in {
-        animation: fadeIn 1s ease-in-out;
-    }
+    /* Mobile Devices */
+    @@media (max-width: 767px) {
+        .hero-title {
+            font-size: 1.8rem;
+        }
+        
+        .destinations-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(6, 160px);
+            gap: 12px;
+        }
+        
+        .destination-item {
+            grid-column: 1 !important;
+        }
+        
+        .large-card { grid-row: 1; }
+        .medium-card:nth-of-type(2) { grid-row: 2; }
+        .medium-card:nth-of-type(3) { grid-row: 3; }
+        .tall-card { grid-row: 4; }
+        .wide-card { grid-row: 5; }
+        .extra-wide-card { grid-row: 6; }
+        
+        .search-box .row > div {
+            margin-bottom: 1rem;
+        }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .favorite-destinations {
+            padding: 2rem 0 !important;
+        }
+
+        .special-offers {
+            padding: 2rem 0;
+        }
     }
-}
-</style>
+</style></style>
+
+<script>
+    // Destination Dropdown Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const destinationInput = document.getElementById('destinationInput');
+        const destinationDropdown = document.getElementById('destinationDropdown');
+        const destinationItems = document.querySelectorAll('.destination-item-dropdown');
+
+        // Function to position dropdown
+        function positionDropdown() {
+            const rect = destinationInput.getBoundingClientRect();
+            destinationDropdown.style.top = (rect.bottom + 5) + 'px';
+            destinationDropdown.style.left = rect.left + 'px';
+            destinationDropdown.style.width = rect.width + 'px';
+        }
+
+        // Show dropdown when input is focused or clicked
+        destinationInput.addEventListener('focus', function() {
+            positionDropdown();
+            destinationDropdown.style.display = 'block';
+        });
+
+        destinationInput.addEventListener('click', function() {
+            positionDropdown();
+            destinationDropdown.style.display = 'block';
+        });
+
+        // Reposition on scroll or resize
+        window.addEventListener('scroll', function() {
+            if (destinationDropdown.style.display === 'block') {
+                positionDropdown();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (destinationDropdown.style.display === 'block') {
+                positionDropdown();
+            }
+        });
+
+        // Filter destinations based on input
+        destinationInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let hasResults = false;
+
+            destinationItems.forEach(item => {
+                const cityName = item.getAttribute('data-city').toLowerCase();
+                if (cityName.includes(searchTerm) || searchTerm === '') {
+                    item.style.display = 'flex';
+                    hasResults = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show/hide dropdown based on results
+            if (hasResults) {
+                positionDropdown();
+                destinationDropdown.style.display = 'block';
+            } else {
+                destinationDropdown.style.display = 'none';
+            }
+        });
+
+        // Handle destination selection
+        destinationItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const cityName = this.getAttribute('data-city');
+                destinationInput.value = cityName;
+                destinationDropdown.style.display = 'none';
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInside = destinationInput.contains(event.target) || 
+                                destinationDropdown.contains(event.target);
+            
+            if (!isClickInside) {
+                destinationDropdown.style.display = 'none';
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside it
+        destinationDropdown.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        // Handle keyboard navigation
+        destinationInput.addEventListener('keydown', function(event) {
+            const visibleItems = Array.from(destinationItems).filter(item => item.style.display !== 'none');
+            
+            if (event.key === 'ArrowDown' && visibleItems.length > 0) {
+                event.preventDefault();
+                visibleItems[0].focus();
+            } else if (event.key === 'Escape') {
+                destinationDropdown.style.display = 'none';
+            }
+        });
+
+        // Add keyboard navigation for dropdown items
+        destinationItems.forEach((item, index) => {
+            item.setAttribute('tabindex', '0');
+            
+            item.addEventListener('keydown', function(event) {
+                const visibleItems = Array.from(destinationItems).filter(item => item.style.display !== 'none');
+                const currentIndex = visibleItems.indexOf(this);
+                
+                if (event.key === 'ArrowDown' && currentIndex < visibleItems.length - 1) {
+                    event.preventDefault();
+                    visibleItems[currentIndex + 1].focus();
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    if (currentIndex > 0) {
+                        visibleItems[currentIndex - 1].focus();
+                    } else {
+                        destinationInput.focus();
+                    }
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    this.click();
+                } else if (event.key === 'Escape') {
+                    destinationDropdown.style.display = 'none';
+                    destinationInput.focus();
+                }
+            });
+        });
+    });
+</script>
+</script>

@@ -36,7 +36,26 @@ namespace BoookingHotels.Controllers
         public async Task<IActionResult> Login(string email, string password)
         {
             var user = _db.Users.FirstOrDefault(u => u.Email == email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Sai tài khoản hoặc mật khẩu");
+                return View();
+            }
+
+            // Check if password is valid (supports both BCrypt hash and plain text for backward compatibility)
+            bool isPasswordValid = false;
+            try
+            {
+                // Try BCrypt verification first
+                isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password);
+            }
+            catch
+            {
+                // If BCrypt fails, compare plain text (for old/seeded data)
+                isPasswordValid = (user.Password == password);
+            }
+
+            if (!isPasswordValid)
             {
                 ModelState.AddModelError("", "Sai tài khoản hoặc mật khẩu");
                 return View();
@@ -118,7 +137,7 @@ namespace BoookingHotels.Controllers
             if (!TempData.TryGetValue("TempUser", out var raw))
                 return RedirectToAction("Register");
 
-            var tempUser = JsonSerializer.Deserialize<TempUserOtpModel>(raw?.ToString());
+            var tempUser = JsonSerializer.Deserialize<TempUserOtpModel>(raw?.ToString() ?? string.Empty);
 
             if (tempUser == null || tempUser.ExpireAt < DateTime.Now)
             {
@@ -208,7 +227,7 @@ namespace BoookingHotels.Controllers
             if (!TempData.TryGetValue("ResetOtp", out var raw))
                 return RedirectToAction("ForgotPassword");
 
-            var tempOtp = JsonSerializer.Deserialize<TempUserOtpModel>(raw?.ToString());
+            var tempOtp = JsonSerializer.Deserialize<TempUserOtpModel>(raw?.ToString() ?? string.Empty);
             if (tempOtp == null || tempOtp.ExpireAt < DateTime.Now)
             {
                 ModelState.AddModelError("", "OTP đã hết hạn");
@@ -240,23 +259,64 @@ namespace BoookingHotels.Controllers
         [HttpGet]
         public IActionResult Profile()
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _db.Users.FirstOrDefault(u => u.UserId == userId);
             return View(user);
         }
 
         [Authorize]
         [HttpPost]
-        public IActionResult Profile(User model)
+        public IActionResult Profile(User model, IFormFile? avatarFile)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = _db.Users.FirstOrDefault(u => u.UserId == userId);
             if (user == null) return NotFound();
 
-
-
             user.UserName = model.UserName;
             user.Phone = model.Phone;
+
+            // Handle avatar upload
+            if (avatarFile != null && avatarFile.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var fileExtension = Path.GetExtension(avatarFile.FileName).ToLower();
+                
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    TempData["Error"] = "Chỉ chấp nhận file ảnh (.jpg, .jpeg, .png, .gif)";
+                    return RedirectToAction("Profile");
+                }
+
+                // Create unique filename
+                var fileName = $"avatar_{userId}_{Guid.NewGuid()}{fileExtension}";
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Image", "avatars");
+                
+                // Create directory if not exists
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                // Delete old avatar if exists
+                if (!string.IsNullOrEmpty(user.AvatarUrl) && user.AvatarUrl.StartsWith("/Image/avatars/"))
+                {
+                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AvatarUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                // Save new avatar
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    avatarFile.CopyTo(stream);
+                }
+
+                user.AvatarUrl = $"/Image/avatars/{fileName}";
+            }
 
             _db.SaveChanges();
 
@@ -267,10 +327,10 @@ namespace BoookingHotels.Controllers
     }
     public class TempUserOtpModel
     {
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string HashedPassword { get; set; }
-        public string Otp { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string HashedPassword { get; set; } = string.Empty;
+        public string Otp { get; set; } = string.Empty;
         public DateTime ExpireAt { get; set; }
     }
 

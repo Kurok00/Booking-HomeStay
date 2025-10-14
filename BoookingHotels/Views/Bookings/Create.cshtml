@@ -92,22 +92,31 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label asp-for="CheckIn" class="form-label"><i class="fa-solid fa-calendar-check"></i> Ngày nhận phòng</label>
-                <input asp-for="CheckIn" type="date" class="form-control" />
+                <input asp-for="CheckIn" type="date" class="form-control" id="checkInDate" />
             </div>
             <div class="col-md-6 mb-3">
                 <label asp-for="CheckOut" class="form-label"><i class="fa-solid fa-calendar-day"></i> Ngày trả phòng</label>
-                <input asp-for="CheckOut" type="date" class="form-control" />
+                <input asp-for="CheckOut" type="date" class="form-control" id="checkOutDate" />
+            </div>
+        </div>
+
+        <div class="mb-3" id="nightsInfo" style="display: none;">
+            <div class="alert alert-info">
+                <i class="fa-solid fa-moon"></i> Số đêm: <strong id="totalNights">0</strong> đêm
             </div>
         </div>
         <div class="mb-3">
             <label class="form-label">Voucher</label>
-            <select name="voucherCode" class="form-select">
-                <option value="">-- Không sử dụng --</option>
+            <select name="voucherCode" class="form-select" id="voucherSelect">
+                <option value="" data-discount-type="" data-discount-value="0">-- Không sử dụng --</option>
                 @if (ViewBag.Vouchers != null)
                 {
                     foreach (var v in (IEnumerable<BoookingHotels.Models.Voucher>)ViewBag.Vouchers)
                     {
-                <option value="@v.Code">
+                <option value="@v.Code" 
+                        data-discount-type="@v.DiscountType" 
+                        data-discount-value="@v.DiscountValue"
+                        data-min-order="@v.MinOrderValue">
                     @v.Code - @(v.DiscountType == "Percent"
                                         ? v.DiscountValue + "%"
                                         : v.DiscountValue.ToString("N0") + " VND")
@@ -116,6 +125,7 @@
                                 }
                 }
             </select>
+            <small class="text-muted" id="voucherMessage"></small>
         </div>
 
         <div class="mb-3">
@@ -128,7 +138,17 @@
 
         <div class="price-box mb-3">
             <i class="fa-solid fa-money-bill-wave"></i>
-            Giá phòng: <span>@Model.SubTotal.ToString("N0") VND</span>
+            <div style="width: 100%;">
+                <div>Giá phòng/đêm: <span id="roomPricePerNight">@((ViewBag.Room?.Price ?? 0).ToString("N0")) VND</span></div>
+                <div style="margin-top: 8px;">Tạm tính: <span id="totalPrice">@Model.SubTotal.ToString("N0") VND</span></div>
+                <div id="discountRow" style="margin-top: 8px; color: #28a745; display: none;">
+                    Giảm giá: -<span id="discountAmount">0 VND</span>
+                </div>
+                <hr style="margin: 10px 0;">
+                <div style="font-size: 1.4rem; font-weight: 700;">
+                    Tổng thanh toán: <span id="finalPrice">@Model.Total.ToString("N0") VND</span>
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">
@@ -172,5 +192,148 @@
     .custom-btn-close {
         filter: invert(1);
     }
+
+    .price-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 </style>
 
+<script>
+    // Realtime price calculation
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkInInput = document.getElementById('checkInDate');
+        const checkOutInput = document.getElementById('checkOutDate');
+        const voucherSelect = document.getElementById('voucherSelect');
+        const totalNightsDisplay = document.getElementById('totalNights');
+        const totalPriceDisplay = document.getElementById('totalPrice');
+        const discountAmountDisplay = document.getElementById('discountAmount');
+        const finalPriceDisplay = document.getElementById('finalPrice');
+        const discountRow = document.getElementById('discountRow');
+        const nightsInfoDiv = document.getElementById('nightsInfo');
+        const voucherMessage = document.getElementById('voucherMessage');
+        
+        // Get room price from ViewBag
+        const roomPricePerNight = @(ViewBag.Room?.Price ?? 0);
+
+        console.log('Room Price Per Night:', roomPricePerNight);
+
+        // Set minimum dates
+        const today = new Date().toISOString().split('T')[0];
+        checkInInput.setAttribute('min', today);
+
+        let currentSubTotal = 0;
+
+        // Function to calculate price
+        function calculatePrice() {
+            const checkIn = new Date(checkInInput.value);
+            const checkOut = new Date(checkOutInput.value);
+
+            if (checkInInput.value && checkOutInput.value) {
+                // Calculate difference in days
+                const diffTime = checkOut - checkIn;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays > 0) {
+                    // Calculate total price
+                    currentSubTotal = roomPricePerNight * diffDays;
+                    
+                    // Update display
+                    totalNightsDisplay.textContent = diffDays;
+                    totalPriceDisplay.textContent = currentSubTotal.toLocaleString('vi-VN') + ' VND';
+                    nightsInfoDiv.style.display = 'block';
+                    
+                    // Recalculate with voucher
+                    applyVoucher();
+                } else {
+                    // Invalid date range
+                    currentSubTotal = 0;
+                    totalPriceDisplay.textContent = '0 VND';
+                    finalPriceDisplay.textContent = '0 VND';
+                    nightsInfoDiv.style.display = 'none';
+                    discountRow.style.display = 'none';
+                    if (diffDays <= 0 && checkOutInput.value) {
+                        alert('Ngày trả phòng phải sau ngày nhận phòng!');
+                        checkOutInput.value = '';
+                    }
+                }
+            } else {
+                // Reset if dates not selected
+                currentSubTotal = roomPricePerNight;
+                totalPriceDisplay.textContent = roomPricePerNight.toLocaleString('vi-VN') + ' VND';
+                finalPriceDisplay.textContent = roomPricePerNight.toLocaleString('vi-VN') + ' VND';
+                nightsInfoDiv.style.display = 'none';
+                discountRow.style.display = 'none';
+            }
+        }
+
+        // Function to apply voucher
+        function applyVoucher() {
+            const selectedOption = voucherSelect.options[voucherSelect.selectedIndex];
+            const discountType = selectedOption.getAttribute('data-discount-type');
+            const discountValue = parseFloat(selectedOption.getAttribute('data-discount-value')) || 0;
+            const minOrderValue = parseFloat(selectedOption.getAttribute('data-min-order')) || 0;
+
+            let discountAmount = 0;
+            let finalPrice = currentSubTotal;
+
+            if (discountType && currentSubTotal > 0) {
+                // Check minimum order value
+                if (minOrderValue > 0 && currentSubTotal < minOrderValue) {
+                    voucherMessage.textContent = `⚠️ Đơn hàng tối thiểu ${minOrderValue.toLocaleString('vi-VN')} VND`;
+                    voucherMessage.style.color = '#dc3545';
+                    discountRow.style.display = 'none';
+                    finalPriceDisplay.textContent = currentSubTotal.toLocaleString('vi-VN') + ' VND';
+                    return;
+                }
+
+                // Calculate discount
+                if (discountType === 'Percent') {
+                    discountAmount = (currentSubTotal * discountValue) / 100;
+                } else if (discountType === 'Fixed') {
+                    discountAmount = discountValue;
+                }
+
+                // Make sure discount doesn't exceed subtotal
+                if (discountAmount > currentSubTotal) {
+                    discountAmount = currentSubTotal;
+                }
+
+                finalPrice = currentSubTotal - discountAmount;
+
+                // Show discount
+                discountAmountDisplay.textContent = discountAmount.toLocaleString('vi-VN') + ' VND';
+                discountRow.style.display = 'block';
+                voucherMessage.textContent = '✅ Mã giảm giá đã được áp dụng';
+                voucherMessage.style.color = '#28a745';
+            } else {
+                // No voucher selected
+                discountRow.style.display = 'none';
+                voucherMessage.textContent = '';
+            }
+
+            // Update final price
+            finalPriceDisplay.textContent = finalPrice.toLocaleString('vi-VN') + ' VND';
+        }
+
+        // Update checkout minimum date when checkin changes
+        checkInInput.addEventListener('change', function() {
+            const checkInDate = new Date(this.value);
+            const minCheckOut = new Date(checkInDate);
+            minCheckOut.setDate(minCheckOut.getDate() + 1);
+            checkOutInput.setAttribute('min', minCheckOut.toISOString().split('T')[0]);
+            calculatePrice();
+        });
+
+        // Calculate price when checkout changes
+        checkOutInput.addEventListener('change', calculatePrice);
+
+        // Apply voucher when voucher is selected
+        voucherSelect.addEventListener('change', applyVoucher);
+
+        // Initial calculation if dates are already set
+        if (checkInInput.value && checkOutInput.value) {
+            calculatePrice();
+        }
+    });
+</script>

@@ -9,18 +9,34 @@
         <div class="col-lg-7">
             <div class="card shadow-lg border-0 rounded-4 p-4 profile-card">
                 <div class="d-flex align-items-center mb-4">
-                    <div class="profile-avatar bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-4"
-                         style="width:80px; height:80px; font-size:2.5rem;">
-                        <i class="bi bi-person-circle"></i>
+                    <div class="position-relative">
+                        @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                        {
+                            <img src="@Model.AvatarUrl" alt="Avatar" class="rounded-circle profile-avatar-img" 
+                                 style="width:80px; height:80px; object-fit:cover;">
+                        }
+                        else
+                        {
+                            <div class="profile-avatar bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:80px; height:80px; font-size:2.5rem;">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                        }
+                        <label for="avatarFile" class="avatar-upload-btn position-absolute bottom-0 end-0 bg-primary rounded-circle text-white d-flex align-items-center justify-content-center"
+                               style="width:30px; height:30px; cursor:pointer;" title="Thay đổi ảnh đại diện">
+                            <i class="bi bi-camera"></i>
+                        </label>
                     </div>
-                    <div>
+                    <div class="ms-4">
                         <h3 class="mb-1 fw-bold">@Model.UserName</h3>
                         <span class="badge bg-success">Thành viên</span>
                     </div>
                 </div>
                 <hr />
 
-                <form asp-action="Profile" method="post">
+                <form asp-action="Profile" method="post" enctype="multipart/form-data">
+                    <input type="file" id="avatarFile" name="avatarFile" accept="image/*" class="d-none" onchange="previewAvatar(this)">
+                    
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary"><i class="bi bi-person me-2"></i>Tên hiển thị</label>
                         <input asp-for="UserName" class="form-control" />
@@ -49,6 +65,10 @@
                 {
                     <div class="alert alert-success mt-3">@TempData["Success"]</div>
                 }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+                }
             </div>
         </div>
     </div>
@@ -63,4 +83,47 @@
     .profile-avatar {
         box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
+
+    .profile-avatar-img {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        border: 3px solid #fff;
+    }
+
+    .avatar-upload-btn {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: transform 0.2s;
+    }
+
+    .avatar-upload-btn:hover {
+        transform: scale(1.1);
+    }
 </style>
+
+<script>
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // Find the avatar container
+                var avatarContainer = input.closest('.position-relative');
+                
+                // Check if there's already an img element
+                var imgElement = avatarContainer.querySelector('.profile-avatar-img');
+                
+                if (imgElement) {
+                    // Update existing image
+                    imgElement.src = e.target.result;
+                } else {
+                    // Replace the placeholder with new image
+                    var placeholder = avatarContainer.querySelector('.profile-avatar');
+                    if (placeholder) {
+                        placeholder.innerHTML = '<img src="' + e.target.result + '" alt="Avatar" class="rounded-circle profile-avatar-img" style="width:80px; height:80px; object-fit:cover;">';
+                        placeholder.classList.remove('bg-primary', 'bg-gradient', 'text-white', 'd-flex', 'align-items-center', 'justify-content-center');
+                        placeholder.style.padding = '0';
+                    }
+                }
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

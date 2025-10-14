@@ -9,6 +9,7 @@
         public int Rating { get; set; }
         public string? Comment { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsVisible { get; set; } = true; // Mặc định là hiển thị
 
         public User User { get; set; } = null!;
         public Hotel? Hotel { get; set; }

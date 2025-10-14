@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Check Cities";
+}
+
+<h2>Cities with Hotels in Database</h2>
+
+<div class="container mt-4">
+    @if (ViewBag.Cities != null)
+    {
+        foreach (var city in ViewBag.Cities)
+        {
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4>@city.City (@city.HotelCount hotels)</h4>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        @foreach (var hotel in city.Hotels)
+                        {
+                            <li>@hotel</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    }
+</div>

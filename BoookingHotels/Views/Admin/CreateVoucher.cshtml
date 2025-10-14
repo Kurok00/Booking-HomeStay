@@ -5,65 +5,109 @@
 }
 
 <div class="container py-4">
-    <h2 class="fw-bold text-success mb-4">
-        <i class="bi bi-plus-circle"></i> Tạo Voucher
-    </h2>
-
-    <form asp-action="CreateVoucher" method="post">
-        <div class="mb-3">
-            <label asp-for="Code" class="form-label">Mã Voucher</label>
-            <input asp-for="Code" class="form-control" />
-            <span asp-validation-for="Code" class="text-danger"></span>
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h2 class="mb-0">
+                <i class="bi bi-plus-circle"></i> Tạo Voucher Mới
+            </h2>
         </div>
+        <div class="card-body">
+            <form asp-action="CreateVoucher" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Code" class="form-label fw-bold">
+                                <i class="bi bi-upc"></i> Mã Voucher <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Code" class="form-control" placeholder="VD: SUMMER2024" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Quantity" class="form-label fw-bold">
+                                <i class="bi bi-stack"></i> Số lượng <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Quantity" type="number" class="form-control" min="1" placeholder="Số lượng voucher" />
+                        </div>
+                    </div>
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label">Mô tả</label>
-            <textarea asp-for="Description" class="form-control"></textarea>
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold">
+                        <i class="bi bi-card-text"></i> Mô tả
+                    </label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả voucher..."></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="DiscountType" class="form-label fw-bold">
+                                <i class="bi bi-percent"></i> Loại giảm giá
+                            </label>
+                            <select asp-for="DiscountType" class="form-select">
+                                <option value="Percent">Phần trăm (%)</option>
+                                <option value="Amount">Số tiền cố định (VND)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="DiscountValue" class="form-label fw-bold">
+                                <i class="bi bi-tag"></i> Giá trị giảm <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="DiscountValue" type="number" class="form-control" step="0.01" placeholder="VD: 10 hoặc 50000" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="MinOrderValue" class="form-label fw-bold">
+                                <i class="bi bi-cash-coin"></i> Đơn tối thiểu (VND)
+                            </label>
+                            <input asp-for="MinOrderValue" type="number" class="form-control" step="1000" placeholder="VD: 500000" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ExpiryDate" class="form-label fw-bold">
+                        <i class="bi bi-calendar-event"></i> Ngày hết hạn <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="ExpiryDate" type="date" class="form-control" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">
+                        <i class="bi bi-person-badge"></i> Chỉ định User
+                    </label>
+                    <select asp-for="UserId" class="form-select">
+                        <option value="">🎁 Tất cả User (Public Voucher)</option>
+                        @if (ViewBag.Users != null)
+                        {
+                            <optgroup label="─── Chỉ định cho User cụ thể ───">
+                                @foreach (var u in ViewBag.Users)
+                                {
+                                    <option value="@u.UserId">👤 @u.UserName (@u.Email)</option>
+                                }
+                            </optgroup>
+                        }
+                    </select>
+                    <small class="form-text text-muted">
+                        💡 <strong>Tất cả User:</strong> Voucher công khai, ai cũng có thể sử dụng<br/>
+                        💡 <strong>Chỉ định User:</strong> Chỉ user được chọn mới dùng được voucher này
+                    </small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check-circle"></i> Tạo Voucher
+                    </button>
+                    <a asp-action="Vouchers" class="btn btn-secondary px-4">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label asp-for="DiscountType" class="form-label">Loại</label>
-            <select asp-for="DiscountType" class="form-select">
-                <option value="Percent">Percent (%)</option>
-                <option value="Amount">Amount (VND)</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="DiscountValue" class="form-label">Giá trị</label>
-            <input asp-for="DiscountValue" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="MinOrderValue" class="form-label">Giá trị đơn tối thiểu</label>
-            <input asp-for="MinOrderValue" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="ExpiryDate" class="form-label">Ngày hết hạn</label>
-            <input asp-for="ExpiryDate" type="date" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Quantity" class="form-label">Số lượng</label>
-            <input asp-for="Quantity" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">User (nếu chỉ định)</label>
-            <select asp-for="UserId" class="form-select">
-                <option value="">-- Public --</option>
-                @if (ViewBag.Users != null)
-                {
-                    foreach (var u in ViewBag.Users)
-                    {
-                        <option value="@u.UserId">@u.UserName (@u.Email)</option>
-                    }
-                }
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-success">Tạo</button>
-        <a asp-action="Vouchers" class="btn btn-secondary">Quay lại</a>
-    </form>
+    </div>
 </div>
