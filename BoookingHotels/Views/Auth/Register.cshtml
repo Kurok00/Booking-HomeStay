@@ -4,51 +4,325 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="card shadow p-4" style="width: 420px;">
-        <h3 class="text-center mb-3 text-primary">Tạo tài khoản</h3>
-
-        @if (ViewData.ModelState.Any())
-        {
-            <div class="alert alert-danger">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <div>@error.ErrorMessage</div>
-                }
-            </div>
-        }
-
-        <form asp-action="Register" method="post" autocomplete="off">
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email:</label>
-                <input asp-for="Email" class="form-control" required />
-                <span asp-validation-for="Email" class="text-danger"></span>
+<div class="auth-container">
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <!-- Header -->
+            <div class="auth-header">
+                <h2 class="auth-title">Tạo tài khoản mới</h2>
+                <p class="auth-subtitle">
+                    Nếu bạn đã có tài khoản, <a asp-controller="Auth" asp-action="Login" class="auth-link-inline">đăng nhập</a>
+                </p>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Phone" class="form-label">Số điện thoại:</label>
-                <input asp-for="Phone" class="form-control" required />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
+            <!-- Error Messages -->
+            @if (ViewData.ModelState.Any())
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Mật khẩu:</label>
-                <input type="password" name="password" class="form-control" required />
-            </div>
+            <!-- Register Form -->
+            <form asp-action="Register" method="post" autocomplete="off" id="registerForm">
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" 
+                           class="form-control form-control-modern" 
+                           placeholder="example@email.com"
+                           required />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
 
-            <button type="submit" class="btn btn-primary w-100">
-                <i class="bi bi-person-plus-fill"></i> Đăng ký
-            </button>
-        </form>
+                <!-- Phone Field -->
+                <div class="form-group">
+                    <label asp-for="Phone" class="form-label">Số điện thoại</label>
+                    <input asp-for="Phone" 
+                           class="form-control form-control-modern" 
+                           placeholder="0912345678"
+                           required />
+                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                </div>
 
-        <div class="text-center mt-3">
-            <small>Đã có tài khoản? <a asp-controller="Auth" asp-action="Login">Đăng nhập</a></small>
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password" class="form-label">Mật khẩu</label>
+                    <div class="password-wrapper">
+                        <input type="password" 
+                               name="password" 
+                               id="password"
+                               class="form-control form-control-modern pe-5" 
+                               placeholder="Tối thiểu 6 ký tự"
+                               minlength="6"
+                               required />
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Nhập lại mật khẩu</label>
+                    <div class="password-wrapper">
+                        <input type="password" 
+                               name="confirmPassword" 
+                               id="confirmPassword"
+                               class="form-control form-control-modern pe-5" 
+                               placeholder="Nhập lại mật khẩu"
+                               minlength="6"
+                               required />
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <small id="passwordMatchError" class="text-danger" style="display: none;">
+                        <i class="bi bi-x-circle me-1"></i>Mật khẩu không khớp
+                    </small>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-modern w-100">
+                    Đăng ký
+                </button>
+            </form>
         </div>
     </div>
 </div>
 
+<style>
+    .auth-container {
+        min-height: 100vh;
+        background-image: url('https://cdn3.ivivu.com/2025/10/Khach-san-Imperial-Vung-Tau-ivivu-0-770x375.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .auth-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+    }
+
+    .auth-wrapper {
+        width: 100%;
+        max-width: 450px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 2rem 2rem 1.5rem;
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+        color: #718096;
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+
+    .auth-link-inline {
+        color: #f59e0b;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .auth-link-inline:hover {
+        color: #d97706;
+        text-decoration: underline;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.4rem;
+        font-size: 0.875rem;
+        display: block;
+    }
+
+    .form-control-modern {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .form-control-modern:focus {
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        outline: none;
+    }
+
+    .password-wrapper {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #718096;
+        cursor: pointer;
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+        color: #667eea;
+    }
+
+    .btn-modern {
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        border: none;
+        background: #f59e0b;
+        color: white;
+        transition: all 0.3s ease;
+        margin-top: 0.75rem;
+    }
+
+    .btn-modern:hover {
+        background: #d97706;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    @@media (max-width: 576px) {
+        .auth-card {
+            padding: 1.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.35rem;
+        }
+
+        .auth-wrapper {
+            max-width: 95%;
+        }
+    }
+</style>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Toggle password visibility
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+
+        // Check password match
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const errorMsg = document.getElementById('passwordMatchError');
+        const form = document.getElementById('registerForm');
+
+        function checkPasswordMatch() {
+            if (confirmPassword.value.length === 0) {
+                errorMsg.style.display = 'none';
+                return;
+            }
+
+            if (password.value !== confirmPassword.value) {
+                errorMsg.style.display = 'block';
+                confirmPassword.classList.add('is-invalid');
+                confirmPassword.classList.remove('is-valid');
+            } else {
+                errorMsg.style.display = 'none';
+                confirmPassword.classList.remove('is-invalid');
+                confirmPassword.classList.add('is-valid');
+            }
+        }
+
+        password.addEventListener('input', checkPasswordMatch);
+        confirmPassword.addEventListener('input', checkPasswordMatch);
+
+        // Form validation
+        form.addEventListener('submit', function(e) {
+            if (password.value !== confirmPassword.value) {
+                e.preventDefault();
+                errorMsg.style.display = 'block';
+                confirmPassword.focus();
+                return false;
+            }
+        });
+    </script>
 }

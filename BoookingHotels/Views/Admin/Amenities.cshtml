@@ -1,43 +1,185 @@
 ﻿@model IEnumerable<BoookingHotels.Models.Amenities>
 @{
-    ViewData["Title"] = "Danh sách tiện ích";
+    ViewData["Title"] = "Quản Lý Tiện Nghi";
 }
 
-<h2 class="mb-3">Danh sách tiện ích</h2>
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">
+                            <i class="bi bi-stars me-2"></i> Quản Lý Tiện Nghi
+                        </h3>
+                        <a asp-action="CreateAmenity" class="btn btn-light btn-lg">
+                            <i class="bi bi-plus-circle me-1"></i> Thêm tiện nghi
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="row g-4">
+                            @foreach (var item in Model)
+                            {
+                                <div class="col-lg-3 col-md-4 col-sm-6">
+                                    <div class="amenity-card card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center p-4">
+                                            <!-- Icon -->
+                                            <div class="icon-container mb-3">
+                                                @if (!string.IsNullOrEmpty(item.Icon))
+                                                {
+                                                    <i class="@item.Icon"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-question-circle text-muted"></i>
+                                                }
+                                            </div>
+                                            
+                                            <!-- Name -->
+                                            <h5 class="amenity-name mb-2">@item.Name</h5>
+                                            
+                                            <!-- Icon Code -->
+                                            @if (!string.IsNullOrEmpty(item.Icon))
+                                            {
+                                                <code class="text-secondary small d-block mb-3">@item.Icon</code>
+                                            }
+                                            else
+                                            {
+                                                <small class="text-muted d-block mb-3">
+                                                    <i class="bi bi-exclamation-triangle"></i> Chưa có icon
+                                                </small>
+                                            }
+                                            
+                                            <!-- ID Badge -->
+                                            <div class="mb-3">
+                                                <span class="badge bg-primary rounded-pill">ID: @item.AmenityId</span>
+                                            </div>
+                                            
+                                            <!-- Actions -->
+                                            <div class="d-flex gap-2 justify-content-center">
+                                                <a asp-action="EditAmenity" asp-route-id="@item.AmenityId" 
+                                                   class="btn btn-warning btn-sm flex-fill"
+                                                   title="Chỉnh sửa">
+                                                    <i class="bi bi-pencil-square"></i> Sửa
+                                                </a>
+                                                <button type="button" 
+                                                        class="btn btn-danger btn-sm flex-fill delete-amenity-btn"
+                                                        data-amenity-id="@item.AmenityId"
+                                                        data-amenity-name="@item.Name"
+                                                        title="Xóa">
+                                                    <i class="bi bi-trash"></i> Xóa
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                <h5>Chưa có tiện nghi nào</h5>
+                                <p>Nhấn nút "Thêm tiện nghi" để bắt đầu</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer bg-light text-muted">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small>
+                            <i class="bi bi-info-circle"></i> 
+                            Tổng số: <strong>@(Model?.Count() ?? 0)</strong> tiện nghi
+                        </small>
+                        <small>
+                            <i class="bi bi-lightbulb"></i> 
+                            Sử dụng Bootstrap Icons: <a href="https://icons.getbootstrap.com/" target="_blank">icons.getbootstrap.com</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<a asp-action="CreateAmenity" class="btn btn-primary mb-3">+ Thêm tiện ích</a>
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên tiện ích</th>
-            <th>Icon</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.AmenityId</td>
-            <td>@item.Name</td>
-            <td>
-                @if (!string.IsNullOrEmpty(item.Icon))
-                {
-                    <i class="@item.Icon"></i> <span>@item.Icon</span>
-                }
-                else
-                {
-                    <span class="text-muted">Không có icon</span>
-                }
-            </td>
-            <td>
-                <a asp-action="EditAmenity" asp-route-id="@item.AmenityId" class="btn btn-sm btn-warning">Sửa</a>
-                <a asp-action="DeleteAmenity" asp-route-id="@item.AmenityId" class="btn btn-sm btn-danger"
-                   onclick="return confirm('Bạn có chắc muốn xóa tiện ích này?')">Xóa</a>
-            </td>
-        </tr>
+<style>
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-    </tbody>
-</table>
+
+    .card {
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .amenity-card {
+        transition: all 0.3s ease;
+        border: 2px solid #e0e7ff !important;
+    }
+
+    .amenity-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
+        border-color: #667eea !important;
+    }
+
+    .icon-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+        border-radius: 1rem;
+        border: 3px solid #667eea;
+    }
+
+    .icon-container i {
+        font-size: 3rem;
+        color: #667eea;
+    }
+
+    .amenity-name {
+        font-weight: 700;
+        color: #333;
+        min-height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .amenity-card .btn {
+        transition: all 0.2s ease;
+    }
+
+    .amenity-card .btn:hover {
+        transform: scale(1.05);
+    }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+    }
+</style>
+
+<script>
+    // Delete amenity with confirmation
+    document.querySelectorAll('.delete-amenity-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const amenityId = this.dataset.amenityId;
+            const amenityName = this.dataset.amenityName;
+            
+            if (confirm(`⚠️ Bạn có chắc muốn xóa tiện nghi "${amenityName}"?\n\nLưu ý: Điều này sẽ xóa tiện nghi khỏi tất cả phòng đang sử dụng!`)) {
+                window.location.href = `/Admin/DeleteAmenity/${amenityId}`;
+            }
+        });
+    });
+</script>

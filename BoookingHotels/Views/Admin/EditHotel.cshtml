@@ -1,93 +1,297 @@
 ﻿@model BoookingHotels.Models.Hotel
 @{
-    ViewData["Title"] = "Sửa khách sạn";
+    ViewData["Title"] = "Chỉnh Sửa Khách Sạn";
 }
 
-<h2 class="mb-3">Sửa khách sạn</h2>
-
-<form asp-action="EditHotel" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="HotelId" />
-
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-
+<div class="container-fluid py-4">
     <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="City" class="form-label"></label>
-            <input asp-for="City" class="form-control" />
-        </div>
-        <div class="col-md-6 mb-3">
-            <label asp-for="Country" class="form-label"></label>
-            <input asp-for="Country" class="form-control" />
-        </div>
-    </div>
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient text-white py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i> Chỉnh Sửa Khách Sạn
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="EditHotel" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="HotelId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
-    <div style="display:none" class="form-check form-switch mb-3">
-        <input asp-for="Status" class="form-check-input" />
-        <label asp-for="Status" class="form-check-label">Kích hoạt</label>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label asp-for="Latitude" class="form-label">Latitude</label>
-            <input asp-for="Latitude" class="form-control" id="latitude" readonly />
-        </div>
-        <div class="col-md-6">
-            <label asp-for="Longitude" class="form-label">Longitude</label>
-            <input asp-for="Longitude" class="form-control" id="longitude" readonly />
-        </div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Ngày tạo</label>
-        <input asp-for="CreatedAt" type="datetime-local" class="form-control"
-               value="@(Model.CreatedAt.HasValue? Model.CreatedAt.Value.ToString("yyyy-MM-ddTHH:mm") : string.Empty)" />
-        <small class="text-muted">Sửa nếu cần, hoặc để nguyên để giữ lịch sử.</small>
-    </div>
+                        <!-- Thông tin cơ bản -->
+                        <div class="section-header mb-3">
+                            <h5 class="text-primary">
+                                <i class="bi bi-info-circle"></i> Thông tin cơ bản
+                            </h5>
+                            <hr />
+                        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Ảnh hiện tại</label>
-        <div class="d-flex flex-wrap gap-2">
-            @if (Model.Photoss != null && Model.Photoss.Any())
-            {
-                foreach (var p in Model.Photoss)
-                {
-                    <img src="@p.Url" style="width:110px;height:110px;object-fit:cover;border-radius:8px" />
-                }
-            }
-            else
-            {
-                <span class="text-muted">Chưa có ảnh</span>
-            }
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">
+                                <i class="bi bi-building text-primary"></i> Tên khách sạn 
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Name" class="form-control form-control-lg" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">
+                                <i class="bi bi-card-text text-info"></i> Mô tả
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        </div>
+
+                        <!-- Địa chỉ -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-geo-alt"></i> Địa chỉ & Vị trí
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label fw-bold">
+                                <i class="bi bi-signpost text-success"></i> Địa chỉ
+                            </label>
+                            <input asp-for="Address" class="form-control" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="City" class="form-label fw-bold">
+                                    <i class="bi bi-pin-map text-warning"></i> Thành phố
+                                </label>
+                                <input asp-for="City" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Country" class="form-label fw-bold">
+                                    <i class="bi bi-flag text-danger"></i> Quốc gia
+                                </label>
+                                <input asp-for="Country" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="card border-info mb-3">
+                            <div class="card-body">
+                                <h6 class="fw-bold text-info mb-3">
+                                    <i class="bi bi-search"></i> Tìm kiếm địa điểm
+                                </h6>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" id="searchAddress" 
+                                           placeholder="Nhập địa chỉ hoặc tọa độ từ Google Maps" />
+                                    <button class="btn btn-primary" type="button" onclick="searchLocation()">
+                                        <i class="bi bi-search"></i> Tìm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Latitude" class="form-label fw-bold">
+                                    <i class="bi bi-compass"></i> Vĩ độ (Latitude)
+                                </label>
+                                <input asp-for="Latitude" class="form-control" id="latitude" 
+                                       step="any" type="number" onchange="updateMapFromInputs()" />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Longitude" class="form-label fw-bold">
+                                    <i class="bi bi-compass"></i> Kinh độ (Longitude)
+                                </label>
+                                <input asp-for="Longitude" class="form-control" id="longitude" 
+                                       step="any" type="number" onchange="updateMapFromInputs()" />
+                            </div>
+                        </div>
+
+                        <!-- Hình ảnh hiện tại -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-images"></i> Hình ảnh
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-folder-open text-warning"></i> Ảnh hiện tại
+                            </label>
+                            <div id="currentPhotos" class="d-flex flex-wrap gap-3">
+                                @if (Model.Photoss != null && Model.Photoss.Any())
+                                {
+                                    foreach (var p in Model.Photoss)
+                                    {
+                                        <div class="position-relative photo-item" data-photo-id="@p.PhotoId">
+                                            <img src="@p.Url" class="img-thumbnail" 
+                                                 style="width:150px;height:150px;object-fit:cover;" />
+                                            <button type="button" 
+                                                    class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 delete-photo-btn"
+                                                    data-photo-id="@p.PhotoId"
+                                                    title="Xóa ảnh">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> Chưa có ảnh
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-camera text-secondary"></i> Thêm ảnh mới
+                            </label>
+                            <div class="card border-secondary">
+                                <div class="card-body">
+                                    <input type="file" name="images" class="form-control" multiple accept="image/*" id="imageInput" />
+                                    <small class="form-text text-muted mt-2 d-block">
+                                        <i class="bi bi-info-circle"></i> Chọn nhiều ảnh để thêm vào khách sạn
+                                    </small>
+                                    <div id="imagePreview" class="mt-3 d-flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin khác -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-sliders"></i> Cài đặt khác
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-calendar-event"></i> Ngày tạo
+                            </label>
+                            <input asp-for="CreatedAt" type="datetime-local" class="form-control"
+                                   value="@(Model.CreatedAt.HasValue? Model.CreatedAt.Value.ToString("yyyy-MM-ddTHH:mm") : string.Empty)" />
+                            <small class="text-muted">Sửa nếu cần, hoặc để nguyên</small>
+                        </div>
+
+                        <div style="display:none">
+                            <input asp-for="Status" class="form-check-input" checked />
+                        </div>
+
+                        <div class="d-flex justify-content-between gap-2 mt-4">
+                            <a asp-action="Hotels" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-4">
+                                <i class="bi bi-check-circle"></i> Cập nhật
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Column -->
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-map"></i> Vị trí trên bản đồ
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="map" style="height: 600px; width: 100%;"></div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-cursor-fill"></i> Click để chọn vị trí
+                        </small>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="getCurrentLocation()">
+                            <i class="bi bi-crosshair"></i> Vị trí hiện tại
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label class="form-label">Thêm ảnh mới</label>
-        <input type="file" name="images" class="form-control" multiple />
-    </div>
+<style>
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
 
-    <button type="submit" class="btn btn-primary">Cập nhật</button>
-    <a asp-action="Hotels" class="btn btn-secondary">Hủy</a>
-</form>
+    .section-header h5 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-header hr {
+        border-top: 2px solid #e0e7ff;
+        margin-top: 0.5rem;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .card {
+        border-radius: 1rem;
+    }
+
+    .form-control-lg {
+        border-radius: 0.5rem;
+    }
+
+    .photo-item {
+        transition: all 0.3s ease;
+    }
+
+    .photo-item:hover {
+        transform: scale(1.05);
+    }
+
+    .delete-photo-btn {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .photo-item:hover .delete-photo-btn {
+        opacity: 1;
+    }
+
+    #imagePreview img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        border: 2px solid #dee2e6;
+    }
+
+    .leaflet-container {
+        border-radius: 0 0 1rem 1rem;
+    }
+</style>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Bản đồ -->
-<div id="map" style="height: 400px;"></div>
-<script>
-
-    var map = L.map('map').setView([10.762622, 106.660172], 13); // Tọa độ mặc định HCM
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+    // Initialize map with current coordinates
+    var currentLat = @(Model.Latitude ?? 16.047079);
+    var currentLng = @(Model.Longitude ?? 108.206230);
+    
+    var map = L.map('map').setView([currentLat, currentLng], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
@@ -95,21 +299,223 @@
 
     var marker;
 
-    map.on('click', function (e) {
-        var lat = e.latlng.lat.toFixed(6);
-        var lng = e.latlng.lng.toFixed(6);
+    // Add initial marker if coordinates exist
+    if (@(Model.Latitude.HasValue ? "true" : "false") && @(Model.Longitude.HasValue ? "true" : "false")) {
+        addMarker(currentLat, currentLng);
+    }
 
+    // Add marker to map
+    function addMarker(lat, lng) {
         if (marker) {
-            marker.setLatLng(e.latlng);
+            marker.setLatLng([lat, lng]);
+            map.panTo([lat, lng]);
         } else {
-            marker = L.marker(e.latlng).addTo(map);
+            marker = L.marker([lat, lng], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                }),
+                draggable: true
+            }).addTo(map);
+            
+            marker.on('dragend', function(e) {
+                var position = marker.getLatLng();
+                updateCoordinates(position.lat, position.lng);
+            });
+        }
+        
+        marker.bindPopup("<b>Vị trí khách sạn</b><br>Lat: " + lat.toFixed(6) + "<br>Lng: " + lng.toFixed(6)).openPopup();
+        updateCoordinates(lat, lng);
+    }
+
+    function updateCoordinates(lat, lng) {
+        document.getElementById("latitude").value = lat.toFixed(6);
+        document.getElementById("longitude").value = lng.toFixed(6);
+    }
+
+    map.on('click', function (e) {
+        addMarker(e.latlng.lat, e.latlng.lng);
+    });
+
+    function searchLocation() {
+        var searchText = document.getElementById('searchAddress').value.trim();
+        
+        if (!searchText) {
+            alert('Vui lòng nhập địa chỉ để tìm kiếm');
+            return;
         }
 
-         console.log("LAT:", lat, "LNG:", lng);
-        console.log("Input Latitude:", document.getElementById("Latitude"));
-        console.log("Input Longitude:", document.getElementById("Longitude"));
+        var coordPattern = /^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/;
+        var match = searchText.match(coordPattern);
+        
+        if (match) {
+            var lat = parseFloat(match[1]);
+            var lng = parseFloat(match[2]);
+            
+            if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                addMarker(lat, lng);
+                map.setView([lat, lng], 15);
+                return;
+            }
+        }
 
-        document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lng;
+        var url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchText)}&countrycodes=vn&limit=1`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    var lat = parseFloat(data[0].lat);
+                    var lng = parseFloat(data[0].lon);
+                    addMarker(lat, lng);
+                    map.setView([lat, lng], 15);
+                } else {
+                    alert('Không tìm thấy địa chỉ. Vui lòng thử lại hoặc nhập tọa độ từ Google Maps');
+                }
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                alert('Lỗi khi tìm kiếm. Vui lòng thử click trực tiếp vào bản đồ');
+            });
+    }
+
+    document.getElementById('searchAddress').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchLocation();
+        }
     });
-</script>
+
+    function updateMapFromInputs() {
+        var lat = parseFloat(document.getElementById("latitude").value);
+        var lng = parseFloat(document.getElementById("longitude").value);
+        
+        if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+            addMarker(lat, lng);
+            map.setView([lat, lng], 15);
+        }
+    }
+
+    function getCurrentLocation() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    addMarker(lat, lng);
+                    map.setView([lat, lng], 15);
+                },
+                function(error) {
+                    alert('Không thể lấy vị trí hiện tại: ' + error.message);
+                }
+            );
+        } else {
+            alert('Trình duyệt không hỗ trợ định vị GPS');
+        }
+    }
+
+    // Image preview for new images
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+        
+        const files = Array.from(e.target.files);
+        
+        if (files.length > 0) {
+            files.forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'position-relative';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${index + 1}">
+                            <span class="badge bg-success position-absolute top-0 start-0 m-2">
+                                Mới ${index + 1}
+                            </span>
+                        `;
+                        preview.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+
+    // Delete photo functionality - using jQuery
+    $(document).ready(function() {
+        console.log('Delete photo script loaded'); // Debug
+        
+        // Get antiforgery token
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        
+        $(document).on('click', '.delete-photo-btn', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Delete button clicked'); // Debug
+            
+            if (!confirm('Bạn có chắc muốn xóa ảnh này?')) {
+                return;
+            }
+            
+            var btn = $(this);
+            var photoId = btn.data('photo-id');
+            var photoItem = btn.closest('.photo-item');
+            
+            console.log('Photo ID:', photoId); // Debug
+            console.log('Token:', token); // Debug
+            
+            // Disable button during request
+            btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i>');
+            
+            $.ajax({
+                url: '@Url.Action("DeleteHotelPhoto", "Admin")',
+                type: 'POST',
+                data: { 
+                    photoId: photoId,
+                    __RequestVerificationToken: token
+                },
+                success: function(response) {
+                    console.log('Response:', response); // Debug
+                    
+                    if (response.success) {
+                        // Remove photo with animation
+                        photoItem.fadeOut(300, function() {
+                            $(this).remove();
+                            
+                            // Check if no photos left
+                            if ($('#currentPhotos .photo-item').length === 0) {
+                                $('#currentPhotos').html('<div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> Chưa có ảnh</div>');
+                            }
+                        });
+                        
+                        // Show success toast or alert
+                        var successMsg = $('<div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 9999;" role="alert">' +
+                            '<i class="bi bi-check-circle"></i> ' + response.message +
+                            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                            '</div>');
+                        $('body').append(successMsg);
+                        setTimeout(function() {
+                            successMsg.alert('close');
+                        }, 3000);
+                    } else {
+                        alert('❌ ' + response.message);
+                        btn.prop('disabled', false).html('<i class="bi bi-trash"></i>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error); // Debug
+                    console.error('Response:', xhr.responseText); // Debug
+                    alert('❌ Có lỗi xảy ra khi xóa ảnh: ' + error);
+                    btn.prop('disabled', false).html('<i class="bi bi-trash"></i>');
+                }
+            });
+        });
+    });
+    </script>
+}

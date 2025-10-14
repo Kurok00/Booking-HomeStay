@@ -1,24 +1,285 @@
 ﻿@model BoookingHotels.Models.Amenities
 @{
-    ViewData["Title"] = "Sửa tiện ích";
+    ViewData["Title"] = "Chỉnh Sửa Tiện Nghi";
 }
 
-<h2 class="mb-3">Sửa tiện ích</h2>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient text-white py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i> Chỉnh Sửa Tiện Nghi
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="EditAmenity" method="post">
+                        <input type="hidden" asp-for="AmenityId" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
-<form asp-action="EditAmenity" method="post">
-    <input type="hidden" asp-for="AmenityId" />
+                        <!-- Tên tiện nghi -->
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label fw-bold">
+                                <i class="bi bi-tag text-primary"></i> Tên tiện nghi
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Name" class="form-control form-control-lg" 
+                                   placeholder="VD: WiFi miễn phí, Điều hòa..." required />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
 
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label">Tên tiện ích</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+                        <!-- Icon -->
+                        <div class="mb-4">
+                            <label asp-for="Icon" class="form-label fw-bold">
+                                <i class="bi bi-emoji-smile text-info"></i> Icon Class (Bootstrap Icons)
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white">
+                                    <i id="iconPreview" class="@Model.Icon fs-4"></i>
+                                </span>
+                                <input asp-for="Icon" class="form-control" id="iconInput"
+                                       placeholder="Nhập class icon, VD: bi bi-wifi" />
+                            </div>
+                            <div class="alert alert-info mt-2 mb-0">
+                                <small>
+                                    <i class="bi bi-lightbulb"></i> 
+                                    <strong>Hướng dẫn:</strong> Nhập class của Bootstrap Icons<br>
+                                    • Ví dụ: <code>bi bi-wifi</code>, <code>bi bi-tv</code>, <code>bi bi-snow</code><br>
+                                    • Tìm thêm icons tại: <a href="https://icons.getbootstrap.com/" target="_blank" class="alert-link">Bootstrap Icons</a><br>
+                                    • Hoặc chọn nhanh từ danh sách bên dưới
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Preview Card -->
+                        <div class="card border-info mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-eye"></i> Preview
+                                </h6>
+                            </div>
+                            <div class="card-body text-center py-4">
+                                <div class="amenity-preview">
+                                    <div class="icon-display mb-3">
+                                        <i id="previewIcon" class="@Model.Icon"></i>
+                                    </div>
+                                    <p class="mb-0 fw-semibold" id="previewName">@Model.Name</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Common Icons -->
+                        <div class="card border-secondary mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-grid-3x3-gap"></i> Chọn nhanh icons phổ biến
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-2">
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-wifi" title="WiFi">
+                                            <i class="bi bi-wifi fs-4"></i>
+                                            <small class="d-block mt-1">WiFi</small>
+                                            <code class="d-block small">bi bi-wifi</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-tv" title="TV">
+                                            <i class="bi bi-tv fs-4"></i>
+                                            <small class="d-block mt-1">TV</small>
+                                            <code class="d-block small">bi bi-tv</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-snow" title="Điều hòa">
+                                            <i class="bi bi-snow fs-4"></i>
+                                            <small class="d-block mt-1">Điều hòa</small>
+                                            <code class="d-block small">bi bi-snow</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-cup-hot" title="Ấm đun">
+                                            <i class="bi bi-cup-hot fs-4"></i>
+                                            <small class="d-block mt-1">Ấm đun</small>
+                                            <code class="d-block small">bi bi-cup-hot</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-car-front" title="Đỗ xe">
+                                            <i class="bi bi-car-front fs-4"></i>
+                                            <small class="d-block mt-1">Đỗ xe</small>
+                                            <code class="d-block small">bi bi-car-front</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-water" title="Bể bơi">
+                                            <i class="bi bi-water fs-4"></i>
+                                            <small class="d-block mt-1">Bể bơi</small>
+                                            <code class="d-block small">bi bi-water</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-cup-straw" title="Mini bar">
+                                            <i class="bi bi-cup-straw fs-4"></i>
+                                            <small class="d-block mt-1">Mini bar</small>
+                                            <code class="d-block small">bi bi-cup-straw</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-person-workspace" title="Bàn làm việc">
+                                            <i class="bi bi-person-workspace fs-4"></i>
+                                            <small class="d-block mt-1">Bàn làm việc</small>
+                                            <code class="d-block small">bi bi-person-workspace</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-wind" title="Máy sấy tóc">
+                                            <i class="bi bi-wind fs-4"></i>
+                                            <small class="d-block mt-1">Máy sấy</small>
+                                            <code class="d-block small">bi bi-wind</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-shield-check" title="Két sắt">
+                                            <i class="bi bi-shield-check fs-4"></i>
+                                            <small class="d-block mt-1">Két sắt</small>
+                                            <code class="d-block small">bi bi-shield-check</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-telephone" title="Điện thoại">
+                                            <i class="bi bi-telephone fs-4"></i>
+                                            <small class="d-block mt-1">Điện thoại</small>
+                                            <code class="d-block small">bi bi-telephone</code>
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-primary w-100 icon-btn" data-icon="bi bi-brightness-high" title="Ánh sáng tự nhiên">
+                                            <i class="bi bi-brightness-high fs-4"></i>
+                                            <small class="d-block mt-1">Ánh sáng</small>
+                                            <code class="d-block small">bi bi-brightness-high</code>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between gap-2">
+                            <a asp-action="Amenities" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-check-circle"></i> Cập nhật
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="Icon" class="form-label">Icon (Bootstrap icon hoặc class)</label>
-        <input asp-for="Icon" class="form-control" placeholder="vd: bi bi-wifi" />
-    </div>
+<style>
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
 
-    <button type="submit" class="btn btn-primary">Cập nhật</button>
-    <a asp-action="Amenities" class="btn btn-secondary">Hủy</a>
-</form>
+    .card {
+        border-radius: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .amenity-preview {
+        padding: 1rem;
+    }
+
+    .icon-display i {
+        font-size: 4rem;
+        color: #667eea;
+        padding: 1.5rem;
+        background-color: #f0f4ff;
+        border-radius: 1rem;
+        border: 3px solid #e0e7ff;
+        display: inline-block;
+        min-width: 100px;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-btn {
+        padding: 0.75rem 0.5rem;
+        transition: all 0.2s ease;
+        min-height: 100px;
+    }
+
+    .icon-btn code {
+        font-size: 0.65rem;
+        opacity: 0.7;
+    }
+
+    .icon-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .icon-btn.active {
+        background-color: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+
+    .icon-btn.active code {
+        color: white;
+        opacity: 1;
+    }
+
+    .input-group-text {
+        min-width: 60px;
+        justify-content: center;
+    }
+
+    .alert-info {
+        border-left: 4px solid #0dcaf0;
+    }
+</style>
+
+<script>
+    // Real-time preview
+    document.getElementById('iconInput').addEventListener('input', function(e) {
+        const iconClass = e.target.value;
+        document.getElementById('iconPreview').className = iconClass + ' fs-4';
+        document.getElementById('previewIcon').className = iconClass;
+    });
+
+    document.querySelector('input[name="Name"]').addEventListener('input', function(e) {
+        document.getElementById('previewName').textContent = e.target.value || 'Tên tiện nghi';
+    });
+
+    // Icon buttons
+    document.querySelectorAll('.icon-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const icon = this.dataset.icon;
+            document.getElementById('iconInput').value = icon;
+            document.getElementById('iconPreview').className = icon + ' fs-4';
+            document.getElementById('previewIcon').className = icon;
+            
+            // Highlight selected
+            document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

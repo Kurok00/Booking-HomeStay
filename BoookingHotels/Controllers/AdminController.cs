@@ -178,23 +178,65 @@ namespace BoookingHotels.Controllers
         {
             var user = _context.Users
                 .Include(u => u.UserRoles)
+                .Include(u => u.Bookings)
                 .FirstOrDefault(u => u.UserId == id);
+            
             if (user != null)
             {
-                // Xóa các AdminLog records trước nếu user này là admin
+                // 1. Xóa các AdminLog records nếu user này là admin
                 var adminLogs = _context.AdminLogs.Where(al => al.AdminId == id).ToList();
                 if (adminLogs.Any())
                 {
                     _context.AdminLogs.RemoveRange(adminLogs);
                 }
                 
-                // Xóa user roles
+                // 2. Xóa các Bookings của user
+                if (user.Bookings.Any())
+                {
+                    _context.Bookings.RemoveRange(user.Bookings);
+                }
+                
+                // 3. Xóa các Reviews của user
+                var reviews = _context.Reviews.Where(r => r.UserId == id).ToList();
+                if (reviews.Any())
+                {
+                    // Xóa ReviewPhotos trước
+                    foreach (var review in reviews)
+                    {
+                        var reviewPhotos = _context.ReviewPhotos.Where(rp => rp.ReviewId == review.ReviewId).ToList();
+                        if (reviewPhotos.Any())
+                        {
+                            _context.ReviewPhotos.RemoveRange(reviewPhotos);
+                        }
+                    }
+                    _context.Reviews.RemoveRange(reviews);
+                }
+                
+                // 4. Xóa UserVouchers
+                var userVouchers = _context.UserVouchers.Where(uv => uv.UserId == id).ToList();
+                if (userVouchers.Any())
+                {
+                    _context.UserVouchers.RemoveRange(userVouchers);
+                }
+                
+                // 5. Xử lý Hotels do user tạo - set CreatedBy về null thay vì xóa
+                var hotels = _context.Hotels.Where(h => h.CreatedBy == id).ToList();
+                foreach (var hotel in hotels)
+                {
+                    hotel.CreatedBy = null;
+                }
+                
+                // 6. Xóa user roles
                 _context.UserRoles.RemoveRange(user.UserRoles);
                 
-                // Xóa user
+                // 7. Xóa user
                 _context.Users.Remove(user);
                 _context.SaveChanges();
-                TempData["success"] = "User deleted!";
+                TempData["success"] = "Đã xóa User và tất cả dữ liệu liên quan!";
+            }
+            else
+            {
+                TempData["error"] = "Không tìm thấy User!";
             }
             return RedirectToAction("Users");
         }
@@ -525,6 +567,37 @@ namespace BoookingHotels.Controllers
                 _context.SaveChanges();
             }
             return RedirectToAction("Hotels");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteHotelPhoto(int photoId)
+        {
+            var photo = _context.Photoss.Find(photoId);
+            if (photo == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy ảnh" });
+            }
+
+            try
+            {
+                // Xóa file vật lý
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photo.Url.TrimStart('/'));
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                // Xóa record trong database
+                _context.Photoss.Remove(photo);
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Đã xóa ảnh thành công" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
         }
         #endregion
 

@@ -1,109 +1,309 @@
 ﻿@model BoookingHotels.Models.Room
 @{
-    ViewData["Title"] = "Add New Room";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Thêm Phòng Mới";
 }
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-success"><i class="bi bi-plus-circle"></i> Add New Room</h2>
-        <a asp-action="Rooms" class="btn btn-secondary shadow-sm">
-            <i class="bi bi-arrow-left"></i> Back to List
-        </a>
-    </div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient text-white py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-door-open me-2"></i> Thêm Phòng Mới
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateRoom" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-4">
-            <form asp-action="CreateRoom" method="post" enctype="multipart/form-data">
-                <div class="row g-3">
-                    <!-- Hotel -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Hotel <span class="text-danger">*</span></label>
-                        <select asp-for="HotelId" class="form-select shadow-sm"
-                                asp-items="@(new SelectList(ViewBag.Hotels, "HotelId", "Name"))">
-                            <option value="">-- Select Hotel --</option>
-                        </select>
-                        <span asp-validation-for="HotelId" class="text-danger"></span>
-                    </div>
+                        <!-- Thông tin cơ bản -->
+                        <div class="section-header mb-3">
+                            <h5 class="text-primary">
+                                <i class="bi bi-info-circle"></i> Thông tin cơ bản
+                            </h5>
+                            <hr />
+                        </div>
 
-                    <!-- Room Name -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Room Name <span class="text-danger">*</span></label>
-                        <input asp-for="Name" class="form-control shadow-sm" placeholder="Enter room name" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
+                        <div class="row g-3">
+                            <!-- Hotel -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-building text-primary"></i> Khách sạn 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="HotelId" class="form-select form-select-lg"
+                                        asp-items="@(new SelectList(ViewBag.Hotels, "HotelId", "Name"))">
+                                    <option value="">-- Chọn khách sạn --</option>
+                                </select>
+                                <span asp-validation-for="HotelId" class="text-danger small"></span>
+                            </div>
 
-                    <!-- Capacity -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Capacity</label>
-                        <input asp-for="Capacity" type="number" min="1" class="form-control shadow-sm" placeholder="2" />
-                        <span asp-validation-for="Capacity" class="text-danger"></span>
-                    </div>
+                            <!-- Room Name -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-door-closed text-info"></i> Tên phòng 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Name" class="form-control form-control-lg" 
+                                       placeholder="VD: Phòng Deluxe Hướng Biển" required />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                        </div>
 
-                    <!-- Price -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Price (VND) <span class="text-danger">*</span></label>
-                        <input asp-for="Price" type="number" step="1000" class="form-control shadow-sm" placeholder="1000000" />
-                        <span asp-validation-for="Price" class="text-danger"></span>
-                    </div>
+                        <!-- Chi tiết phòng -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-card-list"></i> Chi tiết phòng
+                            </h5>
+                            <hr />
+                        </div>
 
-                    <!-- Bed Type -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Bed Type</label>
-                        <input asp-for="BedType" class="form-control shadow-sm" placeholder="Queen / Twin / King" />
-                        <span asp-validation-for="BedType" class="text-danger"></span>
-                    </div>
+                        <div class="row g-3">
+                            <!-- Capacity -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-people text-success"></i> Sức chứa
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Capacity" type="number" min="1" max="20" 
+                                           class="form-control" placeholder="2" value="2" />
+                                    <span class="input-group-text">người</span>
+                                </div>
+                                <small class="text-muted">Số người tối đa</small>
+                            </div>
 
-                    <!-- Size -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Size (m²)</label>
-                        <input asp-for="Size" type="number" min="10" class="form-control shadow-sm" placeholder="30" />
-                        <span asp-validation-for="Size" class="text-danger"></span>
-                    </div>
+                            <!-- Price -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-cash-coin text-warning"></i> Giá phòng 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Price" type="number" step="10000" 
+                                           class="form-control" placeholder="1000000" required id="priceInput" />
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                                <small class="text-success fw-semibold" id="priceFormatted"></small>
+                            </div>
 
-                    <!-- Status -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Status</label>
-                        <select asp-for="Status" class="form-select shadow-sm">
-                            <option value="true">Active</option>
-                            <option value="false">Inactive</option>
-                        </select>
-                    </div>
+                            <!-- Size -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-rulers text-secondary"></i> Diện tích
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Size" type="number" min="10" max="500" 
+                                           class="form-control" placeholder="30" />
+                                    <span class="input-group-text">m²</span>
+                                </div>
+                                <small class="text-muted">Diện tích phòng</small>
+                            </div>
 
-                    <!-- Amenities -->
-                    <div class="col-md-12">
-                        <label class="form-label fw-semibold">Amenities</label>
-                        <div class="row">
-                            @foreach (var amenity in ViewBag.Amenities)
-                            {
-                                <div class="col-md-3 col-sm-4 col-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="amenityIds" value="@amenity.AmenityId" id="amenity-@amenity.AmenityId" />
-                                        <label class="form-check-label" for="amenity-@amenity.AmenityId">
-                                            <i class="@amenity.Icon"></i> @amenity.Name
-                                        </label>
+                            <!-- Bed Type -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-moon text-primary"></i> Loại giường
+                                </label>
+                                <select asp-for="BedType" class="form-select">
+                                    <option value="">-- Chọn loại giường --</option>
+                                    <option value="Giường đơn">Giường đơn (Single)</option>
+                                    <option value="Giường đôi">Giường đôi (Double)</option>
+                                    <option value="Giường Queen">Giường Queen</option>
+                                    <option value="Giường King">Giường King</option>
+                                    <option value="2 Giường đơn">2 Giường đơn (Twin)</option>
+                                    <option value="2 Giường Queen">2 Giường Queen</option>
+                                </select>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-toggle-on text-success"></i> Trạng thái
+                                </label>
+                                <div class="card border-success">
+                                    <div class="card-body py-2">
+                                        <div class="form-check form-switch">
+                                            <input asp-for="Status" class="form-check-input" checked 
+                                                   style="width: 3em; height: 1.5em;" />
+                                            <label asp-for="Status" class="form-check-label ms-2 fw-semibold">
+                                                Kích hoạt ngay
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-                            }
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Room Images -->
-                    <div class="col-md-12">
-                        <label class="form-label fw-semibold">Room Images</label>
-                        <input type="file" name="images" multiple class="form-control shadow-sm" />
-                        <small class="text-muted">You can select multiple images</small>
-                    </div>
-                </div>
+                        <!-- Tiện nghi -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-stars"></i> Tiện nghi phòng
+                            </h5>
+                            <hr />
+                        </div>
 
-                <!-- Submit -->
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" class="btn btn-primary fw-bold px-4 shadow-sm">
-                        <i class="bi bi-save me-1"></i> Save
-                    </button>
+                        <div class="card border-info mb-4">
+                            <div class="card-body">
+                                <div class="row g-2">
+                                    @foreach (var amenity in ViewBag.Amenities)
+                                    {
+                                        <div class="col-md-3 col-sm-4 col-6">
+                                            <div class="form-check amenity-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                       name="amenityIds" value="@amenity.AmenityId" 
+                                                       id="amenity-@amenity.AmenityId" />
+                                                <label class="form-check-label" for="amenity-@amenity.AmenityId">
+                                                    <i class="@amenity.Icon text-primary"></i> 
+                                                    <span class="ms-1">@amenity.Name</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hình ảnh -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-images"></i> Hình ảnh phòng
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="card border-secondary mb-4">
+                            <div class="card-body">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-camera text-secondary"></i> Chọn ảnh phòng
+                                </label>
+                                <input type="file" name="images" multiple class="form-control mb-3" 
+                                       accept="image/*" id="imageInput" />
+                                <small class="text-muted d-block mb-3">
+                                    <i class="bi bi-info-circle"></i> Chọn nhiều ảnh để showcase phòng (JPG, PNG)
+                                </small>
+                                <div id="imagePreview" class="d-flex flex-wrap gap-3"></div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between gap-2 mt-4">
+                            <a asp-action="Rooms" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="bi bi-check-circle"></i> Lưu phòng
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .section-header h5 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-header hr {
+        border-top: 2px solid #e0e7ff;
+        margin-top: 0.5rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .card {
+        border-radius: 1rem;
+    }
+
+    .form-control-lg {
+        border-radius: 0.5rem;
+    }
+
+    .amenity-check {
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .amenity-check:hover {
+        background-color: #f0f4ff;
+    }
+
+    .amenity-check input:checked ~ label {
+        color: #667eea;
+        font-weight: 600;
+    }
+
+    #imagePreview img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        border: 3px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    #imagePreview img:hover {
+        transform: scale(1.05);
+        border-color: #667eea;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    // Format price as user types
+    document.getElementById('priceInput').addEventListener('input', function(e) {
+        const value = parseInt(e.target.value) || 0;
+        const formatted = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(value);
+        document.getElementById('priceFormatted').textContent = formatted;
+    });
+
+    // Image preview
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+        
+        const files = Array.from(e.target.files);
+        
+        if (files.length > 0) {
+            files.forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'position-relative';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${index + 1}">
+                            <span class="badge bg-primary position-absolute top-0 start-0 m-2">
+                                ${index + 1}
+                            </span>
+                        `;
+                        preview.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

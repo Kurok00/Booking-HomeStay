@@ -4,88 +4,156 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container py-4">
+<div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-success"><i class="bi bi-building me-2"></i>Hotels</h2>
+        <h2 class="fw-bold text-success"><i class="bi bi-building me-2"></i>Quản lý Khách sạn</h2>
         <a asp-action="CreateHotel" class="btn btn-success shadow-sm">
-            <i class="bi bi-plus-circle me-1"></i> Add Hotel
+            <i class="bi bi-plus-circle me-1"></i> Thêm Khách sạn
         </a>
     </div>
 
-    <div class="card shadow-sm rounded-4">
-        <div class="card-body">
-            <table class="table table-hover align-middle">
-                <thead class="table-success">
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>City</th>
-                        <th>Country</th>
-                        <th>Status</th>
-                        <th>Approved</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var h in Model)
-                    {
-                        <tr>
-                            <td>@h.HotelId</td>
-                            <td>@h.Name</td>
-                            <td>@h.City</td>
-                            <td>@h.Country</td>
-                            <td>
-                                @if (h.Status == true)
-                                {
-                                    <span class="badge bg-success">Active</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Inactive</span>
-                                }
-                            </td>
-                            <td>
-                                @if (h.IsApproved)
-                                {
-                                    <span class="badge bg-primary">Approved</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                }
-                            </td>
-                       
-                            <td class="text-center">
-                                <a asp-action="EditHotel" asp-route-id="@h.HotelId"
-                                   class="btn btn-sm btn-outline-warning rounded-circle me-1" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a asp-action="DeleteHotel" asp-route-id="@h.HotelId"
-                                   class="btn btn-sm btn-outline-danger rounded-circle me-1"
-                                   onclick="return confirm('Delete this hotel?');" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-
-                                <button type="button"
-                                        class="btn btn-sm @(h.IsApproved ? "btn-outline-secondary" : "btn-outline-success") rounded-circle toggle-approve-btn"
-                                        data-id="@h.HotelId"
-                                        title="@(h.IsApproved ? "Unapprove" : "Approve")">
-                                    <i class="bi @(h.IsApproved ? "bi-x-circle" : "bi-check2-circle")"></i>
-                                </button>
-                            </td>
-
-                        </tr>
+    <div class="row g-3">
+        @foreach (var h in Model)
+        {
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                <div class="card hotel-card shadow-sm h-100">
+                    <!-- Hotel Image -->
+                    @{
+                        var firstPhoto = h.Photoss?.FirstOrDefault();
+                        var imageUrl = firstPhoto != null ? firstPhoto.Url : "/Image/hotel-placeholder.svg";
                     }
-                </tbody>
-            </table>
-        </div>
+                    <div class="hotel-image-container">
+                        <img src="@imageUrl" alt="@h.Name" class="hotel-image" />
+                        <div class="hotel-id-badge">
+                            <span class="badge bg-dark">#@h.HotelId</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <!-- Hotel Name -->
+                        <h6 class="card-title text-center mb-2 fw-bold">
+                            <a asp-controller="Hotels" asp-action="Details" asp-route-id="@h.HotelId" 
+                               class="text-decoration-none text-primary hotel-name-link"
+                               title="Xem chi tiết khách sạn">
+                                @h.Name
+                                <i class="bi bi-box-arrow-up-right ms-1" style="font-size: 0.8rem;"></i>
+                            </a>
+                        </h6>
+
+                        <!-- Location Info -->
+                        <div class="text-center mb-2 small text-muted">
+                            <i class="bi bi-geo-alt me-1"></i>@h.City, @h.Country
+                        </div>
+
+                        <!-- Status Badges -->
+                        <div class="text-center mb-3">
+                            @if (h.Status == true)
+                            {
+                                <span class="badge bg-success me-1">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger me-1">Inactive</span>
+                            }
+                            
+                            @if (h.IsApproved)
+                            {
+                                <span class="badge bg-primary approval-badge">Approved</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark approval-badge">Pending</span>
+                            }
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-center gap-2 mt-auto">
+                            <a asp-action="EditHotel" asp-route-id="@h.HotelId"
+                               class="btn btn-sm btn-outline-warning rounded-circle" title="Chỉnh sửa">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a asp-action="DeleteHotel" asp-route-id="@h.HotelId"
+                               class="btn btn-sm btn-outline-danger rounded-circle"
+                               onclick="return confirm('Xóa khách sạn này?');" title="Xóa">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                            <button type="button"
+                                    class="btn btn-sm @(h.IsApproved ? "btn-outline-secondary" : "btn-outline-success") rounded-circle toggle-approve-btn"
+                                    data-id="@h.HotelId"
+                                    title="@(h.IsApproved ? "Hủy duyệt" : "Phê duyệt")">
+                                <i class="bi @(h.IsApproved ? "bi-x-circle" : "bi-check2-circle")"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>
+
+<style>
+    .hotel-card {
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .hotel-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+    }
+
+    .hotel-image-container {
+        position: relative;
+        width: 100%;
+        height: 180px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+
+    .hotel-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .hotel-card:hover .hotel-image {
+        transform: scale(1.1);
+    }
+
+    .hotel-id-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+    }
+
+    .hotel-name-link {
+        transition: all 0.2s ease;
+        word-break: break-word;
+    }
+
+    .hotel-name-link:hover {
+        color: #0056b3 !important;
+        text-decoration: underline !important;
+    }
+
+    .card-title {
+        min-height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
 @section Scripts {
     <script>
         $(document).on("click", ".toggle-approve-btn", function () {
             var btn = $(this);
             var id = btn.data("id");
+            var card = btn.closest(".hotel-card");
 
             $.ajax({
                 url: '@Url.Action("ToggleApproveHotel", "Admin")',
@@ -96,15 +164,21 @@
                         if (res.isApproved) {
                             btn.removeClass("btn-outline-success")
                                .addClass("btn-outline-secondary")
-                               .attr("title", "Unapprove")
+                               .attr("title", "Hủy duyệt")
                                .html('<i class="bi bi-x-circle"></i>');
-                            btn.closest("tr").find("td:nth-child(6)").html('<span class="badge bg-primary">Approved</span>');
+                            card.find(".approval-badge")
+                                .removeClass("bg-warning text-dark")
+                                .addClass("bg-primary")
+                                .text("Approved");
                         } else {
                             btn.removeClass("btn-outline-secondary")
                                .addClass("btn-outline-success")
-                               .attr("title", "Approve")
+                               .attr("title", "Phê duyệt")
                                .html('<i class="bi bi-check2-circle"></i>');
-                            btn.closest("tr").find("td:nth-child(6)").html('<span class="badge bg-warning text-dark">Pending</span>');
+                            card.find(".approval-badge")
+                                .removeClass("bg-primary")
+                                .addClass("bg-warning text-dark")
+                                .text("Pending");
                         }
                     }
                 }
