@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             x:Class="ChillNest.MobileApp.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource Primary}">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+            
+            <!-- Logo/Title -->
+            <Label Text="🏨 ChillNest" 
+                   FontSize="48" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="White"
+                   Margin="0,0,0,40"/>
+            
+            <Label Text="Welcome Back!" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="White"
+                   Margin="0,0,0,20"/>
+            
+            <!-- Email Input -->
+            <Border StrokeThickness="0" 
+                    BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 10">
+                <Entry Placeholder="Email"
+                       Text="{Binding Email}"
+                       Keyboard="Email"
+                       Margin="15,10"/>
+            </Border>
+            
+            <!-- Password Input -->
+            <Border StrokeThickness="0" 
+                    BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 10">
+                <Entry Placeholder="Password"
+                       Text="{Binding Password}"
+                       IsPassword="True"
+                       Margin="15,10"/>
+            </Border>
+            
+            <!-- Error Message -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   FontAttributes="Bold"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   HorizontalOptions="Center"/>
+            
+            <!-- Login Button -->
+            <Button Text="Login"
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="White"
+                    TextColor="{StaticResource Primary}"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="25"
+                    Margin="0,20,0,0"/>
+            
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="White"
+                              HeightRequest="40"/>
+            
+            <!-- Register Link -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,20,0,0">
+                <Label Text="Don't have an account?" TextColor="White"/>
+                <Label Text="Register"
+                       TextColor="White"
+                       FontAttributes="Bold"
+                       TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToRegisterCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+    
+</ContentPage>

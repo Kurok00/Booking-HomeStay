@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             xmlns:models="clr-namespace:ChillNest.MobileApp.Models"
+             x:Class="ChillNest.MobileApp.Views.HotelDetailsPage"
+             x:DataType="vm:HotelDetailsViewModel"
+             Title=""
+             BackgroundColor="#F8F9FA"
+             Shell.NavBarIsVisible="False">
+    
+    <Grid>
+        <!-- Main Scroll Content -->
+        <ScrollView>
+            <VerticalStackLayout Spacing="0">
+                
+                <!-- Loading Indicator -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                  IsVisible="{Binding IsLoading}"
+                                  Color="#667eea"
+                                  Margin="0,200"
+                                  HeightRequest="60"/>
+                
+                <!-- Hero Section with Image & Gradient Overlay -->
+                <Grid HeightRequest="400">
+                    <!-- Background Image -->
+                    <Image Source="{Binding Hotel.MainPhotoUrl}"
+                           Aspect="AspectFill"
+                           HeightRequest="400"/>
+                    
+                    <!-- Gradient Overlay -->
+                    <BoxView VerticalOptions="Fill"
+                             HorizontalOptions="Fill">
+                        <BoxView.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="Transparent" Offset="0.0"/>
+                                <GradientStop Color="Transparent" Offset="0.5"/>
+                                <GradientStop Color="#B0000000" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
+                    
+                    <!-- Back Button (Top Left) -->
+                    <Border Margin="15,40,0,0"
+                            BackgroundColor="#80000000"
+                            StrokeShape="RoundRectangle 20"
+                            HeightRequest="40"
+                            WidthRequest="40"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start">
+                        <Label Text="←"
+                               FontSize="24"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoBackCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Border>
+                    
+                    <!-- Hero Text Overlay (Bottom) -->
+                    <VerticalStackLayout VerticalOptions="End"
+                                        Padding="20,0,20,24"
+                                        Spacing="8">
+                        <Label Text="{Binding Hotel.Name}"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               LineBreakMode="WordWrap"/>
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="📍"
+                                   FontSize="16"
+                                   VerticalOptions="Center"/>
+                            <Label Text="{Binding Hotel.LocationDisplay}"
+                                   FontSize="15"
+                                   TextColor="White"
+                                   Opacity="0.9"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+                
+                <!-- Main Content Card -->
+                <VerticalStackLayout BackgroundColor="White"
+                                    Padding="20"
+                                    Spacing="24">
+                    
+                    <!-- Price Card with Gradient Background -->
+                    <Border BackgroundColor="Transparent"
+                            Padding="20"
+                            StrokeShape="RoundRectangle 12"
+                            Shadow="{Shadow Brush=#667eea, Opacity=0.3, Radius=12, Offset='0,4'}">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#667eea" Offset="0.0"/>
+                                <GradientStop Color="#764ba2" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="Giá từ"
+                                   FontSize="13"
+                                   TextColor="White"
+                                   Opacity="0.9"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="{Binding Hotel.PriceDisplay}"
+                                   FontSize="32"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="mỗi đêm"
+                                   FontSize="13"
+                                   TextColor="White"
+                                   Opacity="0.9"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    
+                    <!-- Rating Badge -->
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <Border BackgroundColor="#FFD700"
+                                Padding="12,6"
+                                StrokeShape="RoundRectangle 8">
+                            <Label Text="{Binding Hotel.RatingDisplay}"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="#1A1A1A"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                    
+                    <!-- Description Section -->
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Mô tả khách sạn"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="#1A1A1A">
+                            <Label.Shadow>
+                                <Shadow Brush="#ff6b35" Opacity="0" Radius="0" Offset="0,3"/>
+                            </Label.Shadow>
+                        </Label>
+                        <BoxView HeightRequest="3"
+                                 WidthRequest="100"
+                                 Color="#ff6b35"
+                                 HorizontalOptions="Start"
+                                 CornerRadius="2"/>
+                        <Label Text="{Binding Hotel.Description}"
+                               FontSize="14"
+                               TextColor="#555"
+                               LineHeight="1.5"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                    
+                    <!-- Amenities Section -->
+                    <VerticalStackLayout Spacing="16">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="⭐"
+                                   FontSize="18"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Tiện nghi"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="#1A1A1A"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        
+                        <!-- Amenities Grid (2 columns, 4 rows) -->
+                        <Grid ColumnDefinitions="*,*"
+                              RowDefinitions="Auto,Auto,Auto,Auto"
+                              RowSpacing="12"
+                              ColumnSpacing="12">
+                            
+                            <!-- Row 1 -->
+                            <Border Grid.Row="0" Grid.Column="0"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="📶"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="WiFi"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <Border Grid.Row="0" Grid.Column="1"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="❄️"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Điều hoà"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <!-- Row 2 -->
+                            <Border Grid.Row="1" Grid.Column="0"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="🍽️"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Nhà hàng"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <Border Grid.Row="1" Grid.Column="1"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="🅿️"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Bãi đỗ xe"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <!-- Row 3 -->
+                            <Border Grid.Row="2" Grid.Column="0"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="🏊"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Hồ bơi"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <Border Grid.Row="2" Grid.Column="1"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="🏋️"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Phòng gym"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <!-- Row 4 -->
+                            <Border Grid.Row="3" Grid.Column="0"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="🧖"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Spa"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <Border Grid.Row="3" Grid.Column="1"
+                                    Padding="16"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    Stroke="#e9ecef">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
+                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="🔒"
+                                           FontSize="28"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Két sắt"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                    
+                    <!-- Trust Badge -->
+                    <Border Padding="16"
+                            BackgroundColor="#F8F9FA"
+                            StrokeShape="RoundRectangle 10">
+                        <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="🛡️"
+                                   FontSize="16"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Đặt phòng an toàn &amp; bảo mật"
+                                   FontSize="13"
+                                   TextColor="#666"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                    
+                </VerticalStackLayout>
+                
+                <!-- Spacer for bottom button -->
+                <BoxView HeightRequest="90" Color="Transparent"/>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+        
+        <!-- Floating Bottom Button -->
+        <Border VerticalOptions="End"
+                BackgroundColor="White"
+                Padding="20,15"
+                Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=16, Offset='0,-4'}">
+            <Button Text="XEM PHÒNG TRỐNG"
+                    FontSize="15"
+                    FontAttributes="Bold"
+                    HeightRequest="52"
+                    CornerRadius="12"
+                    TextColor="White"
+                    Command="{Binding SelectRoomsCommand}">
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#ff6b35" Offset="0.0"/>
+                        <GradientStop Color="#f7931e" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.Shadow>
+                    <Shadow Brush="#ff6b35" Opacity="0.4" Radius="12" Offset="0,6"/>
+                </Button.Shadow>
+            </Button>
+        </Border>
+        
+        <!-- Error Message -->
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"
+               FontAttributes="Bold"
+               IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+               Padding="20"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               BackgroundColor="White"/>
+        
+    </Grid>
+    
+</ContentPage>

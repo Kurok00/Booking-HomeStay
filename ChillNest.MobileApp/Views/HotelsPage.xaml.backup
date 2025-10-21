@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             xmlns:models="clr-namespace:ChillNest.MobileApp.Models"
+             x:Class="ChillNest.MobileApp.Views.HotelsPage"
+             x:DataType="vm:HotelsViewModel"
+             Title="Hotels">
+    
+    <Grid RowDefinitions="Auto,*">
+        
+        <!-- Search Bar -->
+        <Border Grid.Row="0" Margin="15,10" StrokeShape="RoundRectangle 10" Stroke="Gray" StrokeThickness="1">
+            <SearchBar Placeholder="Search hotels..." 
+                      Text="{Binding SearchText}"
+                      SearchCommand="{Binding SearchHotelsCommand}"
+                      Margin="5,0"/>
+        </Border>
+        
+        <!-- Hotels List -->
+        <RefreshView Grid.Row="1"
+                    IsRefreshing="{Binding IsRefreshing}"
+                    Command="{Binding RefreshHotelsCommand}">
+            <CollectionView ItemsSource="{Binding Hotels}"
+                           SelectionMode="None"
+                           RemainingItemsThreshold="2"
+                           RemainingItemsThresholdReachedCommand="{Binding LoadMoreHotelsCommand}">
+                
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="40" VerticalOptions="Center">
+                        <Label Text="No hotels found"
+                              FontSize="20"
+                              HorizontalOptions="Center"
+                              TextColor="Gray"/>
+                        
+                        <!-- Error Message - Always visible for debugging -->
+                        <Label Text="{Binding ErrorMessage}"
+                              FontSize="12"
+                              HorizontalOptions="Center"
+                              TextColor="Red"
+                              Margin="10"
+                              LineBreakMode="WordWrap"/>
+                        
+                        <!-- Debug Info -->
+                        <Label Text="{Binding IsLoading, StringFormat='Loading: {0}'}"
+                              FontSize="10"
+                              HorizontalOptions="Center"
+                              TextColor="Blue"/>
+                        
+                        <Label Text="{Binding Hotels.Count, StringFormat='Hotels Count: {0}'}"
+                              FontSize="10"
+                              HorizontalOptions="Center"
+                              TextColor="Blue"/>
+                        
+                        <Button Text="Load Hotels"
+                               Command="{Binding LoadHotelsCommand}"
+                               Margin="0,20,0,0"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+                
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Hotel">
+                        <Border Margin="15,10" Padding="0" StrokeShape="RoundRectangle 15" Stroke="LightGray" StrokeThickness="1">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HotelsViewModel}}, Path=NavigateToHotelDetailsCommand}" 
+                                                     CommandParameter="{Binding .}"/>
+                            </Border.GestureRecognizers>
+                            
+                            <Grid RowDefinitions="200,Auto">
+                                <!-- Hotel Image -->
+                                <Image Grid.Row="0" 
+                                      Source="{Binding MainPhotoUrl}"
+                                      Aspect="AspectFill"
+                                      HeightRequest="200"/>
+                                
+                                <!-- Hotel Info -->
+                                <VerticalStackLayout Grid.Row="1" Padding="15" Spacing="5">
+                                    <Label Text="{Binding Name}" 
+                                          FontSize="20" 
+                                          FontAttributes="Bold"/>
+                                    
+                                    <Label Text="{Binding LocationDisplay}" 
+                                          FontSize="14" 
+                                          TextColor="Gray"/>
+                                    
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Label Text="{Binding RatingDisplay}" 
+                                              FontSize="14"/>
+                                        <Label Text="{Binding PriceDisplay}" 
+                                              FontSize="16" 
+                                              FontAttributes="Bold"
+                                              TextColor="{StaticResource Primary}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                
+                <CollectionView.Footer>
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                      IsVisible="{Binding IsLoading}"
+                                      Margin="0,20"
+                                      HeightRequest="40"/>
+                </CollectionView.Footer>
+                
+            </CollectionView>
+        </RefreshView>
+        
+    </Grid>
+    
+</ContentPage>

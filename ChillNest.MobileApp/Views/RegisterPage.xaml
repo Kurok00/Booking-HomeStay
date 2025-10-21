@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             x:Class="ChillNest.MobileApp.Views.RegisterPage"
+             x:DataType="vm:RegisterViewModel"
+             Title="Register">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            
+            <Label Text="Create Account" 
+                   FontSize="28" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   Margin="0,20,0,20"/>
+            
+            <!-- Email -->
+            <Label Text="Email *" FontAttributes="Bold"/>
+            <Border StrokeThickness="1" Stroke="Gray" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="your@email.com"
+                       Text="{Binding Email}"
+                       Keyboard="Email"
+                       Margin="10,5"/>
+            </Border>
+            
+            <!-- Username -->
+            <Label Text="Username *" FontAttributes="Bold"/>
+            <Border StrokeThickness="1" Stroke="Gray" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="username"
+                       Text="{Binding UserName}"
+                       Margin="10,5"/>
+            </Border>
+            
+            <!-- Full Name -->
+            <Label Text="Full Name" FontAttributes="Bold"/>
+            <Border StrokeThickness="1" Stroke="Gray" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="John Doe"
+                       Text="{Binding FullName}"
+                       Margin="10,5"/>
+            </Border>
+            
+            <!-- Phone -->
+            <Label Text="Phone" FontAttributes="Bold"/>
+            <Border StrokeThickness="1" Stroke="Gray" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="+1234567890"
+                       Text="{Binding Phone}"
+                       Keyboard="Telephone"
+                       Margin="10,5"/>
+            </Border>
+            
+            <!-- Password -->
+            <Label Text="Password *" FontAttributes="Bold"/>
+            <Border StrokeThickness="1" Stroke="Gray" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="Min 6 characters"
+                       Text="{Binding Password}"
+                       IsPassword="True"
+                       Margin="10,5"/>
+            </Border>
+            
+            <!-- Confirm Password -->
+            <Label Text="Confirm Password *" FontAttributes="Bold"/>
+            <Border StrokeThickness="1" Stroke="Gray" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="Re-enter password"
+                       Text="{Binding ConfirmPassword}"
+                       IsPassword="True"
+                       Margin="10,5"/>
+            </Border>
+            
+            <!-- Error Message -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   FontAttributes="Bold"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"/>
+            
+            <!-- Register Button -->
+            <Button Text="Register"
+                    Command="{Binding RegisterCommand}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="8"
+                    Margin="0,20,0,0"/>
+            
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"/>
+            
+            <!-- Back Link -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,10,0,0">
+                <Label Text="Already have an account?" TextColor="Gray"/>
+                <Label Text="Login"
+                       TextColor="{StaticResource Primary}"
+                       FontAttributes="Bold"
+                       TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateBackCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+    
+</ContentPage>

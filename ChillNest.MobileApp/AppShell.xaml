@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="ChillNest.MobileApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:ChillNest.MobileApp.Views"
+    Title="ChillNest"
+    FlyoutBehavior="Disabled">
+
+    <TabBar>
+        <ShellContent
+            Title="Home"
+            Icon="🏠"
+            ContentTemplate="{DataTemplate views:HotelsPage}"
+            Route="HotelsPage" />
+            
+        <ShellContent
+            Title="Favorite"
+            Icon="❤️"
+            ContentTemplate="{DataTemplate views:HotelsPage}"
+            Route="FavoritePage" />
+            
+        <ShellContent
+            Title="Bookings"
+            Icon="📋"
+            ContentTemplate="{DataTemplate views:HotelsPage}"
+            Route="BookingsPage" />
+            
+        <ShellContent
+            Title="Profile"
+            Icon="👤"
+            ContentTemplate="{DataTemplate views:HotelsPage}"
+            Route="ProfilePage" />
+    </TabBar>
+
+</Shell>

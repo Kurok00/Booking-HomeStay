@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             xmlns:models="clr-namespace:ChillNest.MobileApp.Models"
+             x:Class="ChillNest.MobileApp.Views.HotelsPage"
+             x:DataType="vm:HotelsViewModel"
+             Title="ChillNest"
+             BackgroundColor="#F8F9FA">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20,10" Spacing="20">
+            
+            <!-- Header with Avatar -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
+                <VerticalStackLayout Grid.Column="0" Spacing="5">
+                    <Label Text="Where Would You" FontSize="22" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                    <Label Text="Like to Go ?" FontSize="22" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                </VerticalStackLayout>
+                
+                <Border Grid.Column="1" 
+                        WidthRequest="50" 
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle 25"
+                        Stroke="#E0E0E0"
+                        StrokeThickness="1"
+                        BackgroundColor="#4A90E2">
+                    <Label Text="👤" 
+                           FontSize="24" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"/>
+                </Border>
+            </Grid>
+            
+            <!-- Search Bar with Filter -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Border Grid.Column="0" 
+                        StrokeShape="RoundRectangle 12"
+                        Stroke="#E0E0E0"
+                        StrokeThickness="1"
+                        BackgroundColor="White"
+                        Padding="15,5">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Grid.Column="0" Text="🔍" FontSize="18" VerticalOptions="Center" Margin="0,0,10,0"/>
+                        <Entry Grid.Column="1" 
+                               Placeholder="Search for place" 
+                               Text="{Binding SearchText}"
+                               PlaceholderColor="#9E9E9E"
+                               TextColor="#1A1A1A"
+                               FontSize="14"
+                               VerticalOptions="Center"/>
+                    </Grid>
+                </Border>
+                
+                <Border Grid.Column="1"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="#003D5B"
+                        Padding="12">
+                    <Label Text="☰" FontSize="20" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+            </Grid>
+            
+            <!-- Category Pills -->
+            <HorizontalStackLayout Spacing="10">
+                <Border Padding="20,10" 
+                        StrokeShape="RoundRectangle 20"
+                        BackgroundColor="#003D5B"
+                        Stroke="Transparent">
+                    <Label Text="Hotel" TextColor="White" FontSize="14" FontAttributes="Bold"/>
+                </Border>
+                
+                <Border Padding="20,10" 
+                        StrokeShape="RoundRectangle 20"
+                        BackgroundColor="White"
+                        Stroke="#E0E0E0">
+                    <Label Text="Apartment" TextColor="#666" FontSize="14"/>
+                </Border>
+                
+                <Border Padding="20,10" 
+                        StrokeShape="RoundRectangle 20"
+                        BackgroundColor="White"
+                        Stroke="#E0E0E0">
+                    <Label Text="Motel" TextColor="#666" FontSize="14"/>
+                </Border>
+            </HorizontalStackLayout>
+            
+            <!-- Featured Hotels Carousel -->
+            <VerticalStackLayout Spacing="15">
+                <Label Text="Featured Hotels" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="15">
+                        
+                        <Border WidthRequest="160" HeightRequest="200" StrokeShape="RoundRectangle 15" Stroke="Transparent" BackgroundColor="#4A90E2">
+                            <Grid Padding="15">
+                                <VerticalStackLayout VerticalOptions="End" Spacing="5">
+                                    <Label Text="Waldorf Astoria" TextColor="White" FontSize="16" FontAttributes="Bold"/>
+                                    <Label Text="⭐ 4.9" TextColor="White" FontSize="12" Opacity="0.9"/>
+                                </VerticalStackLayout>
+                                <Border WidthRequest="35" HeightRequest="35" StrokeShape="RoundRectangle 17.5" BackgroundColor="White" HorizontalOptions="End" VerticalOptions="Start">
+                                    <Label Text="♡" FontSize="18" TextColor="#1A1A1A" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        
+                        <Border WidthRequest="160" HeightRequest="200" StrokeShape="RoundRectangle 15" Stroke="Transparent" BackgroundColor="#5BA3A3">
+                            <Grid Padding="15">
+                                <VerticalStackLayout VerticalOptions="End" Spacing="5">
+                                    <Label Text="Luxury Hotel" TextColor="White" FontSize="16" FontAttributes="Bold"/>
+                                    <Label Text="⭐ 4.8" TextColor="White" FontSize="12" Opacity="0.9"/>
+                                </VerticalStackLayout>
+                                <Border WidthRequest="35" HeightRequest="35" StrokeShape="RoundRectangle 17.5" BackgroundColor="White" HorizontalOptions="End" VerticalOptions="Start">
+                                    <Label Text="♡" FontSize="18" TextColor="#1A1A1A" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        
+                    </HorizontalStackLayout>
+                </ScrollView>
+            </VerticalStackLayout>
+            
+            <!-- Popular Hotels List -->
+            <VerticalStackLayout Spacing="15">
+                <Label Text="Popular Hotels" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Hotels}" Spacing="15">
+                    <BindableLayout.EmptyView>
+                        <VerticalStackLayout Padding="20" Spacing="10">
+                            <ActivityIndicator IsRunning="{Binding IsLoading}" Color="#4A90E2" HeightRequest="40"/>
+                            <Label Text="Loading hotels..." FontSize="14" HorizontalOptions="Center" TextColor="#999" IsVisible="{Binding IsLoading}"/>
+                            <Button Text="Load Hotels" Command="{Binding LoadHotelsCommand}" BackgroundColor="#003D5B" TextColor="White" CornerRadius="10" Margin="0,10,0,0"/>
+                        </VerticalStackLayout>
+                    </BindableLayout.EmptyView>
+                    
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:Hotel">
+                            <Border StrokeShape="RoundRectangle 15" Stroke="Transparent" BackgroundColor="White" Padding="0" HeightRequest="120">
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Opacity="0.08" Radius="8" Offset="0,2"/>
+                                </Border.Shadow>
+                                
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HotelsViewModel}}, Path=NavigateToHotelDetailsCommand}" CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                
+                                <Grid ColumnDefinitions="120,*,Auto" Padding="5">
+                                    <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="Transparent">
+                                        <Image Source="{Binding MainPhotoUrl}" Aspect="AspectFill"/>
+                                    </Border>
+                                    
+                                    <VerticalStackLayout Grid.Column="1" Padding="12,10" Spacing="6" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="#1A1A1A" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding LocationDisplay}" FontSize="12" TextColor="#666"/>
+                                        <Label Text="{Binding RatingDisplay}" FontSize="12" TextColor="#1A1A1A"/>
+                                    </VerticalStackLayout>
+                                    
+                                    <Border Grid.Column="2" WidthRequest="35" HeightRequest="35" StrokeShape="RoundRectangle 17.5" BackgroundColor="#F0F0F0" VerticalOptions="Start" Margin="5,10,5,0">
+                                        <Label Text="♡" FontSize="16" TextColor="#666" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+                
+            </VerticalStackLayout>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+    
+</ContentPage>

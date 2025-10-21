@@ -499,23 +499,127 @@
 
     /* Responsive Design */
     
-    /* Large Desktop (1920px+) - 17+ inch monitors */
-    @@media (min-width: 1920px) {
+    /* Ultra Wide Desktop (2560px+) - 27"+ 4K monitors */
+    @@media (min-width: 2560px) {
         .hotel-details-container {
-            max-width: 1600px !important;
+            max-width: 2000px !important;
+            padding: 40px !important;
         }
         
         .content-grid {
+            grid-template-columns: 2.5fr 420px;
+            gap: 60px;
+        }
+        
+        .room-card {
+            flex: 0 0 calc(33.333% - 14px) !important;
+            max-width: calc(33.333% - 14px) !important;
+        }
+        
+        .room-image {
+            height: 240px;
+        }
+        
+        .hero-section {
+            height: 650px !important;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+        }
+        
+        .photo-gallery {
+            grid-template-rows: 280px 280px;
+            gap: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+        }
+        
+        .description-text {
+            font-size: 1.1rem;
+        }
+        
+        .booking-card {
+            padding: 32px;
+        }
+        
+        .price-amount {
+            font-size: 2.5rem;
+        }
+        
+        .cta-button {
+            padding: 18px;
+            font-size: 1.2rem;
+        }
+    }
+    
+    /* Large Desktop (1920px-2559px) - 24-27 inch monitors */
+    @@media (min-width: 1920px) and (max-width: 2559px) {
+        .hotel-details-container {
+            max-width: 1680px !important;
+            padding: 32px !important;
+        }
+        
+        .content-grid {
+            grid-template-columns: 2.2fr 400px;
             gap: 50px;
         }
         
         .room-card {
-            flex: 0 0 calc(33.333% - 17px) !important;
-            max-width: calc(33.333% - 17px) !important;
+            flex: 0 0 calc(33.333% - 14px) !important;
+            max-width: calc(33.333% - 14px) !important;
+        }
+        
+        .room-image {
+            height: 220px;
         }
         
         .hero-section {
-            height: 550px !important;
+            height: 580px !important;
+        }
+        
+        .hero-title {
+            font-size: 2.6rem;
+        }
+        
+        .photo-gallery {
+            grid-template-rows: 260px 260px;
+            gap: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.6rem;
+        }
+        
+        .description-text {
+            font-size: 1.05rem;
+        }
+        
+        .booking-card {
+            padding: 28px;
+        }
+        
+        .price-amount {
+            font-size: 2.2rem;
+        }
+        
+        .cta-button {
+            padding: 17px;
+            font-size: 1.15rem;
+        }
+        
+        .room-name {
+            font-size: 1.25rem;
+        }
+        
+        .room-content {
+            padding: 22px;
+        }
+        
+        .amenities-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         }
     }
     
@@ -883,12 +987,49 @@
     }
 
     .reviews-container {
-        max-width: 900px;
+        max-width: 100%;
+    }
+    
+    /* Reviews Responsive for Large Screens */
+    @@media (min-width: 1920px) {
+        .reviews-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        
+        .review-card {
+            margin-bottom: 0 !important;
+        }
+    }
+    
+    @@media (min-width: 2560px) {
+        .reviews-container {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+    }
+    
+    /* Map Section Responsive */
+    #hotelMap {
+        height: 400px;
+    }
+    
+    @@media (min-width: 1920px) {
+        #hotelMap {
+            height: 500px;
+        }
+    }
+    
+    @@media (min-width: 2560px) {
+        #hotelMap {
+            height: 600px;
+        }
     }
 </style>
 
 <div class="container-fluid px-0" style="overflow-x: hidden;">
-<div class="hotel-details-container" style="max-width: 1200px; margin: 0 auto; padding: 20px; box-sizing: border-box;">
+<div class="hotel-details-container" style="max-width: 1680px; margin: 0 auto; padding: 32px; box-sizing: border-box;">
     <!-- Hero Section with Main Image -->
     <div class="hero-section">
         <img src="@mainPhoto" alt="@Model.Name" class="hero-image">
