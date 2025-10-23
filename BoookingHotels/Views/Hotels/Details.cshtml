@@ -112,16 +112,20 @@
     /* Content Layout */
     .content-grid {
         display: grid;
-        grid-template-columns: 2fr 380px;
+        grid-template-columns: 1fr 380px;
         gap: 32px;
         align-items: start;
         margin-top: 20px;
+        width: 100%;
+        max-width: 100%;
     }
 
     /* Hotel Info Section */
     .hotel-info {
         background: white;
         padding: 0;
+        width: 100%;
+        min-width: 0;
     }
 
     .section-title {
@@ -326,24 +330,23 @@
     }
 
     .room-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
         margin-top: 24px;
-        justify-content: flex-start;
+        width: 100%;
     }
 
     .room-card {
         background: white;
         border-radius: 16px;
-        overflow: hidden;
+        overflow: visible;
         box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         transition: all 0.3s ease;
         border: 1px solid #f0f0f0;
-        flex: 0 0 calc(50% - 10px);
-        max-width: calc(50% - 10px);
         display: flex;
         flex-direction: column;
+        width: 100%;
     }
 
     .room-card:hover {
@@ -355,6 +358,7 @@
         height: 200px;
         position: relative;
         overflow: hidden;
+        cursor: pointer;
     }
 
     .room-image img {
@@ -367,12 +371,42 @@
     .room-card:hover .room-image img {
         transform: scale(1.05);
     }
+    
+    .room-image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .room-image:hover .room-image-overlay {
+        opacity: 1;
+    }
+    
+    .room-image-overlay-text {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 10px 20px;
+        background: rgba(44, 90, 160, 0.9);
+        border-radius: 8px;
+    }
 
     .room-content {
         padding: 20px;
         flex: 1;
         display: flex;
         flex-direction: column;
+        min-width: 0;
+        width: 100%;
     }
 
     .room-name {
@@ -414,12 +448,14 @@
 
     .room-footer {
         display: flex;
-        align-items: flex-end;
+        align-items: center;
         justify-content: space-between;
+        gap: 12px;
         padding-top: 16px;
         border-top: 1px solid #f0f0f0;
         margin-top: auto;
-        min-height: 60px;
+        min-height: 70px;
+        flex-wrap: wrap;
     }
 
     .room-price {
@@ -435,66 +471,76 @@
     }
 
     .room-book-btn {
-        padding: 10px 16px;
+        padding: 10px 18px;
         background: #2c5aa0;
-        color: white;
-        border: none;
+        color: white !important;
+        border: 2px solid #2c5aa0;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 13px;
-        transition: background 0.2s ease;
-        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        text-decoration: none !important;
         white-space: nowrap;
         text-align: center;
-        display: inline-flex;
+        display: inline-flex !important;
         align-items: center;
         justify-content: center;
-        min-width: 80px;
-        height: 36px;
+        gap: 6px;
+        min-width: 110px;
+        height: 42px;
+        flex-shrink: 0;
     }
 
     .room-book-btn:hover {
         background: #1e3f73;
-        color: white;
+        border-color: #1e3f73;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 63, 115, 0.4);
     }
 
     .room-detail-btn {
-        padding: 10px 16px;
+        padding: 10px 18px;
         background: transparent;
-        color: #2c5aa0;
-        border: 1px solid #2c5aa0;
+        color: #2c5aa0 !important;
+        border: 2px solid #2c5aa0;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 14px;
         transition: all 0.2s ease;
-        text-decoration: none;
-        margin-left: 8px;
+        text-decoration: none !important;
         white-space: nowrap;
         text-align: center;
-        display: inline-flex;
+        display: inline-flex !important;
         align-items: center;
         justify-content: center;
-        min-width: 80px;
-        height: 36px;
+        gap: 6px;
+        min-width: 110px;
+        height: 42px;
         box-sizing: border-box;
+        flex-shrink: 0;
+        margin-left: 0;
     }
 
     .room-detail-btn:hover {
         background: #2c5aa0;
-        color: white;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(44, 90, 160, 0.4);
     }
 
     .room-buttons-group {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-top: 4px;
+        gap: 10px;
+        flex-shrink: 0;
     }
 
     .room-price-section {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        flex-shrink: 0;
     }
 
     /* Responsive Design */
@@ -502,18 +548,18 @@
     /* Ultra Wide Desktop (2560px+) - 27"+ 4K monitors */
     @@media (min-width: 2560px) {
         .hotel-details-container {
-            max-width: 2000px !important;
+            max-width: 95% !important;
             padding: 40px !important;
         }
         
         .content-grid {
-            grid-template-columns: 2.5fr 420px;
+            grid-template-columns: 1fr 420px;
             gap: 60px;
         }
         
-        .room-card {
-            flex: 0 0 calc(33.333% - 14px) !important;
-            max-width: calc(33.333% - 14px) !important;
+        .room-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
         }
         
         .room-image {
@@ -553,23 +599,35 @@
             padding: 18px;
             font-size: 1.2rem;
         }
+        
+        /* Ensure buttons are always visible */
+        .room-footer {
+            min-height: 80px;
+        }
+        
+        .room-book-btn, .room-detail-btn {
+            min-width: 130px;
+            height: 46px;
+            font-size: 15px;
+            padding: 12px 22px;
+        }
     }
     
     /* Large Desktop (1920px-2559px) - 24-27 inch monitors */
     @@media (min-width: 1920px) and (max-width: 2559px) {
         .hotel-details-container {
-            max-width: 1680px !important;
+            max-width: 95% !important;
             padding: 32px !important;
         }
         
         .content-grid {
-            grid-template-columns: 2.2fr 400px;
+            grid-template-columns: 1fr 400px;
             gap: 50px;
         }
         
-        .room-card {
-            flex: 0 0 calc(33.333% - 14px) !important;
-            max-width: calc(33.333% - 14px) !important;
+        .room-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 26px;
         }
         
         .room-image {
@@ -621,36 +679,45 @@
         .amenities-grid {
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         }
+        
+        /* Ensure buttons are always visible on 27" monitors */
+        .room-footer {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            min-height: 75px;
+        }
+        
+        .room-buttons-group {
+            display: flex !important;
+            gap: 10px;
+        }
+        
+        .room-book-btn, .room-detail-btn {
+            display: inline-flex !important;
+            min-width: 120px;
+            height: 44px;
+            font-size: 14px;
+            padding: 11px 20px;
+        }
     }
     
     /* Laptop 15.6" FHD (1600px-1919px) - Modern 15.6" laptops */
     @@media (min-width: 1600px) and (max-width: 1919px) {
         .hotel-details-container {
-            max-width: 1500px !important;
+            max-width: 95% !important;
             padding: 25px !important;
         }
         
         .content-grid {
-            grid-template-columns: 2fr 380px;
+            grid-template-columns: 1fr 380px;
             gap: 40px;
         }
         
-        .hero-section {
-            height: 500px !important;
-        }
-        
-        .hero-title {
-            font-size: 2.4rem;
-        }
-        
-        .photo-gallery {
-            grid-template-rows: 240px 240px;
-            gap: 10px;
-        }
-        
-        .room-card {
-            flex: 0 0 calc(50% - 10px) !important;
-            max-width: calc(50% - 10px) !important;
+        .room-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
         }
         
         .room-image {
@@ -668,18 +735,37 @@
         .section-title {
             font-size: 1.5rem;
         }
+        
+        /* Laptop 15.6" - Ensure buttons visible */
+        .room-footer {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            min-height: 70px;
+        }
+        
+        .room-book-btn, .room-detail-btn {
+            display: inline-flex !important;
+            min-width: 110px;
+            height: 42px;
+        }
     }
 
     /* Laptop 15.6" HD/HD+ (1366px-1599px) - Standard 15.6" laptops */
     @@media (min-width: 1366px) and (max-width: 1599px) {
         .hotel-details-container {
-            max-width: 1320px !important;
+            max-width: 95% !important;
             padding: 20px !important;
         }
         
         .content-grid {
-            grid-template-columns: 2fr 350px;
+            grid-template-columns: 1fr 350px;
             gap: 30px;
+        }
+        
+        .room-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
         }
         
         .hero-section {
@@ -724,23 +810,38 @@
             padding: 15px;
             font-size: 1rem;
         }
+        
+        /* Standard laptop - Ensure buttons visible */
+        .room-footer {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+        }
+        
+        .room-book-btn, .room-detail-btn {
+            display: inline-flex !important;
+            min-width: 105px;
+            height: 40px;
+            font-size: 13px;
+            padding: 10px 16px;
+        }
     }
     
     /* Small Desktop (1200px-1365px) - Some 13-14 inch laptops */
     @@media (min-width: 1200px) and (max-width: 1365px) {
         .hotel-details-container {
-            max-width: 1200px !important;
+            max-width: 95% !important;
             padding: 18px !important;
         }
         
         .content-grid {
-            grid-template-columns: 2fr 340px;
+            grid-template-columns: 1fr 340px;
             gap: 30px;
         }
         
-        .room-card {
-            flex: 0 0 calc(50% - 10px) !important;
-            max-width: calc(50% - 10px) !important;
+        .room-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
         
         .hero-section {
@@ -750,17 +851,35 @@
         .photo-gallery {
             grid-template-rows: 200px 200px;
         }
+        
+        .room-footer {
+            display: flex !important;
+            flex-direction: row !important;
+        }
+        
+        .room-book-btn, .room-detail-btn {
+            display: inline-flex !important;
+            min-width: 100px;
+            height: 38px;
+            font-size: 13px;
+        }
     }
     
     /* Medium Laptop (1024px - 1199px) - Standard laptops */
     @@media (min-width: 1024px) and (max-width: 1199px) {
         .hotel-details-container {
             padding: 16px !important;
+            max-width: 100% !important;
         }
         
         .content-grid {
-            grid-template-columns: 2fr 320px;
+            grid-template-columns: 1fr 320px;
             gap: 25px;
+        }
+        
+        .room-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
         
         .hero-section {
@@ -785,22 +904,25 @@
         }
         
         .room-footer {
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 8px;
+            align-items: center !important;
+            flex-wrap: wrap;
         }
         
         .room-buttons-group {
-            width: 100%;
-            justify-content: center;
+            display: flex !important;
+            gap: 8px;
         }
         
         .room-book-btn, .room-detail-btn {
+            display: inline-flex !important;
             margin-left: 0 !important;
-            flex: 1;
-            max-width: 120px;
-            height: 32px;
-            font-size: 12px;
+            padding: 9px 14px;
+            min-width: 95px;
+            height: 38px;
+            font-size: 13px;
         }
         
         .booking-card {
@@ -816,11 +938,17 @@
     @@media (min-width: 992px) and (max-width: 1023px) {
         .hotel-details-container {
             padding: 15px !important;
+            max-width: 100% !important;
         }
         
         .content-grid {
-            grid-template-columns: 2fr 300px;
+            grid-template-columns: 1fr 300px;
             gap: 20px;
+        }
+        
+        .room-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
         }
         
         .hero-section {
@@ -869,6 +997,19 @@
             padding: 14px;
             font-size: 1rem;
         }
+        
+        .room-footer {
+            display: flex !important;
+            flex-direction: row !important;
+        }
+        
+        .room-book-btn, .room-detail-btn {
+            display: inline-flex !important;
+            min-width: 90px;
+            height: 36px;
+            font-size: 12px;
+            padding: 8px 12px;
+        }
     }
 
     /* Tablet (768px - 991px) */
@@ -876,6 +1017,11 @@
         .content-grid {
             grid-template-columns: 1fr !important;
             gap: 20px;
+        }
+        
+        .room-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
         }
         
         .booking-card {
@@ -897,6 +1043,10 @@
         .room-card {
             flex: 0 0 calc(50% - 10px) !important;
             max-width: calc(50% - 10px) !important;
+        }
+        
+        .room-grid {
+            grid-template-columns: 1fr;
         }
     }
 
@@ -935,6 +1085,10 @@
             max-width: 100% !important;
         }
         
+        .room-grid {
+            grid-template-columns: 1fr;
+        }
+        
         .content-grid {
             gap: 16px;
         }
@@ -964,19 +1118,25 @@
         
         .room-footer {
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
+            align-items: stretch;
+        }
+        
+        .room-price-section {
             align-items: center;
+            text-align: center;
         }
         
         .room-buttons-group {
             width: 100%;
-            justify-content: center;
+            display: flex;
+            gap: 8px;
         }
         
         .room-book-btn, .room-detail-btn {
-            width: 100%;
+            flex: 1;
             margin-left: 0 !important;
-            max-width: none;
+            min-width: 0;
         }
     }
 
@@ -1029,7 +1189,7 @@
 </style>
 
 <div class="container-fluid px-0" style="overflow-x: hidden;">
-<div class="hotel-details-container" style="max-width: 1680px; margin: 0 auto; padding: 32px; box-sizing: border-box;">
+<div class="hotel-details-container" style="max-width: 95%; margin: 0 auto; padding: 32px; box-sizing: border-box;">
     <!-- Hero Section with Main Image -->
     <div class="hero-section">
         <img src="@mainPhoto" alt="@Model.Name" class="hero-image">
@@ -1081,9 +1241,16 @@
                     {
                         var roomPhoto = room.Photos?.FirstOrDefault()?.Url ?? "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400";
                         <div class="room-card">
-                            <div class="room-image">
-                                <img src="@roomPhoto" alt="@room.Name">
-                            </div>
+                            <a href="@Url.Action("Details", "Rooms", new { id = room.RoomId })" style="text-decoration: none; color: inherit;">
+                                <div class="room-image">
+                                    <img src="@roomPhoto" alt="@room.Name">
+                                    <div class="room-image-overlay">
+                                        <div class="room-image-overlay-text">
+                                            <i class="bi bi-eye"></i> Xem chi tiết phòng
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
                             <div class="room-content">
                                 <h3 class="room-name">@room.Name</h3>
                                 <div class="room-specs">
@@ -1103,9 +1270,13 @@
                                 @if (room.RoomAmenities?.Any() == true)
                                 {
                                     <div class="room-amenities">
-                                        @foreach (var amenity in room.RoomAmenities.Where(ra => ra.Amenity != null).Select(ra => ra.Amenity))
+                                        @foreach (var amenity in room.RoomAmenities.Where(ra => ra.Amenity != null).Select(ra => ra.Amenity).Take(5))
                                         {
                                             <span class="amenity-tag">@amenity.Name</span>
+                                        }
+                                        @if (room.RoomAmenities.Count > 5)
+                                        {
+                                            <span class="amenity-tag" style="background: #ffeaa7; color: #d63031;">+@(room.RoomAmenities.Count - 5)</span>
                                         }
                                     </div>
                                 }
@@ -1119,13 +1290,13 @@
                                            asp-action="Create"
                                            asp-route-roomId="@room.RoomId"
                                            class="room-book-btn">
-                                            Đặt ngay
+                                            <i class="bi bi-calendar-check"></i> Đặt ngay
                                         </a>
                                         <a asp-controller="Rooms"
                                            asp-action="Details"
                                            asp-route-id="@room.RoomId"
                                            class="room-detail-btn">
-                                            Chi tiết
+                                            <i class="bi bi-info-circle"></i> Chi tiết
                                         </a>
                                     </div>
                                 </div>

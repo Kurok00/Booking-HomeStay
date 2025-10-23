@@ -6,155 +6,527 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
 <style>
-    .booking-form-container {
-        max-width: 520px;
+    body {
+        background: #f8f9fa;
+    }
+
+    .booking-container {
+        max-width: 1200px;
         margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .booking-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        align-items: start;
+    }
+
+    .booking-form-card {
         background: #fff;
-        border-radius: 18px;
-        box-shadow: 0 8px 32px rgba(60,60,60,0.12);
-        padding: 32px 36px 28px 36px;
-        border: 1px solid #e3e3e3;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        padding: 32px;
     }
+
     .booking-form-title {
+        font-size: 1.5rem;
         font-weight: 700;
-        font-size: 2rem;
-        margin-bottom: 18px;
-        color: #2d3a4a;
-        text-align: center;
+        color: #1a1a1a;
+        margin-bottom: 8px;
     }
+
+    .form-section {
+        margin-bottom: 24px;
+    }
+
     .form-label {
         font-weight: 600;
         color: #2d3a4a;
+        margin-bottom: 8px;
+        font-size: 0.875rem;
+        display: block;
     }
-    .form-control:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 2px #cce5ff;
+
+    .required-mark {
+        color: #dc3545;
     }
-    .input-group-text {
-        background: #f8f9fa;
-        border-right: 0;
-    }
-    .form-control {
-        border-left: 0;
-    }
-    .price-box {
-        background: #f6f8fa;
+
+    .form-control, .form-select {
+        border: 1px solid #e0e0e0;
         border-radius: 8px;
-        padding: 14px 18px;
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #007bff;
-        margin-bottom: 18px;
+        padding: 12px 16px;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #ff6b35;
+        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        outline: none;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 24px;
+        margin-top: 8px;
+    }
+
+    .radio-option {
         display: flex;
         align-items: center;
+        gap: 8px;
+    }
+
+    .radio-option input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .date-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    /* Hotel Info Card */
+    .hotel-info-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+    }
+
+    .hotel-image {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+    }
+
+    .hotel-details {
+        padding: 24px;
+    }
+
+    .hotel-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .hotel-rating {
+        color: #ffa726;
+        margin-bottom: 12px;
+    }
+
+    .hotel-location {
+        color: #666;
+        font-size: 0.875rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .booking-dates {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .date-info {
+        text-align: center;
+    }
+
+    .date-label {
+        font-size: 0.75rem;
+        color: #666;
+        margin-bottom: 4px;
+    }
+
+    .date-value {
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .room-info {
+        margin-bottom: 20px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .room-info-title {
+        font-weight: 700;
+        font-size: 0.9375rem;
+        color: #1a1a1a;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .amenities-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
-    .btn-primary {
-        width: 100%;
-        font-size: 1.1rem;
-        padding: 12px 0;
+
+    .amenity-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8125rem;
+        color: #333;
+        padding: 6px 0;
+    }
+
+    .amenity-item i {
+        color: #ff6b35;
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Price Summary */
+    .price-summary {
+        border-top: 2px solid #f0f0f0;
+        padding-top: 20px;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.9375rem;
+    }
+
+    .price-label {
+        color: #666;
+    }
+
+    .price-value {
         font-weight: 600;
-        border-radius: 8px;
-        letter-spacing: 1px;
+        color: #1a1a1a;
+    }
+
+    .nights-info {
+        color: #ff6b35;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .discount-row {
+        color: #28a745 !important;
+    }
+
+    .total-price {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 16px;
+        border-top: 2px solid #f0f0f0;
+        margin-top: 16px;
+    }
+
+    .total-label {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .total-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ff6b35;
+    }
+
+    /* Voucher Message */
+    .voucher-message {
+        font-size: 0.8125rem;
+        margin-top: 6px;
+        display: block;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+        width: 100%;
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 16px;
+        font-size: 1.0625rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    /* Responsive */
+    @@media (max-width: 992px) {
+        .booking-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hotel-info-card {
+            position: relative;
+            top: 0;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .booking-container {
+            padding: 0 15px;
+        }
+
+        .booking-form-card, .hotel-details {
+            padding: 20px;
+        }
+
+        .date-row {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-dates {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
-<div class="booking-form-container">
-    <div class="booking-form-title">
-        <i class="fa-solid fa-bed"></i>
-        Đặt phòng tại <span style="color:#007bff">@Model.Room?.Hotel?.Name</span>
-    </div>
-    <form asp-action="Create" method="post" autocomplete="off">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<div class="booking-container">
+    <div class="booking-grid">
+        <!-- Left Column: Booking Form -->
+        <div class="booking-form-card">
+            <h2 class="booking-form-title">Thông tin khách lưu trú chính</h2>
+            
+            <form asp-action="Create" method="post" autocomplete="off">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <input type="hidden" asp-for="RoomId" />
-        <input type="hidden" asp-for="HotelId" />
+                <input type="hidden" asp-for="RoomId" />
+                <input type="hidden" asp-for="HotelId" />
 
-        <div class="mb-3">
-            <label asp-for="GuestName" class="form-label"><i class="fa-solid fa-user"></i> Họ và tên</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
-                <input asp-for="GuestName" class="form-control" placeholder="Nhập họ tên khách" />
+                <!-- Gender -->
+                <div class="form-section">
+                    <label class="form-label">Giới tính <span class="required-mark">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gender" value="male" checked />
+                            <span>Quý ông</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gender" value="female" />
+                            <span>Quý bà</span>
+                        </label>
+                    </div>
+                </div>
 
-            </div>
-            <span asp-validation-for="GuestName" class="text-danger"></span>
-        </div>
+                <!-- Full Name -->
+                <div class="form-section">
+                    <label asp-for="GuestName" class="form-label">Họ và tên <span class="required-mark">*</span></label>
+                    <input asp-for="GuestName" class="form-control" placeholder="Họ và tên khách lưu trú" />
+                    <span asp-validation-for="GuestName" class="text-danger"></span>
+                </div>
 
-        <div class="mb-3">
-            <label asp-for="GuestPhone" class="form-label"><i class="fa-solid fa-phone"></i> Số điện thoại</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
-                <input asp-for="GuestPhone" class="form-control" placeholder="Nhập số điện thoại" />
-            </div>
-            <span asp-validation-for="GuestPhone" class="text-danger"></span>
-        </div>
+                <!-- Phone -->
+                <div class="form-section">
+                    <label asp-for="GuestPhone" class="form-label">Số điện thoại <span class="required-mark">*</span></label>
+                    <input asp-for="GuestPhone" class="form-control" placeholder="Số điện thoại liên hệ" />
+                    <span asp-validation-for="GuestPhone" class="text-danger"></span>
+                </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label asp-for="CheckIn" class="form-label"><i class="fa-solid fa-calendar-check"></i> Ngày nhận phòng</label>
-                <input asp-for="CheckIn" type="date" class="form-control" id="checkInDate" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label asp-for="CheckOut" class="form-label"><i class="fa-solid fa-calendar-day"></i> Ngày trả phòng</label>
-                <input asp-for="CheckOut" type="date" class="form-control" id="checkOutDate" />
-            </div>
-        </div>
+                <!-- Check-in / Check-out Dates -->
+                <div class="form-section">
+                    <label class="form-label">Ngày nhận phòng & Trả phòng <span class="required-mark">*</span></label>
+                    <div class="date-row">
+                        <div>
+                            <input name="CheckIn" type="date" class="form-control" id="checkInDate" value="@Model.CheckIn.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div>
+                            <input name="CheckOut" type="date" class="form-control" id="checkOutDate" value="@Model.CheckOut.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+                </div>
 
-        <div class="mb-3" id="nightsInfo" style="display: none;">
-            <div class="alert alert-info">
-                <i class="fa-solid fa-moon"></i> Số đêm: <strong id="totalNights">0</strong> đêm
-            </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Voucher</label>
-            <select name="voucherCode" class="form-select" id="voucherSelect">
-                <option value="" data-discount-type="" data-discount-value="0">-- Không sử dụng --</option>
-                @if (ViewBag.Vouchers != null)
-                {
-                    foreach (var v in (IEnumerable<BoookingHotels.Models.Voucher>)ViewBag.Vouchers)
-                    {
-                <option value="@v.Code" 
-                        data-discount-type="@v.DiscountType" 
-                        data-discount-value="@v.DiscountValue"
-                        data-min-order="@v.MinOrderValue">
-                    @v.Code - @(v.DiscountType == "Percent"
+                <!-- Voucher -->
+                <div class="form-section">
+                    <label class="form-label">Voucher giảm giá</label>
+                    <select name="voucherCode" class="form-select" id="voucherSelect">
+                        <option value="" data-discount-type="" data-discount-value="0">-- Không sử dụng --</option>
+                        @if (ViewBag.Vouchers != null)
+                        {
+                            foreach (var v in (IEnumerable<BoookingHotels.Models.Voucher>)ViewBag.Vouchers)
+                            {
+                                <option value="@v.Code" 
+                                        data-discount-type="@v.DiscountType" 
+                                        data-discount-value="@v.DiscountValue"
+                                        data-min-order="@v.MinOrderValue">
+                                    @v.Code - @(v.DiscountType == "Percent"
                                         ? v.DiscountValue + "%"
                                         : v.DiscountValue.ToString("N0") + " VND")
-                    (HSD: @v.ExpiryDate.ToString("dd/MM/yyyy"))
-                </option>
-                                }
-                }
-            </select>
-            <small class="text-muted" id="voucherMessage"></small>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Phương thức thanh toán</label>
-            <select name="paymentMethod" class="form-control">
-                <option value="COD">Thanh toán khi nhận phòng</option>
-                <option value="ONLINE">Thanh toán online </option>
-            </select>
-        </div>
-
-        <div class="price-box mb-3">
-            <i class="fa-solid fa-money-bill-wave"></i>
-            <div style="width: 100%;">
-                <div>Giá phòng/đêm: <span id="roomPricePerNight">@((ViewBag.Room?.Price ?? 0).ToString("N0")) VND</span></div>
-                <div style="margin-top: 8px;">Tạm tính: <span id="totalPrice">@Model.SubTotal.ToString("N0") VND</span></div>
-                <div id="discountRow" style="margin-top: 8px; color: #28a745; display: none;">
-                    Giảm giá: -<span id="discountAmount">0 VND</span>
+                                    (HSD: @v.ExpiryDate.ToString("dd/MM/yyyy"))
+                                </option>
+                            }
+                        }
+                    </select>
+                    <small class="voucher-message" id="voucherMessage"></small>
                 </div>
-                <hr style="margin: 10px 0;">
-                <div style="font-size: 1.4rem; font-weight: 700;">
-                    Tổng thanh toán: <span id="finalPrice">@Model.Total.ToString("N0") VND</span>
+
+                <!-- Payment Method -->
+                <div class="form-section">
+                    <label class="form-label">Phương thức thanh toán <span class="required-mark">*</span></label>
+                    <select name="paymentMethod" class="form-select" required>
+                        <option value="COD">Thanh toán khi nhận phòng</option>
+                        <option value="ONLINE">Thanh toán online</option>
+                    </select>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-check-circle"></i>
+                    Yêu cầu đặt phòng
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Column: Hotel Info & Price Summary -->
+        <div class="hotel-info-card">
+            @if (Model.Room != null)
+            {
+                @if (Model.Room.Photos != null && Model.Room.Photos.Any())
+                {
+                    <img src="@Model.Room.Photos.FirstOrDefault()?.Url" alt="@Model.Room.Name" class="hotel-image" />
+                }
+                else
+                {
+                    <img src="https://via.placeholder.com/400x240?text=Room+Image" alt="Room" class="hotel-image" />
+                }
+            }
+
+            <div class="hotel-details">
+                <h3 class="hotel-name">@Model.Room?.Hotel?.Name</h3>
+                <div class="hotel-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="hotel-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    @Model.Room?.Hotel?.Address, @Model.Room?.Hotel?.City
+                </div>
+
+                <!-- Booking Dates -->
+                <div class="booking-dates">
+                    <div class="date-info">
+                        <div class="date-label">CHECK-IN</div>
+                        <div class="date-value">
+                            <strong><span id="displayCheckIn">@Model.CheckIn.ToString("dd-MM-yyyy")</span></strong>
+                            <div style="font-size: 0.75rem; color: #999;">Từ 15:00</div>
+                        </div>
+                    </div>
+                    <div class="date-info">
+                        <div class="date-label">CHECK-OUT</div>
+                        <div class="date-value">
+                            <strong><span id="displayCheckOut">@Model.CheckOut.ToString("dd-MM-yyyy")</span></strong>
+                            <div style="font-size: 0.75rem; color: #999;">Trước 12:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nights Display -->
+                <div style="text-align: center; padding: 12px; background: #fff3e0; border-radius: 8px; margin-bottom: 20px;" id="nightsDisplay">
+                    <i class="fa-solid fa-moon" style="color: #ff6b35;"></i>
+                    <strong style="color: #ff6b35; font-size: 1.1rem;"><span id="displayNights">0</span> đêm</strong>
+                </div>
+
+                <!-- Room Amenities -->
+                <div class="room-info">
+                    <div class="room-info-title">
+                        <i class="fa-solid fa-list-check"></i>
+                        Tiện nghi phòng
+                    </div>
+                    <div class="amenities-grid">
+                        @if (Model.Room?.RoomAmenities != null && Model.Room.RoomAmenities.Any())
+                        {
+                            foreach (var ra in Model.Room.RoomAmenities.Take(8))
+                            {
+                                <div class="amenity-item">
+                                    <i class="@ra.Amenity?.Icon"></i>
+                                    <span>@ra.Amenity?.Name</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-wifi"></i>
+                                <span>Wifi miễn phí</span>
+                            </div>
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-tv"></i>
+                                <span>TV màn hình phẳng</span>
+                            </div>
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-snowflake"></i>
+                                <span>Điều hòa</span>
+                            </div>
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-utensils"></i>
+                                <span>Ăn sáng miễn phí</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Price Summary -->
+                <div class="price-summary">
+                    <div class="price-row">
+                        <span class="price-label">Giá phòng</span>
+                        <span class="price-value"><span id="roomPrice">@((ViewBag.Room?.Price ?? 0).ToString("N0"))</span> đ</span>
+                    </div>
+                    
+                    <div class="price-row nights-info" id="nightsRow" style="display: none;">
+                        <span><i class="fa-solid fa-moon"></i> Số đêm: <strong id="totalNights">0</strong> đêm</span>
+                        <span></span>
+                    </div>
+
+                    <div class="price-row" id="discountRow" style="display: none;">
+                        <span class="price-label discount-row">Giảm giá</span>
+                        <span class="price-value discount-row">-<span id="discountAmount">0</span> đ</span>
+                    </div>
+
+                    <div class="total-price">
+                        <span class="total-label">Tổng tiền</span>
+                        <span class="total-value"><span id="finalPrice">0</span> đ</span>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary">
-            <i class="fa-solid fa-check-circle"></i> Xác nhận đặt phòng
-        </button>
-    </form>
+    </div>
 </div>
 <!-- Custom CSS for modal -->
 <style>
@@ -206,22 +578,29 @@
         const checkOutInput = document.getElementById('checkOutDate');
         const voucherSelect = document.getElementById('voucherSelect');
         const totalNightsDisplay = document.getElementById('totalNights');
-        const totalPriceDisplay = document.getElementById('totalPrice');
+        const nightsRow = document.getElementById('nightsRow');
+        const roomPriceDisplay = document.getElementById('roomPrice');
         const discountAmountDisplay = document.getElementById('discountAmount');
         const finalPriceDisplay = document.getElementById('finalPrice');
         const discountRow = document.getElementById('discountRow');
-        const nightsInfoDiv = document.getElementById('nightsInfo');
         const voucherMessage = document.getElementById('voucherMessage');
+        const displayCheckIn = document.getElementById('displayCheckIn');
+        const displayCheckOut = document.getElementById('displayCheckOut');
+        const displayNights = document.getElementById('displayNights');
         
-        // Get room price from ViewBag
-        const roomPricePerNight = @(ViewBag.Room?.Price ?? 0);
+        // Get room price from ViewBag - use parseInt to ensure it's a number
+        const roomPricePerNight = parseInt('@(ViewBag.Room?.Price ?? 0)');
 
+        console.log('=== BOOKING PAGE LOADED ===');
         console.log('Room Price Per Night:', roomPricePerNight);
+        console.log('CheckIn Input Value:', checkInInput.value);
+        console.log('CheckOut Input Value:', checkOutInput.value);
 
         // Set minimum dates
         const today = new Date().toISOString().split('T')[0];
         checkInInput.setAttribute('min', today);
 
+        // Initialize currentSubTotal - will be calculated from dates
         let currentSubTotal = 0;
 
         // Function to calculate price
@@ -229,28 +608,56 @@
             const checkIn = new Date(checkInInput.value);
             const checkOut = new Date(checkOutInput.value);
 
+            console.log('=== CALCULATE PRICE ===');
+            console.log('CheckIn Date:', checkIn);
+            console.log('CheckOut Date:', checkOut);
+
             if (checkInInput.value && checkOutInput.value) {
                 // Calculate difference in days
                 const diffTime = checkOut - checkIn;
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+                console.log('Time Difference (ms):', diffTime);
+                console.log('Number of Days/Nights:', diffDays);
+
                 if (diffDays > 0) {
                     // Calculate total price
                     currentSubTotal = roomPricePerNight * diffDays;
                     
-                    // Update display
+                    console.log('Calculated SubTotal:', currentSubTotal);
+                    
+                    // Update displays
                     totalNightsDisplay.textContent = diffDays;
-                    totalPriceDisplay.textContent = currentSubTotal.toLocaleString('vi-VN') + ' VND';
-                    nightsInfoDiv.style.display = 'block';
+                    displayNights.textContent = diffDays;
+                    nightsRow.style.display = 'flex';
+                    finalPriceDisplay.textContent = currentSubTotal.toLocaleString('vi-VN');
+                    
+                    // Update date displays on right side
+                    const checkInDate = new Date(checkInInput.value);
+                    const checkOutDate = new Date(checkOutInput.value);
+                    
+                    // Format dates as dd-MM-yyyy
+                    const formatDate = (date) => {
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        return `${day}-${month}-${year}`;
+                    };
+                    
+                    displayCheckIn.textContent = formatDate(checkInDate);
+                    displayCheckOut.textContent = formatDate(checkOutDate);
+                    
+                    console.log('Updated displays - CheckIn:', displayCheckIn.textContent, 'CheckOut:', displayCheckOut.textContent, 'Nights:', diffDays);
                     
                     // Recalculate with voucher
                     applyVoucher();
                 } else {
                     // Invalid date range
+                    console.warn('Invalid date range: diffDays =', diffDays);
                     currentSubTotal = 0;
-                    totalPriceDisplay.textContent = '0 VND';
-                    finalPriceDisplay.textContent = '0 VND';
-                    nightsInfoDiv.style.display = 'none';
+                    nightsRow.style.display = 'none';
+                    displayNights.textContent = '0';
+                    finalPriceDisplay.textContent = '0';
                     discountRow.style.display = 'none';
                     if (diffDays <= 0 && checkOutInput.value) {
                         alert('Ngày trả phòng phải sau ngày nhận phòng!');
@@ -258,11 +665,12 @@
                     }
                 }
             } else {
-                // Reset if dates not selected
-                currentSubTotal = roomPricePerNight;
-                totalPriceDisplay.textContent = roomPricePerNight.toLocaleString('vi-VN') + ' VND';
-                finalPriceDisplay.textContent = roomPricePerNight.toLocaleString('vi-VN') + ' VND';
-                nightsInfoDiv.style.display = 'none';
+                // No dates selected
+                console.log('Dates not fully selected yet');
+                currentSubTotal = 0;
+                nightsRow.style.display = 'none';
+                displayNights.textContent = '0';
+                finalPriceDisplay.textContent = '0';
                 discountRow.style.display = 'none';
             }
         }
@@ -274,12 +682,20 @@
             const discountValue = parseFloat(selectedOption.getAttribute('data-discount-value')) || 0;
             const minOrderValue = parseFloat(selectedOption.getAttribute('data-min-order')) || 0;
 
+            console.log('=== APPLY VOUCHER ===');
+            console.log('Selected Voucher:', voucherSelect.value);
+            console.log('Discount Type:', discountType);
+            console.log('Discount Value:', discountValue);
+            console.log('Min Order Value:', minOrderValue);
+            console.log('Current SubTotal:', currentSubTotal);
+
             let discountAmount = 0;
             let finalPrice = currentSubTotal;
 
             if (discountType && currentSubTotal > 0) {
                 // Check minimum order value
                 if (minOrderValue > 0 && currentSubTotal < minOrderValue) {
+                    console.warn('Order below minimum:', currentSubTotal, '<', minOrderValue);
                     voucherMessage.textContent = `⚠️ Đơn hàng tối thiểu ${minOrderValue.toLocaleString('vi-VN')} VND`;
                     voucherMessage.style.color = '#dc3545';
                     discountRow.style.display = 'none';
@@ -301,19 +717,23 @@
 
                 finalPrice = currentSubTotal - discountAmount;
 
+                console.log('Discount Amount:', discountAmount);
+                console.log('Final Price:', finalPrice);
+
                 // Show discount
-                discountAmountDisplay.textContent = discountAmount.toLocaleString('vi-VN') + ' VND';
-                discountRow.style.display = 'block';
+                discountAmountDisplay.textContent = discountAmount.toLocaleString('vi-VN');
+                discountRow.style.display = 'flex';
                 voucherMessage.textContent = '✅ Mã giảm giá đã được áp dụng';
                 voucherMessage.style.color = '#28a745';
             } else {
                 // No voucher selected
+                console.log('No voucher selected or SubTotal is 0');
                 discountRow.style.display = 'none';
                 voucherMessage.textContent = '';
             }
 
             // Update final price
-            finalPriceDisplay.textContent = finalPrice.toLocaleString('vi-VN') + ' VND';
+            finalPriceDisplay.textContent = finalPrice.toLocaleString('vi-VN');
         }
 
         // Update checkout minimum date when checkin changes
@@ -331,9 +751,7 @@
         // Apply voucher when voucher is selected
         voucherSelect.addEventListener('change', applyVoucher);
 
-        // Initial calculation if dates are already set
-        if (checkInInput.value && checkOutInput.value) {
-            calculatePrice();
-        }
+        // Always run initial calculation on page load
+        calculatePrice();
     });
 </script>

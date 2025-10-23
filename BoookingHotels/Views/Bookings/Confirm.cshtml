@@ -48,12 +48,61 @@
         transition: background 0.2s;
     }
 
-        .btn-home:hover {
-            background: #005fa3;
-        }
-</style>
+    .btn-home:hover {
+        background: #005fa3;
+    }
 
-<div class="confirm-container">
+    .payment-notice {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 24px 0;
+    }
+
+    .payment-notice-title {
+        color: #856404;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .payment-notice-content {
+        color: #856404;
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+
+    .bank-info {
+        background: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        margin: 12px 0;
+        border-left: 4px solid #ffc107;
+    }
+
+    .bank-info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .bank-info-value {
+        font-weight: 700;
+        color: #0071c2;
+        font-size: 1.1rem;
+    }
+
+    .deadline {
+        background: #dc3545;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        display: inline-block;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+</style><div class="confirm-container">
     <div class="confirm-title">
         <i class="fa-solid fa-check-circle text-success"></i>
         Đặt phòng thành công!
@@ -67,11 +116,163 @@
         <p><span class="detail-label">Ngày trả phòng:</span> @Model.CheckOut.ToString("dd/MM/yyyy")</p>
         <p><span class="detail-label">Số đêm:</span> @( (Model.CheckOut - Model.CheckIn).Days )</p>
         <p><span class="detail-label">Tổng tiền:</span> <strong>@Model.Total.ToString("N0") VND</strong></p>
-        <p><span class="detail-label">Trạng thái:</span> <span class="text-success">@Model.Status</span></p>
+        <p><span class="detail-label">Trạng thái:</span> 
+            @if (Model.Status == BookingStatus.Pending)
+            {
+                <span class="badge bg-warning text-dark">Chờ thanh toán</span>
+            }
+            else if (Model.Status == BookingStatus.Confirmed)
+            {
+                <span class="badge bg-info text-white">Đã xác nhận</span>
+            }
+            else if (Model.Status == BookingStatus.Paid)
+            {
+                <span class="badge bg-success">Đã thanh toán</span>
+            }
+        </p>
         <p><span class="detail-label">Thời gian đặt:</span> @Model.CreatedAt</p>
     </div>
+
+    @* Payment notice for ONLINE bookings *@
+    @if (Model.PaymentMethod == "ONLINE" && Model.Status == BookingStatus.Pending)
+    {
+        <div class="payment-notice">
+            <div class="payment-notice-title">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Mời quý khách thanh toán online để giữ phòng
+            </div>
+            <div class="payment-notice-content">
+                <p><i class="fa-solid fa-info-circle"></i> Vui lòng chuyển khoản vào tài khoản sau:</p>
+                
+                <div class="bank-info">
+                    <div class="bank-info-item">
+                        <span>Ngân hàng:</span>
+                        <span class="bank-info-value">MB Bank (Ngân hàng Quân Đội)</span>
+                    </div>
+                    <div class="bank-info-item">
+                        <span>Số tài khoản:</span>
+                        <span class="bank-info-value">0123456789</span>
+                    </div>
+                    <div class="bank-info-item">
+                        <span>Chủ tài khoản:</span>
+                        <span class="bank-info-value">CHILLNEST HOTEL</span>
+                    </div>
+                    <div class="bank-info-item">
+                        <span>Số tiền:</span>
+                        <span class="bank-info-value">@Model.Total.ToString("N0") VND</span>
+                    </div>
+                    <div class="bank-info-item">
+                        <span>Nội dung:</span>
+                        <span class="bank-info-value">BOOKING @Model.BookingId @Model.GuestPhone</span>
+                    </div>
+                </div>
+
+                <p><i class="fa-solid fa-clock"></i> Thời hạn thanh toán: 
+                    <span class="deadline" id="countdown">
+                        @if (Model.PaymentDeadline.HasValue)
+                        {
+                            @Model.PaymentDeadline.Value.ToString("HH:mm dd/MM/yyyy")
+                        }
+                        (Đang tính...)
+                    </span>
+                </p>
+
+                <p style="margin-top: 16px;">
+                    <i class="fa-solid fa-warning"></i>
+                    <strong>Lưu ý:</strong> Nếu không thanh toán trong thời hạn, 
+                    đơn đặt phòng sẽ tự động bị hủy và phòng sẽ được mở lại cho khách khác.
+                </p>
+
+                <p style="margin-top: 12px;">
+                    <i class="fa-solid fa-check"></i>
+                    Sau khi chuyển khoản, vui lòng liên hệ hotline hoặc đợi admin xác nhận thanh toán.
+                </p>
+            </div>
+        </div>
+    }
+    else if (Model.PaymentMethod == "COD" && Model.Status == BookingStatus.Confirmed)
+    {
+        <div class="alert alert-success mt-3">
+            <i class="fa-solid fa-check-circle"></i>
+            <strong>Đặt phòng thành công!</strong> Quý khách sẽ thanh toán khi nhận phòng.
+        </div>
+    }
 
     <a href="@Url.Action("Index", "Hotels")" class="btn-home">
         <i class="fa-solid fa-arrow-left"></i> Quay lại trang chính
     </a>
 </div>
+
+@if (Model.PaymentMethod == "ONLINE" && Model.Status == BookingStatus.Pending && Model.PaymentDeadline.HasValue)
+{
+    <script>
+        // Countdown timer for payment deadline
+        const deadlineStr = '@Model.PaymentDeadline.Value.ToString("yyyy-MM-dd HH:mm:ss")';
+        const deadline = new Date(deadlineStr).getTime();
+        const bookingStatus = '@Model.Status.ToString()';
+        let countdownInterval = null;
+        
+        function updateCountdown() {
+            // Stop countdown if status is no longer Pending
+            if (bookingStatus !== 'Pending') {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+                return;
+            }
+            
+            const now = new Date().getTime();
+            const distance = deadline - now;
+            
+            const countdownElement = document.getElementById('countdown');
+            
+            if (distance < 0) {
+                countdownElement.innerHTML = '<i class="fa-solid fa-times-circle"></i> Đã hết hạn';
+                countdownElement.style.background = '#6c757d';
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+                return;
+            }
+            
+            // Calculate hours, minutes, seconds
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            // Display countdown
+            countdownElement.innerHTML = 
+                '<i class="fa-solid fa-clock"></i> Còn ' + 
+                String(hours).padStart(2, '0') + ':' + 
+                String(minutes).padStart(2, '0') + ':' + 
+                String(seconds).padStart(2, '0');
+            
+            // Change color based on time remaining
+            if (distance < 30 * 60 * 1000) { // Less than 30 minutes
+                countdownElement.style.background = '#dc3545';
+                countdownElement.style.animation = 'pulse 1s infinite';
+            } else if (distance < 60 * 60 * 1000) { // Less than 1 hour
+                countdownElement.style.background = '#ffc107';
+                countdownElement.style.color = '#000';
+            }
+        }
+        
+        // Update countdown every second
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+        
+        // Clean up interval when page unloads
+        window.addEventListener('beforeunload', function() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        });
+    </script>
+    
+    <style>
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+}

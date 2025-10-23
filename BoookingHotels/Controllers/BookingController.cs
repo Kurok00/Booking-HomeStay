@@ -23,13 +23,16 @@ public class BookingsController : Controller
     {
         var room = _context.Rooms
             .Include(r => r.Hotel)
+            .Include(r => r.RoomAmenities)
+                .ThenInclude(ra => ra.Amenity)
+            .Include(r => r.Photos)
             .FirstOrDefault(r => r.RoomId == roomId);
         if (room == null) return NotFound();
 
         var defaultCheckIn = checkIn ?? DateTime.Today;
         var defaultCheckOut = checkOut ?? DateTime.Today.AddDays(1);
 
-  
+
         var days = (defaultCheckOut - defaultCheckIn).Days;
         if (days <= 0) days = 1;
 
@@ -54,7 +57,7 @@ public class BookingsController : Controller
              && !_context.UserVouchers.Any(uv => uv.UserId == userId && uv.VoucherId == v.VoucherId))
          .ToList();
 
-        ViewBag.Vouchers = vouchers;   
+        ViewBag.Vouchers = vouchers;
         return View(booking);
     }
 
@@ -90,7 +93,7 @@ public class BookingsController : Controller
         if (isBooked)
         {
             TempData["Error"] = "Phòng này đã có người khác đặt trong khoảng thời gian bạn chọn.";
-            return RedirectToAction("Create", new { roomId = booking.RoomId});
+            return RedirectToAction("Create", new { roomId = booking.RoomId });
         }
 
 
@@ -131,10 +134,19 @@ public class BookingsController : Controller
         booking.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
         booking.CreatedAt = DateTime.Now;
         booking.Currency = "VND";
+        booking.PaymentMethod = paymentMethod;
 
-        booking.Status = paymentMethod == "COD"
-            ? BookingStatus.Paid
-            : BookingStatus.Confirmed; 
+        // Set status based on payment method
+        booking.Status = paymentMethod == "ONLINE"
+            ? BookingStatus.Pending    // Online payment = Pending (waiting for payment)
+            : BookingStatus.Confirmed; // COD = Confirmed, pay later
+
+        // Set payment deadline for ONLINE bookings (2 hours)
+        if (paymentMethod == "ONLINE")
+        {
+            booking.PaymentDeadline = DateTime.Now.AddHours(2);
+            //booking.PaymentDeadline = DateTime.Now.AddMinutes(1);
+        }
 
         _context.Bookings.Add(booking);
         _context.SaveChanges();
@@ -156,7 +168,7 @@ public class BookingsController : Controller
     [Authorize]
     public IActionResult MyBookings()
     {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value); 
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         var bookings = _context.Bookings
             .Where(b => b.UserId == userId)

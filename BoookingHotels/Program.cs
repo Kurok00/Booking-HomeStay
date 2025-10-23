@@ -1,5 +1,6 @@
 using BoookingHotels.Data;
 using BoookingHotels.Service;
+using BoookingHotels.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
@@ -32,6 +33,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddHostedService<BookingCancellationService>(); // Auto-cancel expired bookings
 QuestPDF.Settings.License = LicenseType.Community;
 // Authentication - Cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -95,9 +97,16 @@ using (var scope = app.Services.CreateScope())
             // Seed reviews cho tất cả rooms (5 reviews mỗi room)
             //await ReviewSeeder.SeedReviewsAsync(context);
 
-            // Thêm rooms cho các hotels chưa có rooms
-            //var missingRoomsUpdater = new MissingRoomsUpdater(context);
-            //await missingRoomsUpdater.AddMissingRoomsAsync();
+            // Thêm rooms cho các hotels chưa có rooms hoặc có <=1 room
+            var missingRoomsUpdater = new MissingRoomsUpdater(context);
+            await missingRoomsUpdater.AddMissingRoomsAsync();
+
+            // Cập nhật TẤT CẢ tên phòng sang tiếng Việt
+            await RoomNameVietnameseUpdater.UpdateAllRoomNamesToVietnameseAsync(context);
+
+            // Seed photos cho các rooms (tối thiểu 3 photos mỗi room)
+            var roomPhotoSeeder = new RoomPhotoSeeder(context);
+            await roomPhotoSeeder.SeedRoomPhotosAsync();
 
             Console.WriteLine("✅ Database connected successfully!");
         }

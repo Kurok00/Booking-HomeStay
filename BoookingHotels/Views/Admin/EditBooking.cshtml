@@ -128,7 +128,7 @@
                                         <div class="form-group">
                                             <label asp-for="SubTotal">Tạm tính</label>
                                             <div class="input-group">
-                                                <input asp-for="SubTotal" class="form-control" placeholder="0" />
+                                                <input asp-for="SubTotal" asp-format="{0:0.##}" type="number" step="0.01" class="form-control" placeholder="0" />
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">VND</span>
                                                 </div>
@@ -139,7 +139,7 @@
                                         <div class="form-group">
                                             <label asp-for="Discount">Giảm giá</label>
                                             <div class="input-group">
-                                                <input asp-for="Discount" class="form-control" placeholder="0" />
+                                                <input asp-for="Discount" asp-format="{0:0.##}" type="number" step="0.01" class="form-control" placeholder="0" />
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">VND</span>
                                                 </div>
@@ -150,7 +150,7 @@
                                         <div class="form-group">
                                             <label asp-for="Total">Tổng cộng</label>
                                             <div class="input-group">
-                                                <input asp-for="Total" class="form-control" placeholder="0" />
+                                                <input asp-for="Total" asp-format="{0:0.##}" type="number" step="0.01" class="form-control" placeholder="0" />
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">VND</span>
                                                 </div>

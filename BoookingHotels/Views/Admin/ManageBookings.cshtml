@@ -47,7 +47,11 @@
                         {
                             <span class="badge bg-warning text-dark">Pending</span>
                         }
-                        else
+                        else if (b.Status == BookingStatus.Confirmed)
+                        {
+                            <span class="badge bg-info text-white">Confirmed</span>
+                        }
+                        else if (b.Status == BookingStatus.Canceled)
                         {
                             <span class="badge bg-danger">Canceled</span>
                         }

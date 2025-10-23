@@ -31,7 +31,8 @@ namespace BoookingHotels.Controllers
             var bookingByDay = _context.Bookings
                 .Where(b => b.CreatedAt.HasValue && b.CreatedAt >= last7days)
                 .GroupBy(b => b.CreatedAt!.Value.Date)
-                .Select(g => new {
+                .Select(g => new
+                {
                     Date = g.Key,
                     Count = g.Count(),
                     Total = g.Sum(x => x.Total)
@@ -180,7 +181,7 @@ namespace BoookingHotels.Controllers
                 .Include(u => u.UserRoles)
                 .Include(u => u.Bookings)
                 .FirstOrDefault(u => u.UserId == id);
-            
+
             if (user != null)
             {
                 // 1. Xóa các AdminLog records nếu user này là admin
@@ -189,13 +190,13 @@ namespace BoookingHotels.Controllers
                 {
                     _context.AdminLogs.RemoveRange(adminLogs);
                 }
-                
+
                 // 2. Xóa các Bookings của user
                 if (user.Bookings.Any())
                 {
                     _context.Bookings.RemoveRange(user.Bookings);
                 }
-                
+
                 // 3. Xóa các Reviews của user
                 var reviews = _context.Reviews.Where(r => r.UserId == id).ToList();
                 if (reviews.Any())
@@ -211,24 +212,24 @@ namespace BoookingHotels.Controllers
                     }
                     _context.Reviews.RemoveRange(reviews);
                 }
-                
+
                 // 4. Xóa UserVouchers
                 var userVouchers = _context.UserVouchers.Where(uv => uv.UserId == id).ToList();
                 if (userVouchers.Any())
                 {
                     _context.UserVouchers.RemoveRange(userVouchers);
                 }
-                
+
                 // 5. Xử lý Hotels do user tạo - set CreatedBy về null thay vì xóa
                 var hotels = _context.Hotels.Where(h => h.CreatedBy == id).ToList();
                 foreach (var hotel in hotels)
                 {
                     hotel.CreatedBy = null;
                 }
-                
+
                 // 6. Xóa user roles
                 _context.UserRoles.RemoveRange(user.UserRoles);
-                
+
                 // 7. Xóa user
                 _context.Users.Remove(user);
                 _context.SaveChanges();
@@ -299,35 +300,81 @@ namespace BoookingHotels.Controllers
                 .Include(b => b.User)
                 .FirstOrDefault(b => b.BookingId == id);
 
-            if (booking == null) return NotFound();
-
-            if (booking.Status == BookingStatus.Paid)
+            if (booking == null)
             {
-                booking.Status = BookingStatus.Canceled;
-                _context.SaveChanges();
+                TempData["Error"] = "Không tìm thấy booking!";
+                return RedirectToAction("ManageBookings");
+            }
 
+            // Check if already canceled
+            if (booking.Status == BookingStatus.Canceled)
+            {
+                TempData["Info"] = $"Booking #{booking.BookingId} đã bị hủy trước đó.";
+                return RedirectToAction("ManageBookings");
+            }
+
+            // Cancel the booking
+            booking.Status = BookingStatus.Canceled;
+            _context.SaveChanges();
+
+            // Give voucher compensation if booking was Paid or Confirmed
+            if (booking.Status == BookingStatus.Paid || booking.Status == BookingStatus.Confirmed)
+            {
                 var voucher = new Voucher
                 {
-                    Code = "ADM-" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
-                    Description = $"Voucher bồi hoàn cho booking {booking.BookingId}",
+                    Code = "REFUND-" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(),
+                    Description = $"Voucher bồi hoàn do Admin hủy booking #{booking.BookingId}",
                     DiscountType = "Percent",
-                    DiscountValue = 10,
+                    DiscountValue = 15, // 15% compensation
                     MinOrderValue = 500000,
-                    ExpiryDate = DateTime.Now.AddMonths(1),
+                    ExpiryDate = DateTime.Now.AddMonths(2), // Valid for 2 months
                     Quantity = 1,
-                    IsActive = true
+                    IsActive = true,
+                    UserId = booking.UserId // Assign to specific user
                 };
 
                 _context.Vouchers.Add(voucher);
+
+                // Also add to UserVouchers for tracking
+                _context.UserVouchers.Add(new UserVoucher
+                {
+                    UserId = booking.UserId,
+                    VoucherId = voucher.VoucherId
+                });
+
                 _context.SaveChanges();
 
-                TempData["Success"] = $"Booking #{booking.BookingId} đã bị Admin hủy. Voucher {voucher.Code} đã được tặng cho khách.";
+                TempData["Success"] = $"✅ Đã hủy booking #{booking.BookingId}. Voucher {voucher.Code} (giảm 15%) đã được tặng cho {booking.User?.FullName}. Phòng đã sẵn sàng cho khách khác đặt.";
             }
-            else if (booking.Status == BookingStatus.Pending || booking.Status == BookingStatus.Confirmed)
+            else
             {
-                booking.Status = BookingStatus.Canceled;
+                TempData["Info"] = $"Đã hủy booking #{booking.BookingId}. Phòng đã sẵn sàng cho khách khác đặt.";
+            }
+
+            return RedirectToAction("ManageBookings");
+        }
+
+        [HttpPost]
+        [SkipAdminLog]
+        public IActionResult DeleteBooking(int id)
+        {
+            var booking = _context.Bookings.Find(id);
+
+            if (booking == null)
+            {
+                TempData["Error"] = "Không tìm thấy booking!";
+                return RedirectToAction("ManageBookings");
+            }
+
+            try
+            {
+                _context.Bookings.Remove(booking);
                 _context.SaveChanges();
-                TempData["Info"] = $"Booking #{booking.BookingId} đã được hủy (chưa thanh toán nên không có voucher).";
+                TempData["Success"] = $"Đã xóa booking #{id} thành công!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Có lỗi khi xóa booking: " + ex.Message;
             }
 
             return RedirectToAction("ManageBookings");
@@ -793,7 +840,7 @@ namespace BoookingHotels.Controllers
         {
             var totalReviews = _context.Reviews.Count();
             var totalPages = (int)Math.Ceiling(totalReviews / (double)pageSize);
-            
+
             var reviews = _context.Reviews
                 .Include(r => r.User)
                 .Include(r => r.Room)
@@ -802,11 +849,11 @@ namespace BoookingHotels.Controllers
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-            
+
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
             ViewBag.TotalReviews = totalReviews;
-            
+
             return View(reviews);
         }
 
@@ -831,7 +878,7 @@ namespace BoookingHotels.Controllers
             {
                 review.IsVisible = !review.IsVisible;
                 _context.SaveChanges();
-                
+
                 var status = review.IsVisible ? "hiển thị" : "ẩn";
                 TempData["success"] = $"Review đã được {status} thành công!";
             }

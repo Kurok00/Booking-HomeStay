@@ -28,6 +28,8 @@ namespace BoookingHotels.Models
         public decimal Total { get; set; }
         public string? Currency { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public DateTime? PaymentDeadline { get; set; } // Deadline for online payment (2 hours)
+        public string? PaymentMethod { get; set; } // COD or ONLINE
 
         public Hotel? Hotel { get; set; } = null!;
         public User? User { get; set; } = null!;
@@ -35,9 +37,9 @@ namespace BoookingHotels.Models
     }
     public enum BookingStatus
     {
-        Pending,   
-        Confirmed,  
-        Paid,       
-        Canceled   
+        Pending,
+        Confirmed,
+        Paid,
+        Canceled
     }
 }
