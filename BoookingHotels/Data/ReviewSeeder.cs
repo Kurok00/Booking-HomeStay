@@ -9,6 +9,7 @@ namespace BoookingHotels.Data
         {
             Console.WriteLine("⭐ === BẮT ĐẦU SEED REVIEWS ===");
 
+
             // Xóa tất cả reviews cũ để tạo lại
             var existingReviews = await context.Reviews.ToListAsync();
             if (existingReviews.Any())
@@ -19,16 +20,16 @@ namespace BoookingHotels.Data
                 Console.WriteLine("✅ Đã xóa reviews cũ");
             }
 
-            // Lấy tất cả users
-            var users = await context.Users.ToListAsync();
-            if (!users.Any())
+            // Lấy tất cả users (AsNoTracking)
+            var users = await context.Users.AsNoTracking().ToListAsync();
+            if (users.Count < 5)
             {
-                Console.WriteLine("❌ Không có user nào để tạo reviews!");
+                Console.WriteLine($"❌ Cần ít nhất 5 user để seed reviews (hiện có {users.Count})!");
                 return;
             }
 
-            // Lấy tất cả rooms
-            var rooms = await context.Rooms.ToListAsync();
+            // Lấy tất cả rooms (AsNoTracking)
+            var rooms = await context.Rooms.AsNoTracking().ToListAsync();
             if (!rooms.Any())
             {
                 Console.WriteLine("❌ Không có room nào để tạo reviews!");
@@ -108,10 +109,18 @@ namespace BoookingHotels.Data
                 }
             };
 
-            Console.WriteLine($"📝 Đang tạo 5 reviews cho mỗi room ({rooms.Count} rooms)...");
 
+            Console.WriteLine($"📝 Đang tạo 5 reviews cho mỗi room (tổng {rooms.Count} rooms)...");
+
+            int skippedRooms = 0;
             foreach (var room in rooms)
             {
+                // Nếu user < 5 thì bỏ qua room này
+                if (users.Count < 5)
+                {
+                    skippedRooms++;
+                    continue;
+                }
                 // Mỗi room có 5 reviews từ 5 users khác nhau
                 var shuffledUsers = users.OrderBy(x => random.Next()).Take(5).ToList();
 
@@ -135,7 +144,7 @@ namespace BoookingHotels.Data
             await context.Reviews.AddRangeAsync(reviews);
             await context.SaveChangesAsync();
 
-            Console.WriteLine($"✅ Đã tạo {reviews.Count} reviews cho {rooms.Count} rooms");
+            Console.WriteLine($"✅ Đã tạo {reviews.Count} reviews cho {rooms.Count - skippedRooms} rooms (bỏ qua {skippedRooms} rooms do thiếu user)");
             Console.WriteLine("⭐ === HOÀN THÀNH SEED REVIEWS ===");
         }
     }

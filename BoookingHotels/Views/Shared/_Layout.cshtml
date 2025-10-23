@@ -347,12 +347,12 @@
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("User"))
                     {
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><a asp-controller="Home" asp-action="Index" class="nav-link">Home</a></li>
-                            <li class="nav-item"><a asp-controller="Hotels" asp-action="Index" class="nav-link">Hotels</a></li>
-                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Index" class="nav-link">Blogs</a></li>
-                            <li class="nav-item"><a asp-controller="Reviews" asp-action="MyReviews" class="nav-link">My Reviews</a></li>
-                            <li class="nav-item"><a asp-controller="Vouchers" asp-action="MyVouchers" class="nav-link">My Vouchers</a></li>
-                            <li class="nav-item"><a asp-controller="Bookings" asp-action="MyBookings" class="nav-link">My Bookings</a></li>
+                            <li class="nav-item"><a asp-controller="Home" asp-action="Index" class="nav-link">Trang chủ</a></li>
+                            <li class="nav-item"><a asp-controller="Hotels" asp-action="Index" class="nav-link">Khách sạn</a></li>
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Index" class="nav-link">Blog</a></li>
+                            <li class="nav-item"><a asp-controller="Reviews" asp-action="MyReviews" class="nav-link">Đánh giá của tôi</a></li>
+                            <li class="nav-item"><a asp-controller="Vouchers" asp-action="MyVouchers" class="nav-link">Voucher của tôi</a></li>
+                            <li class="nav-item"><a asp-controller="Bookings" asp-action="MyBookings" class="nav-link">Đặt phòng của tôi</a></li>
                         </ul>
                         <div class="dropdown">
                             <button class="btn user-menu dropdown-toggle d-flex align-items-center" type="button" id="userMenu"
@@ -362,8 +362,8 @@
                                 <span>@User.Identity.Name</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenu">
-                                <li><a class="dropdown-item" asp-controller="Auth" asp-action="Profile"><i class="bi bi-person-lines-fill"></i> Profile</a></li>
-                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                                <li><a class="dropdown-item" asp-controller="Auth" asp-action="Profile"><i class="bi bi-person-lines-fill"></i> Trang cá nhân</a></li>
+                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
                             </ul>
                         </div>
                     }
@@ -379,7 +379,7 @@
                                 <span>@User.Identity.Name</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenu">
-                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                                <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
                             </ul>
                         </div>
                     }
@@ -388,8 +388,8 @@
                     else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Reviewer"))
                     {
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Index" class="nav-link">Blogs</a></li>
-                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Create" class="nav-link">Create Blog</a></li>
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Index" class="nav-link">Blog</a></li>
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Create" class="nav-link">Tạo bài viết</a></li>
                         </ul>
                         <div class="dropdown">
                             <button class="btn user-menu dropdown-toggle d-flex align-items-center" type="button" id="userMenu"
@@ -408,9 +408,11 @@
                     else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Host"))
                     {
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><a asp-controller="Host" asp-action="MyHotels" class="nav-link">My Hotels</a></li>
-                            <li class="nav-item"><a asp-controller="Host" asp-action="CreateHotel" class="nav-link">Create Hotel</a></li>
-                            <li class="nav-item"><a asp-controller="Host" asp-action="MyRooms" class="nav-link">My Rooms</a></li>
+                            <li class="nav-item"><a asp-controller="Host" asp-action="MyHotels" class="nav-link">Khách sạn của tôi</a></li>
+                            <li class="nav-item"><a asp-controller="Host" asp-action="CreateHotel" class="nav-link">Tạo khách sạn</a></li>
+                            <li class="nav-item"><a asp-controller="Host" asp-action="MyRooms" class="nav-link">Phòng của tôi</a></li>
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="MyBlogs" class="nav-link">Blog của tôi</a></li>
+                            <li class="nav-item"><a asp-controller="Blogs" asp-action="Create" class="nav-link">Tạo bài viết</a></li>
                         </ul>
                         <div class="dropdown">
                             <button class="btn user-menu dropdown-toggle d-flex align-items-center" type="button" id="userMenu"
@@ -428,8 +430,8 @@
                     @* ================= CHƯA LOGIN ================= *@
                     else
                     {
-                        <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-primary me-2">Register</a>
-                        <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary">Sign in</a>
+                        <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-primary me-2">Đăng ký</a>
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary">Đăng nhập</a>
                     }
 
                 </div>

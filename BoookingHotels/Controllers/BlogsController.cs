@@ -2,6 +2,7 @@
 using BoookingHotels.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace BoookingHotels.Controllers
@@ -21,6 +22,8 @@ namespace BoookingHotels.Controllers
         public IActionResult Index()
         {
             var blogs = _db.Blogs
+                .Include(b => b.Hotel)
+                .Include(b => b.Reviewer)
                 .OrderByDescending(b => b.CreatedDate)
                 .ToList();
             return View(blogs);
@@ -29,36 +32,72 @@ namespace BoookingHotels.Controllers
         // Xem chi tiết blog
         public IActionResult Detail(int id)
         {
-            var blog = _db.Blogs.FirstOrDefault(b => b.BlogId == id);
+            var blog = _db.Blogs
+                .Include(b => b.Hotel)
+                .Include(b => b.Reviewer)
+                .FirstOrDefault(b => b.BlogId == id);
             if (blog == null) return NotFound();
             return View(blog);
         }
 
-        // GET: Blogs/Create
-        [Authorize(Roles = "Reviewer")]
+        // GET: Blogs/Create - Cho cả Reviewer và Host
+        [Authorize(Roles = "Reviewer,Host")]
         public IActionResult Create()
         {
+            // Nếu là Host, lấy danh sách hotels của họ
+            if (User.IsInRole("Host"))
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                var myHotels = _db.Hotels
+                    .Where(h => h.CreatedBy == userId)
+                    .Select(h => new { h.HotelId, h.Name })
+                    .ToList();
+                ViewBag.MyHotels = myHotels;
+            }
             return View();
         }
 
         // POST: Blogs/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Reviewer")]
+        [Authorize(Roles = "Reviewer,Host")]
         public IActionResult Create(Blog model, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
+            {
+                if (User.IsInRole("Host"))
+                {
+                    var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                    var myHotels = _db.Hotels
+                        .Where(h => h.CreatedBy == userId)
+                        .Select(h => new { h.HotelId, h.Name })
+                        .ToList();
+                    ViewBag.MyHotels = myHotels;
+                }
                 return View(model);
+            }
 
             model.CreatedDate = DateTime.Now;
 
             // lấy user id từ claims
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId != null)
-                model.ReviewerId = int.Parse(userId);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId != null)
+                model.ReviewerId = int.Parse(currentUserId);
 
-            // lấy tên reviewer làm Author
-            model.Author = User.Identity?.Name ?? "Reviewer";
+            // lấy tên user làm Author
+            model.Author = User.Identity?.Name ?? "User";
+
+            // Nếu là Host và chọn hotel, verify hotel thuộc về họ
+            if (User.IsInRole("Host") && model.HotelId.HasValue)
+            {
+                var userId = int.Parse(currentUserId!);
+                var hotel = _db.Hotels.FirstOrDefault(h => h.HotelId == model.HotelId.Value && h.CreatedBy == userId);
+                if (hotel == null)
+                {
+                    ModelState.AddModelError("HotelId", "Khách sạn không hợp lệ");
+                    return View(model);
+                }
+            }
 
             // xử lý upload thumbnail
             if (imageFile != null && imageFile.Length > 0)
@@ -89,6 +128,19 @@ namespace BoookingHotels.Controllers
 
             TempData["success"] = "Đăng blog thành công!";
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Blogs của tôi (cho Host)
+        [Authorize(Roles = "Host")]
+        public IActionResult MyBlogs()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var blogs = _db.Blogs
+                .Include(b => b.Hotel)
+                .Where(b => b.ReviewerId == userId)
+                .OrderByDescending(b => b.CreatedDate)
+                .ToList();
+            return View(blogs);
         }
     }
 }

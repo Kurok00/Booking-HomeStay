@@ -12,37 +12,37 @@ namespace BoookingHotels.Data
 
             // Seed Roles (kiểm tra riêng biệt)
             await SeedRoles(context);
-            
+
             // Seed Users (kiểm tra riêng biệt)
             await SeedUsers(context);
-            
+
             // Seed UserRoles
             await SeedUserRoles(context);
-            
+
             // Seed Amenities
             await SeedAmenities(context);
-            
+
             // Seed Hotels
             await SeedHotels(context);
-            
+
             // Seed Rooms
             await SeedRooms(context);
-            
+
             // Seed Room Amenities
             await SeedRoomAmenities(context);
-            
+
             // Seed Photos
             await SeedPhotos(context);
-            
+
             // Seed Vouchers
             await SeedVouchers(context);
-            
+
             // Seed Bookings
             await SeedBookings(context);
-            
+
             // Seed Reviews
             await SeedReviews(context);
-            
+
             // Seed Blogs
             await SeedBlogs(context);
 
@@ -76,7 +76,7 @@ namespace BoookingHotels.Data
             if (currentUserCount < 31) // Cần 31 users (1 admin + 10 hosts + 20 users)
             {
                 var users = new List<User>();
-                
+
                 // Admin user (chỉ thêm nếu chưa có admin)
                 var adminExists = await context.Users.AnyAsync(u => u.UserName == "admin");
                 if (!adminExists)
@@ -84,7 +84,7 @@ namespace BoookingHotels.Data
                     users.Add(new User
                     {
                         UserName = "admin",
-                        Email = "admin@booking.com", 
+                        Email = "admin@booking.com",
                         Password = BCrypt.Net.BCrypt.HashPassword("admin123"),
                         FullName = "Administrator",
                         Phone = $"012345{DateTime.Now.Millisecond:D4}", // Unique phone
@@ -160,7 +160,7 @@ namespace BoookingHotels.Data
             }
 
             var userRoles = new List<UserRole>();
-            
+
             // Lấy actual User IDs và Role IDs
             var adminUser = await context.Users.FirstOrDefaultAsync(u => u.UserName == "admin");
             var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Admin");
@@ -241,7 +241,7 @@ namespace BoookingHotels.Data
             {
                 var city = cities[random.Next(cities.Length)];
                 var type = hotelTypes[random.Next(hotelTypes.Length)];
-                
+
                 hotels.Add(new Hotel
                 {
                     Name = $"{type} {city} {i}",
@@ -275,8 +275,8 @@ namespace BoookingHotels.Data
                 for (int j = 1; j <= roomCount; j++)
                 {
                     var roomType = roomTypes[random.Next(roomTypes.Length)];
-                    var capacity = roomType == "Phòng gia đình" ? random.Next(4, 7) : 
-                                  roomType == "Suite" ? random.Next(2, 5) : 
+                    var capacity = roomType == "Phòng gia đình" ? random.Next(4, 7) :
+                                  roomType == "Suite" ? random.Next(2, 5) :
                                   roomType == "Phòng đơn" ? 1 : 2;
 
                     rooms.Add(new Room
@@ -284,8 +284,8 @@ namespace BoookingHotels.Data
                         HotelId = hotelId,
                         Name = $"{roomType} {j:D2}",
                         Capacity = capacity,
-                        Price = (decimal)(roomType == "Suite" ? random.Next(1500000, 3000000) : 
-                                        roomType == "Deluxe" ? random.Next(1000000, 2000000) : 
+                        Price = (decimal)(roomType == "Suite" ? random.Next(1500000, 3000000) :
+                                        roomType == "Deluxe" ? random.Next(1000000, 2000000) :
                                         random.Next(500000, 1500000)),
                         Size = random.Next(20, 50),
                         BedType = capacity > 2 ? "King bed + Sofa bed" : capacity == 2 ? "Queen bed" : "Single bed",
@@ -308,7 +308,7 @@ namespace BoookingHotels.Data
             for (int roomId = 1; roomId <= roomCount; roomId++)
             {
                 var amenityIds = Enumerable.Range(1, 20).OrderBy(x => random.Next()).Take(random.Next(5, 11)).ToList();
-                
+
                 foreach (var amenityId in amenityIds)
                 {
                     roomAmenities.Add(new RoomAmenitie
@@ -503,6 +503,37 @@ namespace BoookingHotels.Data
             };
 
             await context.Blogs.AddRangeAsync(blogs);
+            await context.SaveChangesAsync();
+
+            // Seed blog cho mỗi host trên mỗi hotel của host đó
+            var hosts = await context.Users
+                .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Host"))
+                .ToListAsync();
+
+            foreach (var host in hosts)
+            {
+                var hotels = await context.Hotels.Where(h => h.CreatedBy == host.UserId).ToListAsync();
+                foreach (var hotel in hotels)
+                {
+                    // Kiểm tra đã có blog cho hotel này chưa
+                    bool hasBlog = await context.Blogs.AnyAsync(b => b.HotelId == hotel.HotelId && b.ReviewerId == host.UserId);
+                    if (!hasBlog)
+                    {
+                        var blog = new Blog
+                        {
+                            Title = $"Trải nghiệm tại {hotel.Name}",
+                            Content = $"Chia sẻ về khách sạn {hotel.Name} do {host.FullName ?? host.UserName} quản lý.",
+                            ShortDescription = $"Blog review khách sạn {hotel.Name}",
+                            Author = host.FullName ?? host.UserName,
+                            CreatedDate = DateTime.Now.AddDays(-new Random().Next(1, 60)),
+                            ReviewerId = host.UserId,
+                            HotelId = hotel.HotelId
+                        };
+                        await context.Blogs.AddAsync(blog);
+                    }
+                }
+            }
+
             await context.SaveChangesAsync();
         }
     }

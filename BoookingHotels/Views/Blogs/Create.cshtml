@@ -55,6 +55,28 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Mô tả ngắn</label>
+                    <textarea asp-for="ShortDescription" class="form-control" rows="2" placeholder="Viết mô tả ngắn gọn về bài viết..."></textarea>
+                    <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                </div>
+
+                @* Nếu là Host, cho phép chọn hotel *@
+                @if (User.IsInRole("Host") && ViewBag.MyHotels != null)
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Khách sạn liên quan (tùy chọn)</label>
+                        <select asp-for="HotelId" class="form-select">
+                            <option value="">-- Không chọn khách sạn --</option>
+                            @foreach (var hotel in ViewBag.MyHotels)
+                            {
+                                <option value="@hotel.HotelId">@hotel.Name</option>
+                            }
+                        </select>
+                        <small class="text-muted">Chọn khách sạn nếu bài viết review về khách sạn cụ thể</small>
+                    </div>
+                }
+
+                <div class="mb-3">
                     <label class="form-label">Nội dung</label>
                     <textarea asp-for="Content" class="form-control" rows="6" placeholder="Viết nội dung chi tiết..."></textarea>
                     <span asp-validation-for="Content" class="text-danger"></span>

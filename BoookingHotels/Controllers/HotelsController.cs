@@ -14,16 +14,10 @@ namespace BoookingHotels.Controllers
         }
 
         // ============================
-        // 1️⃣ Trang Index - hiển thị danh sách + bộ lọc
+        // 1️⃣ Trang Index - hiển thị danh sách + bộ lọc (với pagination)
         // ============================
         public async Task<IActionResult> Index(string? search, string? sortBy, DateTime? checkIn, DateTime? checkOut, string? city)
         {
-            var hotels = _context.Hotels
-                .Include(h => h.Rooms)
-                .Include(h => h.Photoss)
-                .Where(h => h.Status == true && h.IsApproved == true)
-                .AsQueryable();
-
             // 🔹 Lấy danh sách top city (hiển thị trên giao diện)
             ViewBag.TopCities = await _context.Hotels
                 .Where(h => h.IsApproved == true)
@@ -38,11 +32,43 @@ namespace BoookingHotels.Controllers
                 .Take(6)
                 .ToListAsync();
 
+            // Load chỉ 15 hotels đầu tiên
+            var hotels = await GetFilteredHotels(search, sortBy, checkIn, checkOut, city, 1, 15);
+
+            ViewBag.Search = search;
+            ViewBag.SortBy = sortBy;
+            ViewBag.CheckIn = checkIn;
+            ViewBag.CheckOut = checkOut;
+            ViewBag.SelectedCity = city;
+
+            return View(hotels);
+        }
+
+        // ============================
+        // 📌 API: Load thêm hotels (Lazy Loading)
+        // ============================
+        [HttpGet]
+        public async Task<IActionResult> LoadMoreHotels(string? search, string? sortBy, DateTime? checkIn, DateTime? checkOut, string? city, int page = 1, int pageSize = 15)
+        {
+            var hotels = await GetFilteredHotels(search, sortBy, checkIn, checkOut, city, page, pageSize);
+            return PartialView("_HotelCardsPartial", hotels);
+        }
+
+        // ============================
+        // 🔧 Helper method để lọc hotels
+        // ============================
+        private async Task<List<Models.Hotel>> GetFilteredHotels(string? search, string? sortBy, DateTime? checkIn, DateTime? checkOut, string? city, int page, int pageSize)
+        {
+            var hotels = _context.Hotels
+                .Include(h => h.Rooms)
+                .Include(h => h.Photoss)
+                .Where(h => h.Status == true && h.IsApproved == true)
+                .AsQueryable();
+
             // 🔹 Lọc theo city (nếu được chọn)
             if (!string.IsNullOrWhiteSpace(city))
             {
                 hotels = hotels.Where(h => h.City == city);
-                ViewBag.SelectedCity = city;
             }
 
             // 🔹 Tìm kiếm theo từ khóa
@@ -74,7 +100,11 @@ namespace BoookingHotels.Controllers
                 _ => hotels.OrderByDescending(h => h.CreatedAt)
             };
 
-            return View(await hotels.ToListAsync());
+            // 🔹 Pagination
+            return await hotels
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         // ============================
@@ -133,6 +163,16 @@ namespace BoookingHotels.Controllers
               .FirstOrDefaultAsync(h => h.HotelId == id);
 
             if (hotel == null) return NotFound();
+
+            // Lấy blogs liên quan đến hotel này
+            var relatedBlogs = await _context.Blogs
+                .Include(b => b.Reviewer)
+                .Where(b => b.HotelId == id)
+                .OrderByDescending(b => b.CreatedDate)
+                .Take(5)
+                .ToListAsync();
+
+            ViewBag.RelatedBlogs = relatedBlogs;
 
             return View(hotel);
         }

@@ -28,7 +28,13 @@ namespace BoookingHotels.Models
 
         [ForeignKey("User")]
         public int ReviewerId { get; set; }
-        
+
         public User? Reviewer { get; set; }
+
+        // Liên kết với Hotel (optional - nếu blog review về 1 hotel cụ thể)
+        [ForeignKey("Hotel")]
+        public int? HotelId { get; set; }
+
+        public Hotel? Hotel { get; set; }
     }
 }

@@ -58,6 +58,30 @@
             margin-right: 0.75rem;
         }
 
+    .hotel-info-card {
+        background: linear-gradient(135deg, #0071c2 0%, #003580 100%);
+        color: #fff;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 16px rgba(0,113,194,0.2);
+    }
+
+    .hotel-info-card h5 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hotel-info-card a {
+        color: #febb02;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .hotel-info-card a:hover {
+        text-decoration: underline;
+    }
+
     .btn-back {
         margin-top: 2rem;
         border-radius: 0.5rem;
@@ -84,6 +108,21 @@
                             <i class="fa-solid fa-user-pen"></i> @Model.Author
                         </span>
                     </div>
+
+                    <!-- Hotel Info Card -->
+                    @if (Model.HotelId.HasValue && Model.Hotel != null)
+                    {
+                        <div class="hotel-info-card">
+                            <h5><i class="fa-solid fa-hotel"></i> Khách sạn được review</h5>
+                            <p class="mb-2">
+                                <strong>@Model.Hotel.Name</strong><br/>
+                                <i class="fa-solid fa-location-dot"></i> @Model.Hotel.Address, @Model.Hotel.City
+                            </p>
+                            <a asp-controller="Hotels" asp-action="Details" asp-route-id="@Model.HotelId">
+                                <i class="fa-solid fa-arrow-right"></i> Xem chi tiết khách sạn
+                            </a>
+                        </div>
+                    }
 
                     <!-- Content -->
                     <div class="blog-content">

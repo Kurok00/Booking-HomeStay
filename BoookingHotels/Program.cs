@@ -95,7 +95,7 @@ using (var scope = app.Services.CreateScope())
             //await AmenitySeeder.SeedAmenitiesAndRoomAmenitiesAsync(context);
 
             // Seed reviews cho tất cả rooms (5 reviews mỗi room)
-            //await ReviewSeeder.SeedReviewsAsync(context);
+            await ReviewSeeder.SeedReviewsAsync(context);
 
             // Thêm rooms cho các hotels chưa có rooms hoặc có <=1 room
             var missingRoomsUpdater = new MissingRoomsUpdater(context);
@@ -107,6 +107,9 @@ using (var scope = app.Services.CreateScope())
             // Seed photos cho các rooms (tối thiểu 3 photos mỗi room)
             var roomPhotoSeeder = new RoomPhotoSeeder(context);
             await roomPhotoSeeder.SeedRoomPhotosAsync();
+
+            // Seed 20 hotels và 10 rooms cho mỗi host
+            await HostDataSeeder.SeedHostHotelsAndRoomsAsync(context);
 
             Console.WriteLine("✅ Database connected successfully!");
         }

@@ -1,7 +1,7 @@
-﻿@model IEnumerable<BoookingHotels.Models.Hotel>
+@model IEnumerable<BoookingHotels.Models.Hotel>
 
 @{
-    ViewData["Title"] = "Hotel Listings";
+    ViewData["Title"] = "Danh Sách Khách Sạn";
 }
 
 <style>
@@ -150,7 +150,7 @@
         }
 
     .destination-card {
-        flex: 0 0 100%; /* 👉 chỉ 1 item chiếm toàn khung */
+        flex: 0 0 100%; /* Để chỉ 1 item chiếm toàn khung */
         position: relative;
         overflow: hidden;
         border-radius: 1rem;
@@ -263,23 +263,23 @@
         </div>
     </section>
 
-    <!-- 🔹 SEARCH FORM -->
+    <!-- ?? SEARCH FORM -->
     <section>
-        <h1 class="booking-hero-title">Find your next stay</h1>
-        <p class="booking-hero-desc">Search low prices on hotels, homes and much more...</p>
+        <h1 class="booking-hero-title">Tìm nơi nghỉ tiếp theo của bạn</h1>
+        <p class="booking-hero-desc">Tìm kiếm giá tốt cho khách sạn, nhà nghỉ và nhiều hơn nữa...</p>
 
         <div class="booking-searchbox">
             <div class="row g-2 align-items-end">
                 <div class="col-md-3 col-12 position-relative">
-                    <input type="text" id="searchCity" class="form-control" placeholder="Where are you going?" autocomplete="off">
+                    <input type="text" id="searchCity" class="form-control" placeholder="Bạn muốn đi đâu?" autocomplete="off">
                     <div id="citySuggestions"></div>
                 </div>
                 <div class="col-md-2 col-6">
-                    <label class="form-label mb-1">Check-in</label>
+                    <label class="form-label mb-1">Ngày nhận phòng</label>
                     <input type="date" name="checkIn" class="form-control">
                 </div>
                 <div class="col-md-2 col-6">
-                    <label class="form-label mb-1">Check-out</label>
+                    <label class="form-label mb-1">Ngày trả phòng</label>
                     <input type="date" name="checkOut" class="form-control">
                 </div>
                 <div class="col-md-3 col-12">
@@ -290,15 +290,15 @@
                     </select>
                 </div>
                 <div class="col-md-2 col-12">
-                    <button id="btnSearch" class="btn btn-primary w-100">Search</button>
+                    <button id="btnSearch" class="btn btn-primary w-100">Tìm kiếm</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 🔹 DANH SÁCH KHÁCH SẠN -->
+    <!-- 🏨 DANH SÁCH KHÁCH SẠN -->
     <div id="hotelResults">
-        <div class="row g-3 mt-3">
+        <div class="row g-3 mt-3" id="hotelGrid">
             @foreach (var hotel in Model)
             {
                 <div class="col-lg-4 col-md-6 col-sm-12">
@@ -311,16 +311,30 @@
                             <div class="hotel-price">
                                 @if (hotel.Rooms != null && hotel.Rooms.Any())
                                 {
-                                    @:From @hotel.Rooms.Min(r => r.Price).ToString("N0") VND/night
+                                    @:Từ @hotel.Rooms.Min(r => r.Price).ToString("N0") VNĐ/đêm
                                 }
                             </div>
                             <a asp-action="Details" asp-route-id="@hotel.HotelId"
-                               class="btn btn-outline-primary view-details-btn mt-auto">View Details</a>
+                               class="btn btn-outline-primary view-details-btn mt-auto">Xem chi tiết</a>
                         </div>
                     </div>
                 </div>
             }
         </div>
+        
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <p class="mt-2 text-muted">Đang tải thêm khách sạn...</p>
+        </div>
+
+        <!-- End of results message -->
+        <div id="endMessage" class="text-center py-4" style="display: none;">
+            <p class="text-muted">✅ Bạn đã xem hết tất cả khách sạn</p>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -328,44 +342,92 @@
         const searchInput = document.getElementById('searchCity');
         const suggestionBox = document.getElementById('citySuggestions');
         const hotelContainer = document.getElementById('hotelResults');
+        const hotelGrid = document.getElementById('hotelGrid');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const endMessage = document.getElementById('endMessage');
 
-        // 🔹 Gợi ý city khi gõ
+        // Lazy loading state
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMoreData = true;
+        let currentFilters = {
+            search: '@ViewBag.Search',
+            sortBy: '@ViewBag.SortBy',
+            checkIn: '@ViewBag.CheckIn',
+            checkOut: '@ViewBag.CheckOut',
+            city: '@ViewBag.SelectedCity'
+        };
+
+        // Lazy Loading
+        function handleScroll() {
+            if (isLoading || !hasMoreData) return;
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const threshold = document.documentElement.scrollHeight - 500;
+            if (scrollPosition >= threshold) { loadMoreHotels(); }
+        }
+
+        async function loadMoreHotels() {
+            if (isLoading || !hasMoreData) return;
+            isLoading = true;
+            loadingSpinner.style.display = 'block';
+            endMessage.style.display = 'none';
+            currentPage++;
+            try {
+                const params = new URLSearchParams();
+                if (currentFilters.search) params.append('search', currentFilters.search);
+                if (currentFilters.sortBy) params.append('sortBy', currentFilters.sortBy);
+                if (currentFilters.checkIn) params.append('checkIn', currentFilters.checkIn);
+                if (currentFilters.checkOut) params.append('checkOut', currentFilters.checkOut);
+                if (currentFilters.city) params.append('city', currentFilters.city);
+                params.append('page', currentPage);
+                params.append('pageSize', 15);
+                const response = await fetch(`/Hotels/LoadMoreHotels?${params.toString()}`);
+                const html = await response.text();
+                if (html.trim().length === 0) {
+                    hasMoreData = false;
+                    endMessage.style.display = 'block';
+                } else {
+                    hotelGrid.insertAdjacentHTML('beforeend', html);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                isLoading = false;
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        function resetPagination() { currentPage = 1; hasMoreData = true; endMessage.style.display = 'none'; }
+
         searchInput.addEventListener('input', async function () {
             const term = this.value.trim();
-            if (term.length < 2) {
-                suggestionBox.innerHTML = '';
-                return;
-            }
-
+            if (term.length < 2) { suggestionBox.innerHTML = ''; return; }
             const response = await fetch(`/Hotels/SuggestCity?term=${encodeURIComponent(term)}`);
             const cities = await response.json();
-
             suggestionBox.innerHTML = '';
             cities.forEach(c => {
                 const item = document.createElement('a');
                 item.classList.add('d-flex', 'align-items-center', 'gap-2', 'p-2', 'suggest-item');
-                item.innerHTML = `
-                    <img src="${c.photo}" alt="${c.city}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;">
-                    <span>${c.city}</span>
-                `;
-
+                item.innerHTML = `<img src="${c.photo}" alt="${c.city}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;"><span>${c.city}</span>`;
                 item.addEventListener('click', async () => {
                     searchInput.value = c.city;
                     suggestionBox.innerHTML = '';
+                    currentFilters.city = c.city;
+                    resetPagination();
                     const resp = await fetch(`/Hotels/SearchByCity?city=${encodeURIComponent(c.city)}`);
                     const html = await resp.text();
                     hotelContainer.innerHTML = html;
                     window.scrollTo({ top: hotelContainer.offsetTop - 50, behavior: 'smooth' });
                 });
-
                 suggestionBox.appendChild(item);
             });
         });
 
-        // 🔹 Click city trong Top City section
         document.querySelectorAll('.destination-card').forEach(card => {
             card.addEventListener('click', async () => {
                 const city = card.getAttribute('data-city');
+                currentFilters.city = city;
+                resetPagination();
                 const resp = await fetch(`/Hotels/SearchByCity?city=${encodeURIComponent(city)}`);
                 const html = await resp.text();
                 hotelContainer.innerHTML = html;
@@ -373,35 +435,29 @@
             });
         });
 
-        // Ẩn suggestion khi click ra ngoài
         document.addEventListener('click', e => {
-            if (!suggestionBox.contains(e.target) && e.target !== searchInput) {
-                suggestionBox.innerHTML = '';
-            }
+            if (!suggestionBox.contains(e.target) && e.target !== searchInput) { suggestionBox.innerHTML = ''; }
         });
 
-            const scrollContainer = document.getElementById('destinationScroll');
-            const btnLeft = document.getElementById('scrollLeft');
-            const btnRight = document.getElementById('scrollRight');
-
-            // Cuộn sang trái/phải 1 “khung hiển thị” (4 item)
-            btnLeft.addEventListener('click', () => {
-                scrollContainer.scrollBy({ left: -scrollContainer.clientWidth, behavior: 'smooth' });
-            });
-            btnRight.addEventListener('click', () => {
-                scrollContainer.scrollBy({ left: scrollContainer.clientWidth, behavior: 'smooth' });
-            });
-
-            // Ẩn/hiện nút khi ở đầu/cuối danh sách
-            function updateButtons() {
-                const scrollLeft = scrollContainer.scrollLeft;
-                const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-                btnLeft.style.display = scrollLeft <= 10 ? 'none' : 'flex';
-                btnRight.style.display = scrollLeft >= maxScroll - 10 ? 'none' : 'flex';
-            }
-
-            scrollContainer.addEventListener('scroll', updateButtons);
-            window.addEventListener('resize', updateButtons);
-            updateButtons();
-        </script>
+        const scrollContainer = document.getElementById('destinationScroll');
+        const btnLeft = document.getElementById('scrollLeft');
+        const btnRight = document.getElementById('scrollRight');
+        btnLeft.addEventListener('click', () => { scrollContainer.scrollBy({ left: -scrollContainer.clientWidth, behavior: 'smooth' }); });
+        btnRight.addEventListener('click', () => { scrollContainer.scrollBy({ left: scrollContainer.clientWidth, behavior: 'smooth' }); });
+        function updateButtons() {
+            const scrollLeft = scrollContainer.scrollLeft;
+            const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+            btnLeft.style.display = scrollLeft <= 10 ? 'none' : 'flex';
+            btnRight.style.display = scrollLeft >= maxScroll - 10 ? 'none' : 'flex';
+        }
+        scrollContainer.addEventListener('scroll', updateButtons);
+        window.addEventListener('resize', updateButtons);
+        updateButtons();
+        
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(handleScroll, 100);
+        });
+    </script>
 }
