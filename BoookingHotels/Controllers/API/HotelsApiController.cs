@@ -104,6 +104,8 @@ namespace BoookingHotels.Controllers.API
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetHotel(int id)
         {
+            Console.WriteLine($"🔵 [HotelsApi] GET request for hotel ID: {id}");
+
             var hotel = await _context.Hotels
                 .Include(h => h.Photoss)
                 .Include(h => h.Rooms)
@@ -119,6 +121,33 @@ namespace BoookingHotels.Controllers.API
             if (hotel == null)
                 return NotFound(new { message = "Hotel not found" });
 
+            // Aggregate all unique amenities from all rooms (remove duplicates by Name + Icon)
+            var roomAmenities = hotel.Rooms
+                .SelectMany(r => r.RoomAmenities ?? new List<RoomAmenitie>())
+                .Where(ra => ra.Amenity != null)
+                .Select(ra => ra.Amenity!)
+                .GroupBy(a => new { a.Name, a.Icon })  // Group by Name AND Icon to remove duplicates
+                .Select(g => g.First())  // Take first from each group
+                .OrderBy(a => a.Name)
+                .ToList();
+
+            var allAmenities = roomAmenities.Any()
+                ? roomAmenities.Select(a => new
+                {
+                    AmenitiesId = a.AmenityId,
+                    Name = a.Name,
+                    IconUrl = a.Icon ?? "🏨"
+                }).ToList()
+                : new[]
+                {
+                    new { AmenitiesId = 1, Name = "WiFi", IconUrl = "📶" },
+                    new { AmenitiesId = 2, Name = "Air Conditioning", IconUrl = "❄️" },
+                    new { AmenitiesId = 3, Name = "Restaurant", IconUrl = "🍽️" },
+                    new { AmenitiesId = 4, Name = "Parking", IconUrl = "🅿️" },
+                    new { AmenitiesId = 5, Name = "Pool", IconUrl = "🏊" },
+                    new { AmenitiesId = 6, Name = "Gym", IconUrl = "🏋️" }
+                }.ToList();
+
             var result = new
             {
                 hotel.HotelId,
@@ -131,59 +160,10 @@ namespace BoookingHotels.Controllers.API
                 hotel.Longitude,
                 hotel.Status,
                 hotel.CreatedAt,
-                Photos = hotel.Photoss.Where(p => p.RoomId == null).Select(p => new
-                {
-                    p.PhotoId,
-                    p.Url
-                }).ToList(),
-                Rooms = hotel.Rooms.Select(r => new
-                {
-                    r.RoomId,
-                    r.Name,
-                    r.Capacity,
-                    r.BedType,
-                    r.Size,
-                    r.Price,
-                    IsAvailable = r.Status,
-                    MainPhoto = r.Photos != null && r.Photos.Any()
-                        ? r.Photos.First().Url
-                        : "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400",
-                    Photos = r.Photos != null ? r.Photos.Select(p => p.Url).ToList() : new List<string>(),
-                    Amenities = (r.RoomAmenities != null && r.RoomAmenities.Any()
-                        ? r.RoomAmenities.Where(ra => ra.Amenity != null)
-                            .Select(ra => (object)new
-                            {
-                                ra.Amenity!.AmenityId,
-                                ra.Amenity.Name,
-                                ra.Amenity.Icon
-                            })
-                        : Enumerable.Empty<object>()).ToList(),
-                    AvgRating = r.Reviews != null && r.Reviews.Any(rv => rv.IsVisible)
-                        ? r.Reviews.Where(rv => rv.IsVisible).Average(rv => rv.Rating)
-                        : 0,
-                    ReviewCount = r.Reviews != null ? r.Reviews.Count(rv => rv.IsVisible) : 0
-                }).ToList(),
-                Reviews = hotel.Rooms
-                    .SelectMany(r => r.Reviews ?? new List<Review>())
-                    .Where(rv => rv.IsVisible)
-                    .OrderByDescending(rv => rv.CreatedAt)
-                    .Select(rv => new
-                    {
-                        rv.ReviewId,
-                        rv.Rating,
-                        rv.Comment,
-                        rv.CreatedAt,
-                        User = new
-                        {
-                            rv.User!.UserId,
-                            rv.User.UserName,
-                            rv.User.FullName,
-                            rv.User.AvatarUrl
-                        },
-                        RoomName = rv.Room != null ? rv.Room.Name : ""
-                    })
-                    .Take(20)
-                    .ToList(),
+                MinPrice = hotel.Rooms.Any() ? hotel.Rooms.Min(r => r.Price) : 0,
+                RoomCount = hotel.Rooms.Count(),
+                Photos = hotel.Photoss.Where(p => p.RoomId == null).Select(p => p.Url).ToList(),
+                Amenities = allAmenities,
                 AvgRating = hotel.Rooms.Any()
                     ? hotel.Rooms.SelectMany(r => r.Reviews ?? new List<Review>())
                         .Where(rv => rv.IsVisible)
@@ -255,6 +235,70 @@ namespace BoookingHotels.Controllers.API
                 .ToList();
 
             return Ok(nearbyHotels);
+        }
+
+        // GET: api/HotelsApi/5/rooms
+        [HttpGet("{id}/rooms")]
+        public async Task<ActionResult<IEnumerable<object>>> GetHotelRooms(int id)
+        {
+            var hotel = await _context.Hotels
+                .Include(h => h.Rooms)
+                    .ThenInclude(r => r.Photos)
+                .Include(h => h.Rooms)
+                    .ThenInclude(r => r.RoomAmenities!)
+                        .ThenInclude(ra => ra.Amenity)
+                .FirstOrDefaultAsync(h => h.HotelId == id);
+
+            if (hotel == null)
+                return NotFound();
+
+            var rooms = hotel.Rooms.Select(r => new
+            {
+                r.RoomId,
+                r.Name,
+                r.Price,
+                r.Capacity,
+                r.BedType,
+                r.Size,
+                r.Status,
+                Photos = r.Photos?.Select(p => p.Url).ToList() ?? new List<string>(),
+                Amenities = r.RoomAmenities?.Select(ra => new
+                {
+                    ra.Amenity.AmenityId,
+                    ra.Amenity.Name,
+                    ra.Amenity.Icon
+                }).ToList()
+            }).ToList();
+
+            return Ok(rooms);
+        }
+
+        // GET: api/HotelsApi/5/reviews
+        [HttpGet("{id}/reviews")]
+        public async Task<ActionResult<IEnumerable<object>>> GetHotelReviews(int id)
+        {
+            var reviews = await _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Photos)
+                .Where(r => r.HotelId == id && r.IsVisible)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    r.ReviewId,
+                    r.Rating,
+                    r.Comment,
+                    r.CreatedAt,
+                    User = new
+                    {
+                        r.User.UserId,
+                        r.User.UserName,
+                        AvatarUrl = r.User.AvatarUrl
+                    },
+                    Photos = r.Photos.Select(p => p.Url).ToList()
+                })
+                .ToListAsync();
+
+            return Ok(reviews);
         }
 
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)

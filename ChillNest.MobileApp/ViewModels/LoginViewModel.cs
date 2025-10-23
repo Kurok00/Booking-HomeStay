@@ -8,6 +8,7 @@ namespace ChillNest.MobileApp.ViewModels;
 public partial class LoginViewModel : ObservableObject
 {
     private readonly IApiService _apiService;
+    private readonly IAuthService _authService;
 
     [ObservableProperty]
     private string email = string.Empty;
@@ -21,9 +22,10 @@ public partial class LoginViewModel : ObservableObject
     [ObservableProperty]
     private string errorMessage = string.Empty;
 
-    public LoginViewModel(IApiService apiService)
+    public LoginViewModel(IApiService apiService, IAuthService authService)
     {
         _apiService = apiService;
+        _authService = authService;
     }
 
     [RelayCommand]
@@ -49,6 +51,8 @@ public partial class LoginViewModel : ObservableObject
             IsLoading = true;
             ErrorMessage = string.Empty;
 
+            Android.Util.Log.Info("LoginVM", $"🔵 Logging in - Email: {Email}");
+
             var request = new LoginRequest
             {
                 Email = Email.Trim(),
@@ -57,23 +61,29 @@ public partial class LoginViewModel : ObservableObject
 
             var response = await _apiService.LoginAsync(request);
 
+            Android.Util.Log.Info("LoginVM", $"Response: {Newtonsoft.Json.JsonConvert.SerializeObject(response)}");
+
             if (response.Success && response.User != null)
             {
-                // Save user info (in real app, use SecureStorage)
-                await SecureStorage.SetAsync("user_id", response.User.Id.ToString());
-                await SecureStorage.SetAsync("user_email", response.User.Email);
-                await SecureStorage.SetAsync("user_name", response.User.UserName);
+                // Save user info using AuthService
+                await _authService.SaveUserAsync(response.User);
+                // Use userId as token (simple approach)
+                await _authService.SaveTokenAsync(response.User.Id.ToString());
 
-                // Navigate to main page
+                Android.Util.Log.Info("LoginVM", $"✅ Login successful - User: {response.User.UserName}");
+
+                // Navigate to hotels page
                 await Shell.Current.GoToAsync("///HotelsPage");
             }
             else
             {
+                Android.Util.Log.Warn("LoginVM", $"⚠️ Login failed: {response.Message}");
                 ErrorMessage = response.Message ?? "Login failed";
             }
         }
         catch (Exception ex)
         {
+            Android.Util.Log.Error("LoginVM", $"❌ Login error: {ex.Message}");
             ErrorMessage = $"Login error: {ex.Message}";
         }
         finally
@@ -85,6 +95,6 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task NavigateToRegisterAsync()
     {
-        await Shell.Current.GoToAsync("RegisterPage");
+        await Shell.Current.GoToAsync(nameof(Views.RegisterPage));
     }
 }

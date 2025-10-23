@@ -17,6 +17,12 @@ public partial class HotelDetailsViewModel : ObservableObject
     private Hotel? hotel;
 
     [ObservableProperty]
+    private List<Room> rooms = new();
+
+    [ObservableProperty]
+    private List<Review> reviews = new();
+
+    [ObservableProperty]
     private bool isLoading;
 
     [ObservableProperty]
@@ -28,6 +34,26 @@ public partial class HotelDetailsViewModel : ObservableObject
     [ObservableProperty]
     private DateTime checkOutDate = DateTime.Today.AddDays(2);
 
+    // Gallery properties
+    public string PhotoUrl1 => GetPhotoUrl(0);
+    public string PhotoUrl2 => GetPhotoUrl(1);
+    public string PhotoUrl3 => GetPhotoUrl(2);
+    public string PhotoUrl4 => GetPhotoUrl(3);
+    public string RemainingPhotosCount => Hotel?.PhotoUrls != null && Hotel.PhotoUrls.Count > 4
+        ? (Hotel.PhotoUrls.Count - 4).ToString()
+        : "0";
+
+    private string GetPhotoUrl(int index)
+    {
+        if (Hotel?.PhotoUrls == null || Hotel.PhotoUrls.Count <= index)
+            return Hotel?.MainPhotoUrl ?? "https://via.placeholder.com/300x200";
+
+        var url = Hotel.PhotoUrls[index];
+        return !string.IsNullOrEmpty(url) && !url.StartsWith("http")
+            ? $"http://10.0.2.2:5182{url}"
+            : url ?? "https://via.placeholder.com/300x200";
+    }
+
     public HotelDetailsViewModel(IApiService apiService)
     {
         _apiService = apiService;
@@ -35,9 +61,14 @@ public partial class HotelDetailsViewModel : ObservableObject
 
     partial void OnHotelIdChanged(int value)
     {
+        Android.Util.Log.Info("HotelDetailsVM", $"🔵 HotelId changed to: {value}");
         if (value > 0)
         {
             _ = LoadHotelDetailsAsync();
+        }
+        else
+        {
+            Android.Util.Log.Warn("HotelDetailsVM", $"⚠️ Invalid HotelId: {value}");
         }
     }
 
@@ -48,18 +79,44 @@ public partial class HotelDetailsViewModel : ObservableObject
 
         try
         {
+            Android.Util.Log.Info("HotelDetailsVM", $"🔵 LoadHotelDetailsAsync started for HotelId: {HotelId}");
             IsLoading = true;
             ErrorMessage = string.Empty;
 
-            Hotel = await _apiService.GetHotelDetailsAsync(HotelId);
+            // Load hotel details, rooms, and reviews in parallel
+            var hotelTask = _apiService.GetHotelDetailsAsync(HotelId);
+            var roomsTask = _apiService.GetHotelRoomsAsync(HotelId);
+            var reviewsTask = _apiService.GetHotelReviewsAsync(HotelId);
+
+            await Task.WhenAll(hotelTask, roomsTask, reviewsTask);
+
+            Hotel = await hotelTask;
+            Rooms = await roomsTask ?? new List<Room>();
+            Reviews = await reviewsTask ?? new List<Review>();
 
             if (Hotel == null)
             {
+                Android.Util.Log.Warn("HotelDetailsVM", "⚠️ Hotel is NULL after API call");
                 ErrorMessage = "Hotel not found";
+            }
+            else
+            {
+                Android.Util.Log.Info("HotelDetailsVM", $"✅ Hotel loaded: {Hotel.Name} (ID: {Hotel.Id})");
+                Android.Util.Log.Info("HotelDetailsVM", $"✅ Rooms loaded: {Rooms.Count}");
+                Android.Util.Log.Info("HotelDetailsVM", $"✅ Reviews loaded: {Reviews.Count}");
+
+                // Notify property changes for gallery
+                OnPropertyChanged(nameof(PhotoUrl1));
+                OnPropertyChanged(nameof(PhotoUrl2));
+                OnPropertyChanged(nameof(PhotoUrl3));
+                OnPropertyChanged(nameof(PhotoUrl4));
+                OnPropertyChanged(nameof(RemainingPhotosCount));
             }
         }
         catch (Exception ex)
         {
+            Android.Util.Log.Error("HotelDetailsVM", $"❌ Exception: {ex.Message}");
+            Android.Util.Log.Error("HotelDetailsVM", $"❌ Stack: {ex.StackTrace}");
             ErrorMessage = $"Failed to load hotel: {ex.Message}";
         }
         finally
@@ -75,53 +132,23 @@ public partial class HotelDetailsViewModel : ObservableObject
 
         try
         {
-            IsLoading = true;
-            ErrorMessage = string.Empty;
+            Android.Util.Log.Info("HotelDetailsVM", $"🔵 Navigate to RoomDetailsPage - Room: {room.RoomId}, Hotel: {Hotel.Id}");
 
-            // Check availability first
-            var available = await _apiService.CheckAvailabilityAsync(room.Id, CheckInDate, CheckOutDate);
-
-            if (!available)
-            {
-                await Shell.Current.DisplayAlert("Not Available", "This room is not available for the selected dates.", "OK");
-                return;
-            }
-
-            // Navigate to booking page with parameters
+            // Navigate to room details page
             var parameters = new Dictionary<string, object>
             {
-                { "RoomId", room.Id },
-                { "HotelName", Hotel.Name },
-                { "RoomName", room.Name },
-                { "CheckInDate", CheckInDate },
-                { "CheckOutDate", CheckOutDate },
-                { "PricePerNight", room.PricePerNight }
+                { "RoomId", room.RoomId },
+                { "HotelId", Hotel.Id }
             };
 
-            await Shell.Current.GoToAsync("BookingPage", parameters);
+            await Shell.Current.GoToAsync(nameof(Views.RoomDetailsPage), parameters);
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Booking failed: {ex.Message}";
+            Android.Util.Log.Error("HotelDetailsVM", $"❌ Navigate error: {ex.Message}");
+            ErrorMessage = $"Navigation failed: {ex.Message}";
             await Shell.Current.DisplayAlert("Error", ErrorMessage, "OK");
         }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    [RelayCommand]
-    private async Task SelectRoomsAsync()
-    {
-        if (Hotel == null) return;
-
-        // TODO: Navigate to room selection page
-        await Shell.Current.DisplayAlert(
-            "Select Rooms",
-            $"Room selection for {Hotel.Name}\nCheck-in: {CheckInDate:MMM dd}\nCheck-out: {CheckOutDate:MMM dd}\n\nThis feature will show available rooms.",
-            "OK"
-        );
     }
 
     [RelayCommand]

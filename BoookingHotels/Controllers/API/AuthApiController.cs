@@ -13,17 +13,10 @@ namespace BoookingHotels.Controllers.API
     public class AuthApiController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
-        private readonly IEmailSender _emailSender;
 
-        public AuthApiController(ApplicationDbContext db, IEmailSender emailSender)
+        public AuthApiController(ApplicationDbContext db)
         {
             _db = db;
-            _emailSender = emailSender;
-        }
-
-        public interface IEmailSender
-        {
-            void Send(string to, string content);
         }
 
         // POST: api/AuthApi/login
@@ -54,9 +47,9 @@ namespace BoookingHotels.Controllers.API
 
             // Get user roles
             var roles = await (from ur in _db.UserRoles
-                              join r in _db.Roles on ur.RoleId equals r.RoleId
-                              where ur.UserId == user.UserId
-                              select r.RoleName).ToListAsync();
+                               join r in _db.Roles on ur.RoleId equals r.RoleId
+                               where ur.UserId == user.UserId
+                               select r.RoleName).ToListAsync();
 
             // Return user info (in real app, you should generate JWT token)
             return Ok(new
@@ -82,7 +75,7 @@ namespace BoookingHotels.Controllers.API
             }
 
             var otp = new Random().Next(100000, 999999).ToString();
-            
+
             // In mobile app, you should store this in a temporary storage or database
             // For now, we'll return the OTP (remove this in production!)
             var tempUser = new
@@ -94,8 +87,8 @@ namespace BoookingHotels.Controllers.API
                 ExpireAt = DateTime.Now.AddMinutes(5)
             };
 
-            // Send OTP via email
-            _emailSender.Send(request.Email, $"Your OTP code is: {otp}");
+            // Send OTP via email (removed for mobile testing - OTP returned directly)
+            // _emailSender.Send(request.Email, $"Your OTP code is: {otp}");
 
             return Ok(new
             {
@@ -187,7 +180,7 @@ namespace BoookingHotels.Controllers.API
                 ExpireAt = DateTime.Now.AddMinutes(5)
             };
 
-            _emailSender.Send(request.Email, $"Your password reset OTP is: {otp}");
+            // _emailSender.Send(request.Email, $"Your password reset OTP is: {otp}");
 
             return Ok(new
             {
@@ -241,14 +234,14 @@ namespace BoookingHotels.Controllers.API
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = await _db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-            
+
             if (user == null)
                 return NotFound(new { message = "User not found" });
 
             var roles = await (from ur in _db.UserRoles
-                              join r in _db.Roles on ur.RoleId equals r.RoleId
-                              where ur.UserId == user.UserId
-                              select r.RoleName).ToListAsync();
+                               join r in _db.Roles on ur.RoleId equals r.RoleId
+                               where ur.UserId == user.UserId
+                               select r.RoleName).ToListAsync();
 
             return Ok(new
             {
@@ -270,7 +263,7 @@ namespace BoookingHotels.Controllers.API
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var user = await _db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-            
+
             if (user == null)
                 return NotFound(new { message = "User not found" });
 

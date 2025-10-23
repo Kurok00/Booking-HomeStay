@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             xmlns:System="clr-namespace:System;assembly=System.Runtime"
+             x:Class="ChillNest.MobileApp.Views.BookingPage"
+             x:DataType="vm:BookingViewModel"
+             Title="Booking"
+             BackgroundColor="White"
+             Shell.NavBarIsVisible="False">
+    
+    <Grid>
+        <!-- Main Scroll Content -->
+        <ScrollView>
+            <VerticalStackLayout Padding="20"
+                                Spacing="24">
+                
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      Margin="0,20,0,0">
+                    <!-- Back Button -->
+                    <Border Grid.Column="0"
+                            BackgroundColor="#F5F5F5"
+                            StrokeShape="RoundRectangle 22"
+                            HeightRequest="44"
+                            WidthRequest="44"
+                            VerticalOptions="Center">
+                        <Label Text="←"
+                               FontSize="24"
+                               TextColor="#1A1A1A"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoBackCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Border>
+                    
+                    <!-- Title -->
+                    <Label Grid.Column="1"
+                           Text="Confirm Booking"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="#1A1A1A"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Grid>
+                
+                <!-- Loading Indicator -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                  IsVisible="{Binding IsLoading}"
+                                  Color="#00BCD4"
+                                  HeightRequest="40"/>
+                
+                <!-- Booking Summary Card -->
+                <Border BackgroundColor="#F9F9F9"
+                        StrokeShape="RoundRectangle 16"
+                        StrokeThickness="0"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="Booking Summary"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#1A1A1A"/>
+                        
+                        <!-- Hotel & Room -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding HotelName}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="#333"/>
+                            <Label Text="{Binding RoomName}"
+                                   FontSize="14"
+                                   TextColor="#666"/>
+                        </VerticalStackLayout>
+                        
+                        <!-- Dates -->
+                        <Grid ColumnDefinitions="*,Auto,*"
+                              ColumnSpacing="12">
+                            <!-- Check-in -->
+                            <Border Grid.Column="0"
+                                    BackgroundColor="White"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="#E0E0E0"
+                                    StrokeThickness="1"
+                                    Padding="12,8">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Check-in"
+                                           FontSize="12"
+                                           TextColor="#999"/>
+                                    <DatePicker Date="{Binding CheckInDate}"
+                                               MinimumDate="{x:Static System:DateTime.Today}"
+                                               Format="MMM dd, yyyy"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="#333"
+                                               BackgroundColor="Transparent"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <!-- Arrow -->
+                            <Label Grid.Column="1"
+                                   Text="→"
+                                   FontSize="20"
+                                   TextColor="#00BCD4"
+                                   VerticalOptions="Center"/>
+                            
+                            <!-- Check-out -->
+                            <Border Grid.Column="2"
+                                    BackgroundColor="White"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="#E0E0E0"
+                                    StrokeThickness="1"
+                                    Padding="12,8">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Check-out"
+                                           FontSize="12"
+                                           TextColor="#999"/>
+                                    <DatePicker Date="{Binding CheckOutDate}"
+                                               MinimumDate="{x:Static System:DateTime.Today}"
+                                               Format="MMM dd, yyyy"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="#333"
+                                               BackgroundColor="Transparent"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                        
+                        <!-- Price Breakdown -->
+                        <BoxView HeightRequest="1"
+                                BackgroundColor="#E0E0E0"/>
+                        
+                        <Grid ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto,Auto,Auto"
+                              RowSpacing="8">
+                            <!-- Price per night -->
+                            <Label Grid.Row="0" Grid.Column="0"
+                                   FontSize="14"
+                                   TextColor="#666">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding PricePerNightDisplay}"/>
+                                        <Span Text=" x "/>
+                                        <Span Text="{Binding NightsDisplay}"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Row="0" Grid.Column="1"
+                                   Text="{Binding SubTotalDisplay}"
+                                   FontSize="14"
+                                   TextColor="#666"
+                                   HorizontalOptions="End"/>
+                            
+                            <!-- Discount -->
+                            <Label Grid.Row="1" Grid.Column="0"
+                                   Text="Discount"
+                                   FontSize="14"
+                                   TextColor="#4CAF50"
+                                   IsVisible="{Binding Discount, Converter={StaticResource GreaterThanZeroConverter}}"/>
+                            <Label Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding DiscountDisplay}"
+                                   FontSize="14"
+                                   TextColor="#4CAF50"
+                                   HorizontalOptions="End"
+                                   IsVisible="{Binding Discount, Converter={StaticResource GreaterThanZeroConverter}}"/>
+                            
+                            <!-- Total -->
+                            <Label Grid.Row="2" Grid.Column="0"
+                                   Text="Total"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#1A1A1A"/>
+                            <Label Grid.Row="2" Grid.Column="1"
+                                   Text="{Binding FinalTotalDisplay}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="#00BCD4"
+                                   HorizontalOptions="End"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+                
+                <!-- Guest Information -->
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Guest Information"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1A1A1A"/>
+                    
+                    <!-- Full Name -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Full Name *"
+                               FontSize="14"
+                               TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="16,12">
+                            <Entry Text="{Binding GuestName}"
+                                   Placeholder="Enter your full name"
+                                   FontSize="15"
+                                   TextColor="#1A1A1A"
+                                   BackgroundColor="Transparent"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Phone -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Phone Number *"
+                               FontSize="14"
+                               TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="16,12">
+                            <Entry Text="{Binding GuestPhone}"
+                                   Placeholder="+84 123 456 789"
+                                   Keyboard="Telephone"
+                                   FontSize="15"
+                                   TextColor="#1A1A1A"
+                                   BackgroundColor="Transparent"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Voucher Selection -->
+                    <VerticalStackLayout Spacing="8"
+                                        IsVisible="{Binding AvailableVouchers.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                        <Label Text="Apply Voucher (Optional)"
+                               FontSize="14"
+                               TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="16,12">
+                            <Picker ItemsSource="{Binding AvailableVouchers}"
+                                   SelectedItem="{Binding SelectedVoucher}"
+                                   ItemDisplayBinding="{Binding Code}"
+                                   Title="Select a voucher"
+                                   FontSize="15"
+                                   TextColor="#1A1A1A"
+                                   BackgroundColor="Transparent"/>
+                        </Border>
+                        
+                        <!-- Voucher Details -->
+                        <Border IsVisible="{Binding SelectedVoucher, Converter={StaticResource IsNotNullConverter}}"
+                                BackgroundColor="#E8F5E9"
+                                StrokeShape="RoundRectangle 12"
+                                Stroke="#4CAF50"
+                                StrokeThickness="1"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="4">
+                                <Label FontSize="13"
+                                       TextColor="#2E7D32">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="🎫 " FontSize="14"/>
+                                            <Span Text="{Binding SelectedVoucher.Code}" FontAttributes="Bold"/>
+                                            <Span Text=" - "/>
+                                            <Span Text="{Binding SelectedVoucher.DiscountDisplay}" FontAttributes="Bold" TextColor="#4CAF50"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Text="{Binding SelectedVoucher.Description}"
+                                       FontSize="12"
+                                       TextColor="#666"
+                                       IsVisible="{Binding SelectedVoucher.Description, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                <Label FontSize="11"
+                                       TextColor="#999"
+                                       IsVisible="{Binding SelectedVoucher.MinOrderValue, Converter={StaticResource IsNotNullConverter}}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Min. order: $"/>
+                                            <Span Text="{Binding SelectedVoucher.MinOrderValue, StringFormat='{0:F0}'}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Payment Method Selection -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Payment Method"
+                               FontSize="14"
+                               TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="16,12">
+                            <Picker ItemsSource="{Binding PaymentMethods}"
+                                   SelectedItem="{Binding SelectedPaymentMethod}"
+                                   ItemDisplayBinding="{Binding Name}"
+                                   Title="Select payment method"
+                                   FontSize="15"
+                                   TextColor="#1A1A1A"
+                                   BackgroundColor="Transparent"/>
+                        </Border>
+                        
+                        <!-- Payment Method Details -->
+                        <Border IsVisible="{Binding SelectedPaymentMethod, Converter={StaticResource IsNotNullConverter}}"
+                                BackgroundColor="#E3F2FD"
+                                StrokeShape="RoundRectangle 12"
+                                Stroke="#2196F3"
+                                StrokeThickness="1"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="4">
+                                <Label FontSize="13"
+                                       TextColor="#1565C0">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding SelectedPaymentMethod.Icon}" FontSize="14"/>
+                                            <Span Text=" "/>
+                                            <Span Text="{Binding SelectedPaymentMethod.Name}" FontAttributes="Bold"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Text="{Binding SelectedPaymentMethod.Description}"
+                                       FontSize="12"
+                                       TextColor="#666"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+                
+                <!-- Error Message -->
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="Red"
+                       FontSize="14"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                       HorizontalOptions="Center"/>
+                
+                <!-- Spacer for bottom button -->
+                <BoxView HeightRequest="80" Color="Transparent"/>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+        
+        <!-- Floating Bottom Button -->
+        <Border VerticalOptions="End"
+                BackgroundColor="White"
+                Padding="20"
+                Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=20, Offset='0,-4'}">
+            <Button Text="Confirm Booking"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    HeightRequest="56"
+                    CornerRadius="12"
+                    TextColor="White"
+                    BackgroundColor="#00BCD4"
+                    Command="{Binding ConfirmBookingCommand}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                <Button.Shadow>
+                    <Shadow Brush="#00BCD4" Opacity="0.3" Radius="10" Offset="0,4"/>
+                </Button.Shadow>
+            </Button>
+        </Border>
+        
+    </Grid>
+    
+</ContentPage>

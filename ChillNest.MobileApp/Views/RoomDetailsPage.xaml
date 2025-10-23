@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             xmlns:models="clr-namespace:ChillNest.MobileApp.Models"
+             x:Class="ChillNest.MobileApp.Views.RoomDetailsPage"
+             x:DataType="vm:RoomDetailsViewModel"
+             Title=""
+             BackgroundColor="White"
+             Shell.NavBarIsVisible="False">
+    
+    <Grid>
+        <!-- Main Scroll Content -->
+        <ScrollView>
+            <VerticalStackLayout Spacing="0">
+                
+                <!-- Loading Indicator -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                  IsVisible="{Binding IsLoading}"
+                                  Color="#00BCD4"
+                                  Margin="0,200"
+                                  HeightRequest="60"/>
+                
+                <!-- Hero Section -->
+                <Grid HeightRequest="320">
+                    <!-- Hero Image -->
+                    <Border StrokeShape="RoundRectangle 20,20,0,0"
+                            StrokeThickness="0">
+                        <Image Source="{Binding Room.MainPhotoUrl}"
+                               Aspect="AspectFill"/>
+                    </Border>
+                    
+                    <!-- Gradient Overlay -->
+                    <Border StrokeShape="RoundRectangle 20,20,0,0"
+                            StrokeThickness="0">
+                        <BoxView>
+                            <BoxView.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="Transparent" Offset="0.0"/>
+                                    <GradientStop Color="Transparent" Offset="0.6"/>
+                                    <GradientStop Color="#D0000000" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </BoxView.Background>
+                        </BoxView>
+                    </Border>
+                    
+                    <!-- Back Button -->
+                    <Border Margin="16,45,0,0"
+                            BackgroundColor="#F0FFFFFF"
+                            StrokeShape="RoundRectangle 22"
+                            HeightRequest="44"
+                            WidthRequest="44"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start">
+                        <Label Text="←"
+                               FontSize="24"
+                               TextColor="#1A1A1A"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoBackCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Border>
+                    
+                    <!-- Room Info (Bottom) -->
+                    <VerticalStackLayout VerticalOptions="End"
+                                        Padding="20,0,20,20"
+                                        Spacing="6">
+                        <Label Text="{Binding Room.Name}"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               LineBreakMode="WordWrap"/>
+                        <Label Text="{Binding Hotel.Name}"
+                               FontSize="14"
+                               TextColor="White"
+                               Opacity="0.9"/>
+                    </VerticalStackLayout>
+                </Grid>
+                
+                <!-- Content Section -->
+                <VerticalStackLayout Padding="20"
+                                    Spacing="24"
+                                    BackgroundColor="White">
+                    
+                    <!-- Room Specs -->
+                    <Grid ColumnDefinitions="*,*,*"
+                          ColumnSpacing="12">
+                        <!-- Capacity -->
+                        <Border Grid.Column="0"
+                                BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="4"
+                                                HorizontalOptions="Center">
+                                <Label Text="👥"
+                                       FontSize="24"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="{Binding Room.CapacityDisplay}"
+                                       FontSize="12"
+                                       TextColor="#666"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        
+                        <!-- Bed Type -->
+                        <Border Grid.Column="1"
+                                BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="4"
+                                                HorizontalOptions="Center">
+                                <Label Text="🛏️"
+                                       FontSize="24"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="{Binding Room.BedTypeDisplay}"
+                                       FontSize="12"
+                                       TextColor="#666"
+                                       HorizontalOptions="Center"
+                                       LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        
+                        <!-- Size -->
+                        <Border Grid.Column="2"
+                                BackgroundColor="#F5F5F5"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="4"
+                                                HorizontalOptions="Center">
+                                <Label Text="📏"
+                                       FontSize="24"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="{Binding Room.SizeDisplay}"
+                                       FontSize="12"
+                                       TextColor="#666"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                    
+                    <!-- Price Info -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Price"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#1A1A1A"/>
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{Binding Room.PriceDisplay}"
+                                   FontSize="28"
+                                   FontAttributes="Bold"
+                                   TextColor="#00BCD4"
+                                   VerticalOptions="Center"/>
+                            <Label Text="{Binding Room.StatusDisplay}"
+                                   FontSize="12"
+                                   TextColor="#4CAF50"
+                                   Padding="8,4"
+                                   BackgroundColor="#E8F5E9"
+                                   VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    
+                    <!-- Amenities -->
+                    <VerticalStackLayout Spacing="12"
+                                        IsVisible="{Binding Room.Amenities.Count, Converter={StaticResource IntToBoolConverter}}">
+                        <Label Text="Room Amenities"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#1A1A1A"/>
+                        
+                        <FlexLayout Wrap="Wrap"
+                                   BindableLayout.ItemsSource="{Binding Room.Amenities}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:RoomAmenity">
+                                    <Border Margin="0,0,8,8"
+                                            Padding="12,8"
+                                            BackgroundColor="#F5F5F5"
+                                            StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="0">
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="{Binding Icon}"
+                                                   FontSize="16"
+                                                   VerticalOptions="Center"/>
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="13"
+                                                   TextColor="#333"
+                                                   VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                    
+                    <!-- Gallery -->
+                    <VerticalStackLayout Spacing="12"
+                                        IsVisible="{Binding Room.Photos.Count, Converter={StaticResource IntToBoolConverter}}">
+                        <Label Text="Room Photos"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#1A1A1A"/>
+                        
+                        <Grid ColumnDefinitions="*,8,*"
+                              RowDefinitions="140,8,140"
+                              ColumnSpacing="0"
+                              RowSpacing="0">
+                            
+                            <Border Grid.Row="0" Grid.Column="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
+                                <Image Source="{Binding PhotoUrl1}"
+                                       Aspect="AspectFill"/>
+                            </Border>
+                            
+                            <Border Grid.Row="0" Grid.Column="2"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
+                                <Image Source="{Binding PhotoUrl2}"
+                                       Aspect="AspectFill"/>
+                            </Border>
+                            
+                            <Border Grid.Row="2" Grid.Column="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
+                                <Image Source="{Binding PhotoUrl3}"
+                                       Aspect="AspectFill"/>
+                            </Border>
+                            
+                            <Border Grid.Row="2" Grid.Column="2"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
+                                <Grid>
+                                    <Image Source="{Binding PhotoUrl4}"
+                                           Aspect="AspectFill"/>
+                                    <BoxView BackgroundColor="#80000000"
+                                            IsVisible="{Binding RemainingPhotosCount, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                    <Label Text="{Binding RemainingPhotosCount, StringFormat='+{0}'}"
+                                           FontSize="32"
+                                           FontAttributes="Bold"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding RemainingPhotosCount, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                    
+                    <!-- Date Selection -->
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Select Dates"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#1A1A1A"/>
+                        
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="12">
+                            <!-- Check-in -->
+                            <Border Grid.Column="0"
+                                    BackgroundColor="#F5F5F5"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Check-in"
+                                           FontSize="12"
+                                           TextColor="#666"/>
+                                    <DatePicker Date="{Binding CheckInDate}"
+                                               MinimumDate="{Binding Source={x:Static x:DateTime.Now}}"
+                                               FontSize="14"
+                                               TextColor="#1A1A1A"
+                                               BackgroundColor="Transparent"/>
+                                </VerticalStackLayout>
+                            </Border>
+                            
+                            <!-- Check-out -->
+                            <Border Grid.Column="1"
+                                    BackgroundColor="#F5F5F5"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Check-out"
+                                           FontSize="12"
+                                           TextColor="#666"/>
+                                    <DatePicker Date="{Binding CheckOutDate}"
+                                               MinimumDate="{Binding CheckInDate}"
+                                               FontSize="14"
+                                               TextColor="#1A1A1A"
+                                               BackgroundColor="Transparent"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                        
+                        <!-- Nights Count -->
+                        <Label Text="{Binding NightsCount, StringFormat='{0} nights'}"
+                               FontSize="14"
+                               TextColor="#666"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    
+                </VerticalStackLayout>
+                
+                <!-- Spacer for bottom button -->
+                <BoxView HeightRequest="90" Color="Transparent"/>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+        
+        <!-- Floating Bottom Button -->
+        <Border VerticalOptions="End"
+                BackgroundColor="White"
+                Padding="20,12,20,20"
+                Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=20, Offset='0,-4'}">
+            <Grid ColumnDefinitions="Auto,*">
+                <!-- Total Price -->
+                <VerticalStackLayout Grid.Column="0"
+                                    Spacing="2"
+                                    VerticalOptions="Center"
+                                    Margin="0,0,20,0">
+                    <Label Text="Total"
+                           FontSize="12"
+                           TextColor="#999"/>
+                    <Label Text="{Binding TotalPriceDisplay}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="#1A1A1A"/>
+                </VerticalStackLayout>
+                
+                <!-- Book Button -->
+                <Button Grid.Column="1"
+                        Text="Book Now"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        TextColor="White"
+                        BackgroundColor="#00BCD4"
+                        Command="{Binding BookNowCommand}">
+                    <Button.Shadow>
+                        <Shadow Brush="#00BCD4" Opacity="0.3" Radius="10" Offset="0,4"/>
+                    </Button.Shadow>
+                </Button>
+            </Grid>
+        </Border>
+        
+    </Grid>
+    
+</ContentPage>

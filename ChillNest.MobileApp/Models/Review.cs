@@ -1,25 +1,54 @@
+using Newtonsoft.Json;
+
 namespace ChillNest.MobileApp.Models;
 
 public class Review
 {
+    [JsonProperty("reviewId")]
     public int ReviewId { get; set; }
-    public int HotelId { get; set; }
-    public int UserId { get; set; }
+
+    [JsonProperty("rating")]
     public int Rating { get; set; }
+
+    [JsonProperty("comment")]
     public string? Comment { get; set; }
+
+    [JsonProperty("createdAt")]
     public DateTime CreatedAt { get; set; }
-    public User? User { get; set; }
-    public List<ReviewPhoto>? ReviewPhotos { get; set; }
+
+    [JsonProperty("user")]
+    public ReviewUser? User { get; set; }
+
+    [JsonProperty("photos")]
+    public List<string>? Photos { get; set; }
 
     // Display properties
     public string RatingDisplay => $"{Rating} ⭐";
     public string DateDisplay => CreatedAt.ToString("MMM dd, yyyy");
     public string UserNameDisplay => User?.UserName ?? "Anonymous";
+    public string UserAvatarUrl
+    {
+        get
+        {
+            var avatar = User?.AvatarUrl;
+            if (string.IsNullOrEmpty(avatar))
+                return "https://via.placeholder.com/50";
+
+            return !avatar.StartsWith("http")
+                ? $"http://10.0.2.2:5182{avatar}"
+                : avatar;
+        }
+    }
 }
 
-public class ReviewPhoto
+public class ReviewUser
 {
-    public int PhotoId { get; set; }
-    public string PhotoUrl { get; set; } = string.Empty;
-    public int ReviewId { get; set; }
+    [JsonProperty("userId")]
+    public int UserId { get; set; }
+
+    [JsonProperty("userName")]
+    public string UserName { get; set; } = string.Empty;
+
+    [JsonProperty("avatarUrl")]
+    public string? AvatarUrl { get; set; }
 }

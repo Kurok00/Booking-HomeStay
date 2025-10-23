@@ -49,9 +49,20 @@ public class Hotel
     public List<Amenity>? Amenities { get; set; }
 
     // Display properties
-    public string MainPhotoUrl => !string.IsNullOrEmpty(MainPhoto) && !MainPhoto.StartsWith("http")
-        ? $"http://10.0.2.2:5182{MainPhoto}"
-        : MainPhoto ?? "https://via.placeholder.com/300x200";
+    public string MainPhotoUrl
+    {
+        get
+        {
+            // Try MainPhoto first, then PhotoUrls[0], then placeholder
+            var photo = MainPhoto ?? (PhotoUrls?.FirstOrDefault());
+            if (string.IsNullOrEmpty(photo))
+                return "https://via.placeholder.com/300x200";
+
+            return !photo.StartsWith("http")
+                ? $"http://10.0.2.2:5182{photo}"
+                : photo;
+        }
+    }
     public string RatingDisplay => Rating.HasValue ? $"{Rating:F1} ⭐" : "No rating";
     public string PriceDisplay => PricePerNight.HasValue ? $"${PricePerNight:F0}/night" : "Price not available";
     public string LocationDisplay => !string.IsNullOrEmpty(City) && !string.IsNullOrEmpty(Country)

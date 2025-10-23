@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ChillNest.MobileApp.ViewModels"
+             x:Class="ChillNest.MobileApp.Views.ProfilePage"
+             x:DataType="vm:ProfileViewModel"
+             Title="Profile"
+             BackgroundColor="White">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="24">
+            
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="#00BCD4"
+                              HeightRequest="40"/>
+            
+            <!-- Logged In View -->
+            <VerticalStackLayout Spacing="24"
+                                IsVisible="{Binding IsLoggedIn}">
+                
+                <!-- Avatar Section -->
+                <VerticalStackLayout Spacing="16"
+                                    HorizontalOptions="Center"
+                                    Margin="0,20,0,0">
+                    <!-- Avatar -->
+                    <Border BackgroundColor="#F0F0F0"
+                            StrokeShape="RoundRectangle 60"
+                            StrokeThickness="0"
+                            HeightRequest="120"
+                            WidthRequest="120"
+                            HorizontalOptions="Center">
+                        <Grid>
+                            <!-- Image -->
+                            <Image Source="{Binding AvatarUrl}"
+                                  Aspect="AspectFill"
+                                  HeightRequest="120"
+                                  WidthRequest="120"
+                                  IsVisible="{Binding AvatarUrl, Converter={StaticResource StringNotEmptyConverter}}"/>
+                            
+                            <!-- Initials fallback -->
+                            <Label Text="{Binding CurrentUser.InitialsDisplay}"
+                                  FontSize="40"
+                                  FontAttributes="Bold"
+                                  TextColor="#00BCD4"
+                                  HorizontalOptions="Center"
+                                  VerticalOptions="Center"
+                                  IsVisible="{Binding AvatarUrl, Converter={StaticResource StringNotEmptyConverter}}"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Name -->
+                    <Label Text="{Binding CurrentUser.DisplayName}"
+                          FontSize="24"
+                          FontAttributes="Bold"
+                          TextColor="#1A1A1A"
+                          HorizontalOptions="Center"/>
+                    
+                    <Label Text="{Binding Email}"
+                          FontSize="14"
+                          TextColor="#666"
+                          HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+                
+                <!-- Edit/View Toggle Button -->
+                <Button Text="{Binding IsEditing, Converter={StaticResource EditButtonTextConverter}}"
+                       Command="{Binding ToggleEditCommand}"
+                       BackgroundColor="#F5F5F5"
+                       TextColor="#00BCD4"
+                       FontAttributes="Bold"
+                       HeightRequest="44"
+                       CornerRadius="12"
+                       IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+                
+                <!-- Profile Information -->
+                <VerticalStackLayout Spacing="16"
+                                    IsVisible="{Binding IsEditing, Converter={StaticResource InvertedBoolConverter}}">
+                    <Label Text="Profile Information"
+                          FontSize="18"
+                          FontAttributes="Bold"
+                          TextColor="#1A1A1A"/>
+                    
+                    <!-- Username (Read-only) -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Username"
+                              FontSize="14"
+                              TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                               StrokeShape="RoundRectangle 12"
+                               Padding="16,12">
+                            <Label Text="{Binding UserName}"
+                                  FontSize="15"
+                                  TextColor="#1A1A1A"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Full Name (Read-only) -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Full Name"
+                              FontSize="14"
+                              TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                               StrokeShape="RoundRectangle 12"
+                               Padding="16,12">
+                            <Label Text="{Binding FullName}"
+                                  FontSize="15"
+                                  TextColor="#1A1A1A"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Phone (Read-only) -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Phone Number"
+                              FontSize="14"
+                              TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                               StrokeShape="RoundRectangle 12"
+                               Padding="16,12">
+                            <Label Text="{Binding Phone}"
+                                  FontSize="15"
+                                  TextColor="#1A1A1A"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+                
+                <!-- Edit Form -->
+                <VerticalStackLayout Spacing="16"
+                                    IsVisible="{Binding IsEditing}">
+                    <Label Text="Edit Profile"
+                          FontSize="18"
+                          FontAttributes="Bold"
+                          TextColor="#1A1A1A"/>
+                    
+                    <!-- Username -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Username *"
+                              FontSize="14"
+                              TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                               StrokeShape="RoundRectangle 12"
+                               Padding="16,12">
+                            <Entry Text="{Binding UserName}"
+                                  Placeholder="Enter username"
+                                  FontSize="15"
+                                  TextColor="#1A1A1A"
+                                  BackgroundColor="Transparent"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Full Name -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Full Name"
+                              FontSize="14"
+                              TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                               StrokeShape="RoundRectangle 12"
+                               Padding="16,12">
+                            <Entry Text="{Binding FullName}"
+                                  Placeholder="Enter full name"
+                                  FontSize="15"
+                                  TextColor="#1A1A1A"
+                                  BackgroundColor="Transparent"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Phone -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Phone Number"
+                              FontSize="14"
+                              TextColor="#666"/>
+                        <Border BackgroundColor="#F5F5F5"
+                               StrokeShape="RoundRectangle 12"
+                               Padding="16,12">
+                            <Entry Text="{Binding Phone}"
+                                  Placeholder="+84 123 456 789"
+                                  Keyboard="Telephone"
+                                  FontSize="15"
+                                  TextColor="#1A1A1A"
+                                  BackgroundColor="Transparent"/>
+                        </Border>
+                    </VerticalStackLayout>
+                    
+                    <!-- Save/Cancel Buttons -->
+                    <Grid ColumnDefinitions="*,*"
+                         ColumnSpacing="12"
+                         Margin="0,8,0,0">
+                        <!-- Cancel -->
+                        <Button Grid.Column="0"
+                               Text="Cancel"
+                               Command="{Binding ToggleEditCommand}"
+                               BackgroundColor="#F5F5F5"
+                               TextColor="#666"
+                               FontAttributes="Bold"
+                               HeightRequest="48"
+                               CornerRadius="12"/>
+                        
+                        <!-- Save -->
+                        <Button Grid.Column="1"
+                               Text="Save Changes"
+                               Command="{Binding SaveProfileCommand}"
+                               BackgroundColor="#00BCD4"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               HeightRequest="48"
+                               CornerRadius="12">
+                            <Button.Shadow>
+                                <Shadow Brush="#00BCD4" Opacity="0.3" Radius="10" Offset="0,4"/>
+                            </Button.Shadow>
+                        </Button>
+                    </Grid>
+                </VerticalStackLayout>
+                
+                <!-- Logout Button -->
+                <Button Text="Logout"
+                       Command="{Binding LogoutCommand}"
+                       BackgroundColor="#F44336"
+                       TextColor="White"
+                       FontAttributes="Bold"
+                       HeightRequest="48"
+                       CornerRadius="12"
+                       Margin="0,16,0,0"
+                       IsVisible="{Binding IsEditing, Converter={StaticResource InvertedBoolConverter}}">
+                    <Button.Shadow>
+                        <Shadow Brush="#F44336" Opacity="0.3" Radius="10" Offset="0,4"/>
+                    </Button.Shadow>
+                </Button>
+                
+            </VerticalStackLayout>
+            
+            <!-- Not Logged In View -->
+            <VerticalStackLayout Spacing="24"
+                                Padding="20"
+                                IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}">
+                
+                <Image Source="login_illustration.png"
+                      HeightRequest="200"
+                      Aspect="AspectFit"
+                      Margin="0,40,0,0"/>
+                
+                <Label Text="You're not logged in"
+                      FontSize="24"
+                      FontAttributes="Bold"
+                      TextColor="#1A1A1A"
+                      HorizontalOptions="Center"/>
+                
+                <Label Text="Please login to view and edit your profile"
+                      FontSize="14"
+                      TextColor="#666"
+                      HorizontalOptions="Center"
+                      HorizontalTextAlignment="Center"/>
+                
+                <Button Text="Login"
+                       Command="{Binding GoToLoginCommand}"
+                       BackgroundColor="#00BCD4"
+                       TextColor="White"
+                       FontAttributes="Bold"
+                       HeightRequest="56"
+                       CornerRadius="12"
+                       Margin="0,20,0,0">
+                    <Button.Shadow>
+                        <Shadow Brush="#00BCD4" Opacity="0.3" Radius="10" Offset="0,4"/>
+                    </Button.Shadow>
+                </Button>
+                
+            </VerticalStackLayout>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+    
+</ContentPage>

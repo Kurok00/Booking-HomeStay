@@ -6,7 +6,7 @@
              x:Class="ChillNest.MobileApp.Views.HotelDetailsPage"
              x:DataType="vm:HotelDetailsViewModel"
              Title=""
-             BackgroundColor="#F8F9FA"
+             BackgroundColor="White"
              Shell.NavBarIsVisible="False">
     
     <Grid>
@@ -17,40 +17,46 @@
                 <!-- Loading Indicator -->
                 <ActivityIndicator IsRunning="{Binding IsLoading}"
                                   IsVisible="{Binding IsLoading}"
-                                  Color="#667eea"
+                                  Color="#00BCD4"
                                   Margin="0,200"
                                   HeightRequest="60"/>
                 
-                <!-- Hero Section with Image & Gradient Overlay -->
-                <Grid HeightRequest="400">
-                    <!-- Background Image -->
-                    <Image Source="{Binding Hotel.MainPhotoUrl}"
-                           Aspect="AspectFill"
-                           HeightRequest="400"/>
+                <!-- Hero Section with Rounded Card -->
+                <Grid HeightRequest="320"
+                      Margin="0"
+                      Padding="0">
+                    <!-- Rounded Card Container -->
+                    <Border StrokeShape="RoundRectangle 20,20,0,0"
+                            StrokeThickness="0">
+                        <Image Source="{Binding Hotel.MainPhotoUrl}"
+                               Aspect="AspectFill"/>
+                    </Border>
                     
                     <!-- Gradient Overlay -->
-                    <BoxView VerticalOptions="Fill"
-                             HorizontalOptions="Fill">
-                        <BoxView.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                <GradientStop Color="Transparent" Offset="0.0"/>
-                                <GradientStop Color="Transparent" Offset="0.5"/>
-                                <GradientStop Color="#B0000000" Offset="1.0"/>
-                            </LinearGradientBrush>
-                        </BoxView.Background>
-                    </BoxView>
+                    <Border StrokeShape="RoundRectangle 20,20,0,0"
+                            StrokeThickness="0">
+                        <BoxView>
+                            <BoxView.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="Transparent" Offset="0.0"/>
+                                    <GradientStop Color="Transparent" Offset="0.6"/>
+                                    <GradientStop Color="#D0000000" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </BoxView.Background>
+                        </BoxView>
+                    </Border>
                     
                     <!-- Back Button (Top Left) -->
-                    <Border Margin="15,40,0,0"
-                            BackgroundColor="#80000000"
-                            StrokeShape="RoundRectangle 20"
-                            HeightRequest="40"
-                            WidthRequest="40"
+                    <Border Margin="16,45,0,0"
+                            BackgroundColor="#F0FFFFFF"
+                            StrokeShape="RoundRectangle 22"
+                            HeightRequest="44"
+                            WidthRequest="44"
                             HorizontalOptions="Start"
                             VerticalOptions="Start">
                         <Label Text="←"
                                FontSize="24"
-                               TextColor="White"
+                               TextColor="#1A1A1A"
                                HorizontalOptions="Center"
                                VerticalOptions="Center">
                             <Label.GestureRecognizers>
@@ -59,320 +65,358 @@
                         </Label>
                     </Border>
                     
-                    <!-- Hero Text Overlay (Bottom) -->
+                    <!-- Bookmark Icon (Top Right) -->
+                    <Border Margin="0,45,16,0"
+                            BackgroundColor="#F0FFFFFF"
+                            StrokeShape="RoundRectangle 22"
+                            HeightRequest="44"
+                            WidthRequest="44"
+                            HorizontalOptions="End"
+                            VerticalOptions="Start">
+                        <Label Text="🔖"
+                               FontSize="20"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Border>
+                    
+                    <!-- Hotel Name & Location (Bottom Left) -->
                     <VerticalStackLayout VerticalOptions="End"
-                                        Padding="20,0,20,24"
-                                        Spacing="8">
+                                        Padding="20,0,20,20"
+                                        Spacing="6">
                         <Label Text="{Binding Hotel.Name}"
-                               FontSize="28"
+                               FontSize="24"
                                FontAttributes="Bold"
                                TextColor="White"
-                               LineBreakMode="WordWrap"/>
+                               LineBreakMode="WordWrap"
+                               MaxLines="2"/>
                         <HorizontalStackLayout Spacing="6">
                             <Label Text="📍"
-                                   FontSize="16"
+                                   FontSize="14"
                                    VerticalOptions="Center"/>
                             <Label Text="{Binding Hotel.LocationDisplay}"
-                                   FontSize="15"
+                                   FontSize="14"
                                    TextColor="White"
-                                   Opacity="0.9"
-                                   VerticalOptions="Center"/>
+                                   VerticalOptions="Center"
+                                   LineBreakMode="TailTruncation"/>
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Grid>
                 
                 <!-- Main Content Card -->
                 <VerticalStackLayout BackgroundColor="White"
-                                    Padding="20"
-                                    Spacing="24">
+                                    Padding="20,16"
+                                    Spacing="20">
                     
-                    <!-- Price Card with Gradient Background -->
-                    <Border BackgroundColor="Transparent"
-                            Padding="20"
-                            StrokeShape="RoundRectangle 12"
-                            Shadow="{Shadow Brush=#667eea, Opacity=0.3, Radius=12, Offset='0,4'}">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#667eea" Offset="0.0"/>
-                                <GradientStop Color="#764ba2" Offset="1.0"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                            <Label Text="Giá từ"
-                                   FontSize="13"
-                                   TextColor="White"
-                                   Opacity="0.9"
-                                   HorizontalOptions="Center"/>
-                            <Label Text="{Binding Hotel.PriceDisplay}"
-                                   FontSize="32"
-                                   FontAttributes="Bold"
-                                   TextColor="White"
-                                   HorizontalOptions="Center"/>
-                            <Label Text="mỗi đêm"
-                                   FontSize="13"
-                                   TextColor="White"
-                                   Opacity="0.9"
-                                   HorizontalOptions="Center"/>
-                        </VerticalStackLayout>
-                    </Border>
-                    
-                    <!-- Rating Badge -->
-                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                    <!-- Rating Badge (Yellow Circle) -->
+                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Start">
                         <Border BackgroundColor="#FFD700"
-                                Padding="12,6"
-                                StrokeShape="RoundRectangle 8">
-                            <Label Text="{Binding Hotel.RatingDisplay}"
-                                   FontSize="15"
-                                   FontAttributes="Bold"
-                                   TextColor="#1A1A1A"/>
+                                StrokeShape="RoundRectangle 20"
+                                Padding="10,6"
+                                VerticalOptions="Center">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="⭐"
+                                       FontSize="14"
+                                       VerticalOptions="Center"/>
+                                <Label Text="{Binding Hotel.Rating, StringFormat='{0:F1}'}"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="#1A1A1A"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
                         </Border>
+                        <Label Text="{Binding Hotel.Reviews.Count, StringFormat='({0} reviews)'}"
+                               FontSize="13"
+                               TextColor="#666"
+                               VerticalOptions="Center"/>
                     </HorizontalStackLayout>
                     
                     <!-- Description Section -->
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="Mô tả khách sạn"
-                               FontSize="20"
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Description"
+                               FontSize="18"
                                FontAttributes="Bold"
-                               TextColor="#1A1A1A">
-                            <Label.Shadow>
-                                <Shadow Brush="#ff6b35" Opacity="0" Radius="0" Offset="0,3"/>
-                            </Label.Shadow>
-                        </Label>
-                        <BoxView HeightRequest="3"
-                                 WidthRequest="100"
-                                 Color="#ff6b35"
-                                 HorizontalOptions="Start"
-                                 CornerRadius="2"/>
+                               TextColor="#1A1A1A"/>
                         <Label Text="{Binding Hotel.Description}"
                                FontSize="14"
-                               TextColor="#555"
+                               TextColor="#666"
                                LineHeight="1.5"
-                               LineBreakMode="WordWrap"/>
+                               LineBreakMode="WordWrap"
+                               MaxLines="4"/>
                     </VerticalStackLayout>
                     
                     <!-- Amenities Section -->
-                    <VerticalStackLayout Spacing="16">
-                        <HorizontalStackLayout Spacing="8">
-                            <Label Text="⭐"
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Amenities"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#1A1A1A"/>
+                        
+                        <!-- Amenities Horizontal Icons (from backend) -->
+                        <FlexLayout Direction="Row"
+                                   Wrap="Wrap"
+                                   JustifyContent="Start"
+                                   AlignItems="Start"
+                                   BindableLayout.ItemsSource="{Binding Hotel.Amenities}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:Amenity">
+                                    <Border Margin="0,0,8,8"
+                                            Padding="12,8"
+                                            BackgroundColor="#F5F5F5"
+                                            StrokeShape="RoundRectangle 8"
+                                            StrokeThickness="0">
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="{Binding IconUrl}"
+                                                   FontSize="16"
+                                                   VerticalOptions="Center"/>
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="13"
+                                                   TextColor="#333"
+                                                   VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                    
+                    <!-- Available Rooms Section -->
+                    <VerticalStackLayout Spacing="12"
+                                        IsVisible="{Binding Rooms.Count, Converter={StaticResource IntToBoolConverter}}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="Available Rooms"
                                    FontSize="18"
-                                   VerticalOptions="Center"/>
-                            <Label Text="Tiện nghi"
-                                   FontSize="20"
                                    FontAttributes="Bold"
                                    TextColor="#1A1A1A"
                                    VerticalOptions="Center"/>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="1"
+                                   Text="{Binding Rooms.Count, StringFormat='{0} rooms'}"
+                                   FontSize="12"
+                                   TextColor="#999"
+                                   VerticalOptions="Center"/>
+                        </Grid>
                         
-                        <!-- Amenities Grid (2 columns, 4 rows) -->
-                        <Grid ColumnDefinitions="*,*"
-                              RowDefinitions="Auto,Auto,Auto,Auto"
-                              RowSpacing="12"
-                              ColumnSpacing="12">
+                        <CollectionView ItemsSource="{Binding Rooms}"
+                                       SelectionMode="None">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Room">
+                                    <Border BackgroundColor="White"
+                                            StrokeShape="RoundRectangle 12"
+                                            StrokeThickness="1"
+                                            Stroke="#E0E0E0"
+                                            Padding="12">
+                                        <Grid ColumnDefinitions="100,*"
+                                              ColumnSpacing="12">
+                                            <!-- Room Photo -->
+                                            <Border Grid.Column="0"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    StrokeThickness="0"
+                                                    HeightRequest="100"
+                                                    WidthRequest="100">
+                                                <Image Source="{Binding MainPhotoUrl}"
+                                                       Aspect="AspectFill"/>
+                                            </Border>
+                                            
+                                            <!-- Room Details -->
+                                            <VerticalStackLayout Grid.Column="1"
+                                                                Spacing="6">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="15"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#1A1A1A"
+                                                       LineBreakMode="TailTruncation"/>
+                                                
+                                                <HorizontalStackLayout Spacing="4">
+                                                    <Label Text="👥"
+                                                           FontSize="12"/>
+                                                    <Label Text="{Binding CapacityDisplay}"
+                                                           FontSize="12"
+                                                           TextColor="#666"
+                                                           VerticalOptions="Center"/>
+                                                    <Label Text="•"
+                                                           FontSize="12"
+                                                           TextColor="#CCC"
+                                                           Margin="4,0"
+                                                           VerticalOptions="Center"/>
+                                                    <Label Text="{Binding BedTypeDisplay}"
+                                                           FontSize="12"
+                                                           TextColor="#666"
+                                                           VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                                
+                                                <HorizontalStackLayout Spacing="6"
+                                                                      Margin="0,4,0,0">
+                                                    <Label Text="{Binding PriceDisplay}"
+                                                           FontSize="16"
+                                                           FontAttributes="Bold"
+                                                           TextColor="#00BCD4"
+                                                           VerticalOptions="Center"/>
+                                                    <Label Text="{Binding StatusDisplay}"
+                                                           FontSize="11"
+                                                           TextColor="#4CAF50"
+                                                           Padding="6,2"
+                                                           BackgroundColor="#E8F5E9"
+                                                           VerticalOptions="Center">
+                                                        <Label.GestureRecognizers>
+                                                            <TapGestureRecognizer/>
+                                                        </Label.GestureRecognizers>
+                                                    </Label>
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                        
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HotelDetailsViewModel}}, Path=BookRoomCommand}"
+                                                                 CommandParameter="{Binding .}"/>
+                                        </Border.GestureRecognizers>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                    
+                    <!-- Reviews Section -->
+                    <VerticalStackLayout Spacing="12"
+                                        IsVisible="{Binding Reviews.Count, Converter={StaticResource IntToBoolConverter}}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="Guest Reviews"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#1A1A1A"
+                                   VerticalOptions="Center"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding Reviews.Count, StringFormat='{0} reviews'}"
+                                   FontSize="12"
+                                   TextColor="#999"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        
+                        <CollectionView ItemsSource="{Binding Reviews}"
+                                       SelectionMode="None">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Review">
+                                    <Border BackgroundColor="#F9F9F9"
+                                            StrokeShape="RoundRectangle 12"
+                                            StrokeThickness="0"
+                                            Padding="16">
+                                        <VerticalStackLayout Spacing="10">
+                                            <!-- User Info -->
+                                            <Grid ColumnDefinitions="40,*,Auto"
+                                                  ColumnSpacing="12">
+                                                <Border Grid.Column="0"
+                                                        StrokeShape="RoundRectangle 20"
+                                                        StrokeThickness="0"
+                                                        HeightRequest="40"
+                                                        WidthRequest="40">
+                                                    <Image Source="{Binding UserAvatarUrl}"
+                                                           Aspect="AspectFill"/>
+                                                </Border>
+                                                
+                                                <VerticalStackLayout Grid.Column="1"
+                                                                    Spacing="2">
+                                                    <Label Text="{Binding UserNameDisplay}"
+                                                           FontSize="14"
+                                                           FontAttributes="Bold"
+                                                           TextColor="#1A1A1A"/>
+                                                    <Label Text="{Binding DateDisplay}"
+                                                           FontSize="11"
+                                                           TextColor="#999"/>
+                                                </VerticalStackLayout>
+                                                
+                                                <Label Grid.Column="2"
+                                                       Text="{Binding RatingDisplay}"
+                                                       FontSize="13"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#FFA726"
+                                                       VerticalOptions="Center"/>
+                                            </Grid>
+                                            
+                                            <!-- Comment -->
+                                            <Label Text="{Binding Comment}"
+                                                   FontSize="13"
+                                                   TextColor="#333"
+                                                   LineBreakMode="WordWrap"
+                                                   MaxLines="3"
+                                                   LineHeight="1.4"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                    
+                    <!-- Gallery Section -->
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="Gallery"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#1A1A1A"
+                                   VerticalOptions="Center"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding Hotel.PhotoUrls.Count, StringFormat='Displaying {0}+'}"
+                                   FontSize="12"
+                                   TextColor="#999"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        
+                        <!-- 4 Photos Grid (2x2) with +24 badge -->
+                        <Grid ColumnDefinitions="*,8,*"
+                              RowDefinitions="140,8,140"
+                              ColumnSpacing="0"
+                              RowSpacing="0">
                             
-                            <!-- Row 1 -->
+                            <!-- Photo 1 (Top Left) -->
                             <Border Grid.Row="0" Grid.Column="0"
-                                    Padding="16"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="📶"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="WiFi"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
+                                    StrokeThickness="0">
+                                <Image Source="{Binding PhotoUrl1}"
+                                       Aspect="AspectFill"/>
                             </Border>
                             
-                            <Border Grid.Row="0" Grid.Column="1"
-                                    Padding="16"
+                            <!-- Photo 2 (Top Right) -->
+                            <Border Grid.Row="0" Grid.Column="2"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="❄️"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="Điều hoà"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
+                                    StrokeThickness="0">
+                                <Image Source="{Binding PhotoUrl2}"
+                                       Aspect="AspectFill"/>
                             </Border>
                             
-                            <!-- Row 2 -->
-                            <Border Grid.Row="1" Grid.Column="0"
-                                    Padding="16"
-                                    StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="🍽️"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="Nhà hàng"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
-                            </Border>
-                            
-                            <Border Grid.Row="1" Grid.Column="1"
-                                    Padding="16"
-                                    StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="🅿️"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="Bãi đỗ xe"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
-                            </Border>
-                            
-                            <!-- Row 3 -->
+                            <!-- Photo 3 (Bottom Left) -->
                             <Border Grid.Row="2" Grid.Column="0"
-                                    Padding="16"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="🏊"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="Hồ bơi"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
+                                    StrokeThickness="0">
+                                <Image Source="{Binding PhotoUrl3}"
+                                       Aspect="AspectFill"/>
                             </Border>
                             
-                            <Border Grid.Row="2" Grid.Column="1"
-                                    Padding="16"
+                            <!-- Photo 4 (Bottom Right) with +24 overlay -->
+                            <Border Grid.Row="2" Grid.Column="2"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="🏋️"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="Phòng gym"
-                                           FontSize="12"
+                                    StrokeThickness="0">
+                                <Grid>
+                                    <Image Source="{Binding PhotoUrl4}"
+                                           Aspect="AspectFill"/>
+                                    <!-- Dark overlay with +24 -->
+                                    <BoxView BackgroundColor="#80000000"/>
+                                    <Label Text="{Binding RemainingPhotosCount, StringFormat='+{0}'}"
+                                           FontSize="32"
                                            FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
-                            </Border>
-                            
-                            <!-- Row 4 -->
-                            <Border Grid.Row="3" Grid.Column="0"
-                                    Padding="16"
-                                    StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="🧖"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="Spa"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
-                            </Border>
-                            
-                            <Border Grid.Row="3" Grid.Column="1"
-                                    Padding="16"
-                                    StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="1"
-                                    Stroke="#e9ecef">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#F8F9FA" Offset="0.0"/>
-                                        <GradientStop Color="#FFFFFF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                    <Label Text="🔒"
-                                           FontSize="28"
-                                           HorizontalOptions="Center"/>
-                                    <Label Text="Két sắt"
-                                           FontSize="12"
-                                           FontAttributes="Bold"
-                                           TextColor="#495057"
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
+                                </Grid>
                             </Border>
                         </Grid>
                     </VerticalStackLayout>
-                    
-                    <!-- Trust Badge -->
-                    <Border Padding="16"
-                            BackgroundColor="#F8F9FA"
-                            StrokeShape="RoundRectangle 10">
-                        <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
-                            <Label Text="🛡️"
-                                   FontSize="16"
-                                   VerticalOptions="Center"/>
-                            <Label Text="Đặt phòng an toàn &amp; bảo mật"
-                                   FontSize="13"
-                                   TextColor="#666"
-                                   VerticalOptions="Center"/>
-                        </HorizontalStackLayout>
-                    </Border>
                     
                 </VerticalStackLayout>
                 
@@ -381,30 +425,6 @@
                 
             </VerticalStackLayout>
         </ScrollView>
-        
-        <!-- Floating Bottom Button -->
-        <Border VerticalOptions="End"
-                BackgroundColor="White"
-                Padding="20,15"
-                Shadow="{Shadow Brush=Black, Opacity=0.1, Radius=16, Offset='0,-4'}">
-            <Button Text="XEM PHÒNG TRỐNG"
-                    FontSize="15"
-                    FontAttributes="Bold"
-                    HeightRequest="52"
-                    CornerRadius="12"
-                    TextColor="White"
-                    Command="{Binding SelectRoomsCommand}">
-                <Button.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                        <GradientStop Color="#ff6b35" Offset="0.0"/>
-                        <GradientStop Color="#f7931e" Offset="1.0"/>
-                    </LinearGradientBrush>
-                </Button.Background>
-                <Button.Shadow>
-                    <Shadow Brush="#ff6b35" Opacity="0.4" Radius="12" Offset="0,6"/>
-                </Button.Shadow>
-            </Button>
-        </Border>
         
         <!-- Error Message -->
         <Label Text="{Binding ErrorMessage}"

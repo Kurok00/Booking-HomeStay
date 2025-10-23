@@ -26,18 +26,27 @@ public static class MauiProgram
 
 		// Register Services
 		builder.Services.AddSingleton<IApiService, ApiService>();
+		builder.Services.AddSingleton<IAuthService, AuthService>();
 
 		// Register ViewModels
 		builder.Services.AddTransient<LoginViewModel>();
 		builder.Services.AddTransient<RegisterViewModel>();
 		builder.Services.AddTransient<HotelsViewModel>();
 		builder.Services.AddTransient<HotelDetailsViewModel>();
+		builder.Services.AddTransient<RoomDetailsViewModel>();
+		builder.Services.AddTransient<BookingViewModel>();
+		builder.Services.AddTransient<ProfileViewModel>();
+		builder.Services.AddTransient<MyBookingsViewModel>(); // ✅ New ViewModel
 
 		// Register Pages
 		builder.Services.AddTransient<LoginPage>();
 		builder.Services.AddTransient<RegisterPage>();
 		builder.Services.AddTransient<HotelsPage>();
 		builder.Services.AddTransient<HotelDetailsPage>();
+		builder.Services.AddTransient<RoomDetailsPage>();
+		builder.Services.AddTransient<BookingPage>();
+		builder.Services.AddTransient<ProfilePage>();
+		builder.Services.AddTransient<MyBookingsPage>(); // ✅ New page
 
 		return builder.Build();
 	}

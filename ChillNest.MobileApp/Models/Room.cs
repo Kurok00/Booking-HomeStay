@@ -1,28 +1,66 @@
+using Newtonsoft.Json;
+
 namespace ChillNest.MobileApp.Models;
 
 public class Room
 {
-    public int Id { get; set; }
+    [JsonProperty("roomId")]
+    public int RoomId { get; set; }
+
+    [JsonProperty("name")]
     public string Name { get; set; } = string.Empty;
-    public int HotelId { get; set; }
-    public decimal PricePerNight { get; set; }
+
+    [JsonProperty("price")]
+    public decimal Price { get; set; }
+
+    [JsonProperty("capacity")]
     public int Capacity { get; set; }
-    public string? Description { get; set; }
-    public bool IsAvailable { get; set; }
-    public List<RoomAmenity>? RoomAmenities { get; set; }
-    public List<Photo>? Photos { get; set; }
+
+    [JsonProperty("bedType")]
+    public string? BedType { get; set; }
+
+    [JsonProperty("size")]
+    public int? Size { get; set; }
+
+    [JsonProperty("status")]
+    public bool Status { get; set; }
+
+    [JsonProperty("photos")]
+    public List<string>? Photos { get; set; }
+
+    [JsonProperty("amenities")]
+    public List<RoomAmenity>? Amenities { get; set; }
 
     // Display properties
-    public string PriceDisplay => $"${PricePerNight:F0}/night";
+    public string PriceDisplay => $"${Price:F0}/night";
     public string CapacityDisplay => $"{Capacity} guests";
-    public string AvailabilityDisplay => IsAvailable ? "Available" : "Not Available";
-    public string MainPhotoUrl => Photos?.FirstOrDefault()?.PhotoUrl ?? "https://via.placeholder.com/300x200";
+    public string BedTypeDisplay => BedType ?? "Standard bed";
+    public string SizeDisplay => Size.HasValue ? $"{Size}m²" : "";
+    public string StatusDisplay => Status ? "Available" : "Not Available";
+
+    public string MainPhotoUrl
+    {
+        get
+        {
+            var photo = Photos?.FirstOrDefault();
+            if (string.IsNullOrEmpty(photo))
+                return "https://via.placeholder.com/300x200";
+
+            return !photo.StartsWith("http")
+                ? $"http://10.0.2.2:5182{photo}"
+                : photo;
+        }
+    }
 }
 
 public class RoomAmenity
 {
-    public int RoomAmenitieId { get; set; }
-    public int RoomId { get; set; }
-    public int AmenitiesId { get; set; }
-    public Amenity? Amenitie { get; set; }
+    [JsonProperty("amenityId")]
+    public int AmenityId { get; set; }
+
+    [JsonProperty("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonProperty("icon")]
+    public string? Icon { get; set; }
 }

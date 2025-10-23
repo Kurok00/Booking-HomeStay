@@ -18,6 +18,10 @@ public partial class HotelsPage : ContentPage
         base.OnAppearing();
 
         Android.Util.Log.Info("ChillNest", "[HotelsPage] OnAppearing called!");
+
+        // Refresh user info every time page appears
+        await _viewModel.RefreshUserInfoAsync();
+
         Android.Util.Log.Info("ChillNest", $"[HotelsPage] Current Hotels count: {_viewModel.Hotels.Count}");
 
         // Load hotels when page appears

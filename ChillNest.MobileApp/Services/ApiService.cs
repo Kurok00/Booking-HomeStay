@@ -11,18 +11,25 @@ public interface IApiService
     Task<List<Hotel>> GetHotelsAsync(int page = 1, int pageSize = 10, string? searchTerm = null);
     Task<Hotel?> GetHotelDetailsAsync(int hotelId);
     Task<List<Hotel>> GetNearbyHotelsAsync(double latitude, double longitude, double radiusKm = 10);
+    Task<List<Room>> GetHotelRoomsAsync(int hotelId);
+    Task<List<Review>> GetHotelReviewsAsync(int hotelId);
 
     // Auth
     Task<LoginResponse> LoginAsync(LoginRequest request);
     Task<RegisterResponse> RegisterAsync(RegisterRequest request);
     Task<User?> GetProfileAsync();
+    Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request);
     Task<bool> LogoutAsync();
 
     // Bookings
     Task<BookingResponse> CreateBookingAsync(CreateBookingRequest request);
     Task<List<Booking>> GetMyBookingsAsync();
-    Task<bool> CancelBookingAsync(int bookingId);
+    Task<List<BookingItem>> GetUserBookingsAsync(int userId); // ✅ New method
+    Task<bool> CancelBookingAsync(int bookingId, int userId); // ✅ Updated with userId
     Task<bool> CheckAvailabilityAsync(int roomId, DateTime checkIn, DateTime checkOut);
+
+    // Vouchers
+    Task<List<VoucherModel>> GetAvailableVouchersAsync();
 }
 
 public class ApiService : IApiService
@@ -105,14 +112,27 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"HotelsApi/{hotelId}");
+            Android.Util.Log.Info("ApiService", $"🔵 GetHotelDetailsAsync called with hotelId: {hotelId}");
+            var url = $"HotelsApi/{hotelId}";
+            Android.Util.Log.Info("ApiService", $"🔵 Calling URL: {_httpClient.BaseAddress}{url}");
+
+            var response = await _httpClient.GetAsync(url);
+            Android.Util.Log.Info("ApiService", $"🔵 Response status: {response.StatusCode}");
+
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<Hotel>(content);
+            Android.Util.Log.Info("ApiService", $"🔵 Response content length: {content.Length}");
+
+            var hotel = JsonConvert.DeserializeObject<Hotel>(content);
+            Android.Util.Log.Info("ApiService", $"🔵 Deserialized hotel: {hotel?.Name ?? "NULL"}");
+
+            return hotel;
         }
         catch (Exception ex)
         {
+            Android.Util.Log.Error("ApiService", $"❌ Error getting hotel details: {ex.Message}");
+            Android.Util.Log.Error("ApiService", $"❌ Stack trace: {ex.StackTrace}");
             Console.WriteLine($"Error getting hotel details: {ex.Message}");
             return null;
         }
@@ -135,6 +155,60 @@ public class ApiService : IApiService
         }
     }
 
+    public async Task<List<Room>> GetHotelRoomsAsync(int hotelId)
+    {
+        try
+        {
+            Android.Util.Log.Info("ApiService", $"🔵 GetHotelRoomsAsync called with hotelId: {hotelId}");
+            var url = $"HotelsApi/{hotelId}/rooms";
+
+            var response = await _httpClient.GetAsync(url);
+            Android.Util.Log.Info("ApiService", $"🔵 Rooms response status: {response.StatusCode}");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            Android.Util.Log.Info("ApiService", $"🔵 Rooms content length: {content.Length}");
+
+            var rooms = JsonConvert.DeserializeObject<List<Room>>(content);
+            Android.Util.Log.Info("ApiService", $"🔵 Deserialized {rooms?.Count ?? 0} rooms");
+
+            return rooms ?? new List<Room>();
+        }
+        catch (Exception ex)
+        {
+            Android.Util.Log.Error("ApiService", $"❌ Error getting rooms: {ex.Message}");
+            return new List<Room>();
+        }
+    }
+
+    public async Task<List<Review>> GetHotelReviewsAsync(int hotelId)
+    {
+        try
+        {
+            Android.Util.Log.Info("ApiService", $"🔵 GetHotelReviewsAsync called with hotelId: {hotelId}");
+            var url = $"HotelsApi/{hotelId}/reviews";
+
+            var response = await _httpClient.GetAsync(url);
+            Android.Util.Log.Info("ApiService", $"🔵 Reviews response status: {response.StatusCode}");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            Android.Util.Log.Info("ApiService", $"🔵 Reviews content length: {content.Length}");
+
+            var reviews = JsonConvert.DeserializeObject<List<Review>>(content);
+            Android.Util.Log.Info("ApiService", $"🔵 Deserialized {reviews?.Count ?? 0} reviews");
+
+            return reviews ?? new List<Review>();
+        }
+        catch (Exception ex)
+        {
+            Android.Util.Log.Error("ApiService", $"❌ Error getting reviews: {ex.Message}");
+            return new List<Review>();
+        }
+    }
+
     #endregion
 
     #region Auth
@@ -143,18 +217,49 @@ public class ApiService : IApiService
     {
         try
         {
+            Android.Util.Log.Info("ApiService", $"🔵 Login - Email: {request.Email}");
+
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync("AuthApi/login", content);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<LoginResponse>(responseContent)
-                ?? new LoginResponse { Success = false, Message = "Invalid response from server" };
+            Android.Util.Log.Info("ApiService", $"Response Status: {response.StatusCode}");
+            Android.Util.Log.Info("ApiService", $"Response: {responseContent}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorObj = JsonConvert.DeserializeObject<dynamic>(responseContent);
+                var errorMessage = errorObj?.message?.ToString() ?? "Login failed";
+                return new LoginResponse { Success = false, Message = errorMessage };
+            }
+
+            // Parse backend response: { userId, userName, email, fullName, phone, avatarUrl, roles, message }
+            var backendResponse = JsonConvert.DeserializeObject<dynamic>(responseContent);
+            var user = new User
+            {
+                Id = (int)(backendResponse?.userId ?? 0),
+                UserName = backendResponse?.userName?.ToString() ?? "",
+                Email = backendResponse?.email?.ToString() ?? "",
+                Phone = backendResponse?.phone?.ToString(),
+                FullName = backendResponse?.fullName?.ToString(),
+                AvatarUrl = backendResponse?.avatarUrl?.ToString(),
+                Roles = backendResponse?.roles != null
+                    ? JsonConvert.DeserializeObject<List<string>>(backendResponse.roles.ToString()) ?? new List<string>()
+                    : new List<string>()
+            };
+
+            return new LoginResponse
+            {
+                Success = true,
+                Message = backendResponse?.message?.ToString() ?? "Login successful",
+                User = user
+            };
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error during login: {ex.Message}");
+            Android.Util.Log.Error("ApiService", $"❌ Login error: {ex.Message}");
             return new LoginResponse { Success = false, Message = $"Connection error: {ex.Message}" };
         }
     }
@@ -183,16 +288,113 @@ public class ApiService : IApiService
     {
         try
         {
-            var response = await _httpClient.GetAsync("AuthApi/profile");
-            response.EnsureSuccessStatusCode();
+            // Get auth token
+            var token = await SecureStorage.GetAsync("auth_token");
+            if (string.IsNullOrEmpty(token))
+            {
+                Android.Util.Log.Warn("ApiService", $"⚠️ No auth token found for GetProfile!");
+                return null;
+            }
 
+            Android.Util.Log.Info("ApiService", $"🔵 GetProfile - Token: {token.Substring(0, Math.Min(20, token.Length))}...");
+
+            // Create request with Authorization header
+            var request = new HttpRequestMessage(HttpMethod.Get, "AuthApi/profile");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<User>(content);
+
+            Android.Util.Log.Info("ApiService", $"Response Status: {response.StatusCode}");
+            Android.Util.Log.Info("ApiService", $"Response Content: {content.Substring(0, Math.Min(200, content.Length))}...");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Android.Util.Log.Error("ApiService", $"❌ GetProfile failed: {response.StatusCode}");
+                return null;
+            }
+
+            // Parse response - backend returns { userId, userName, email, fullName, phone, avatarUrl, createdAt, roles }
+            var profileData = JsonConvert.DeserializeObject<dynamic>(content);
+
+            var user = new User
+            {
+                Id = (int)(profileData?.userId ?? 0),
+                UserName = profileData?.userName?.ToString() ?? "",
+                Email = profileData?.email?.ToString() ?? "",
+                FullName = profileData?.fullName?.ToString(),
+                Phone = profileData?.phone?.ToString(),
+                AvatarUrl = profileData?.avatarUrl?.ToString(),
+                Roles = profileData?.roles != null
+                    ? JsonConvert.DeserializeObject<List<string>>(profileData.roles.ToString()) ?? new List<string>()
+                    : new List<string>()
+            };
+
+            Android.Util.Log.Info("ApiService", $"✅ Profile loaded: {user.UserName}, FullName: {user.FullName}");
+
+            return user;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error getting profile: {ex.Message}");
+            Android.Util.Log.Error("ApiService", $"❌ Error getting profile: {ex.Message}");
             return null;
+        }
+    }
+
+    public async Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request)
+    {
+        try
+        {
+            // Get auth token
+            var token = await SecureStorage.GetAsync("auth_token");
+            if (string.IsNullOrEmpty(token))
+            {
+                return new UpdateProfileResponse
+                {
+                    Success = false,
+                    Message = "Please login to update profile"
+                };
+            }
+
+            var json = JsonConvert.SerializeObject(request);
+            Android.Util.Log.Info("ApiService", $"🔵 Updating profile - Username: {request.UserName}, FullName: {request.FullName}");
+
+            // Create request with Authorization header
+            var httpRequest = new HttpRequestMessage(HttpMethod.Put, "AuthApi/profile");
+            httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(httpRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseJson = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<dynamic>(responseJson);
+
+                Android.Util.Log.Info("ApiService", $"✅ Profile updated successfully");
+
+                return new UpdateProfileResponse
+                {
+                    Success = true,
+                    Message = result?.message ?? "Profile updated successfully"
+                };
+            }
+
+            Android.Util.Log.Warn("ApiService", $"⚠️ Update profile failed: {response.StatusCode}");
+            return new UpdateProfileResponse
+            {
+                Success = false,
+                Message = $"Failed to update profile: {response.StatusCode}"
+            };
+        }
+        catch (Exception ex)
+        {
+            Android.Util.Log.Error("ApiService", $"❌ Exception updating profile: {ex.Message}");
+            return new UpdateProfileResponse
+            {
+                Success = false,
+                Message = $"Error: {ex.Message}"
+            };
         }
     }
 
@@ -218,18 +420,68 @@ public class ApiService : IApiService
     {
         try
         {
-            var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            Android.Util.Log.Info("ApiService", $"🔵 Creating booking for Room {request.RoomId}");
 
-            var response = await _httpClient.PostAsync("BookingsApi", content);
+            // Get auth token
+            var token = await SecureStorage.GetAsync("auth_token");
+            if (string.IsNullOrEmpty(token))
+            {
+                Android.Util.Log.Warn("ApiService", $"⚠️ No auth token found!");
+                return new BookingResponse { Success = false, Message = "Please login to create booking" };
+            }
+
+            Android.Util.Log.Info("ApiService", $"✅ Token found: {token.Substring(0, Math.Min(20, token.Length))}...");
+
+            var json = JsonConvert.SerializeObject(request);
+            Android.Util.Log.Info("ApiService", $"Request JSON: {json}");
+
+            // Create request with Authorization header
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "BookingsApi");
+            httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            Android.Util.Log.Info("ApiService", $"📤 Sending request to: {_httpClient.BaseAddress}BookingsApi");
+            Android.Util.Log.Info("ApiService", $"🔐 Authorization header: Bearer {token.Substring(0, Math.Min(20, token.Length))}...");
+
+            var response = await _httpClient.SendAsync(httpRequest);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<BookingResponse>(responseContent)
-                ?? new BookingResponse { Success = false, Message = "Invalid response from server" };
+            Android.Util.Log.Info("ApiService", $"Response Status: {response.StatusCode}");
+            Android.Util.Log.Info("ApiService", $"Response (first 500 chars): {responseContent.Substring(0, Math.Min(500, responseContent.Length))}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Android.Util.Log.Error("ApiService", $"❌ Booking failed with status: {response.StatusCode}");
+
+                // Try to parse error message
+                try
+                {
+                    var errorObj = JsonConvert.DeserializeObject<dynamic>(responseContent);
+                    var errorMessage = errorObj?.message?.ToString() ?? $"Server error: {response.StatusCode}";
+                    return new BookingResponse { Success = false, Message = errorMessage };
+                }
+                catch
+                {
+                    return new BookingResponse { Success = false, Message = $"Server error: {response.StatusCode}" };
+                }
+            }
+
+            // Parse backend response: { bookingId, checkIn, checkOut, totalPrice, status, message, hotelName, roomName, nights }
+            var backendResponse = JsonConvert.DeserializeObject<dynamic>(responseContent);
+
+            Android.Util.Log.Info("ApiService", $"✅ Booking created successfully - ID: {backendResponse?.bookingId}");
+
+            return new BookingResponse
+            {
+                Success = true,
+                Message = backendResponse?.message?.ToString() ?? "Booking created successfully",
+                BookingId = (int)(backendResponse?.bookingId ?? 0)
+            };
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating booking: {ex.Message}");
+            Android.Util.Log.Error("ApiService", $"❌ Error creating booking: {ex.Message}");
+            Android.Util.Log.Error("ApiService", $"Stack trace: {ex.StackTrace}");
             return new BookingResponse { Success = false, Message = $"Connection error: {ex.Message}" };
         }
     }
@@ -287,6 +539,163 @@ public class ApiService : IApiService
         {
             Console.WriteLine($"Error checking availability: {ex.Message}");
             return false;
+        }
+    }
+
+    // ✅ Get user bookings list
+    public async Task<List<BookingItem>> GetUserBookingsAsync(int userId)
+    {
+        try
+        {
+            Android.Util.Log.Info("ApiService", $"📥 Getting bookings for userId: {userId}");
+
+            var response = await _httpClient.GetAsync($"BookingsApi?userId={userId}");
+
+            Android.Util.Log.Info("ApiService", $"Response status: {response.StatusCode}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                Android.Util.Log.Info("ApiService", $"Response JSON (first 500 chars): {json.Substring(0, Math.Min(500, json.Length))}");
+
+                // Parse the response - backend returns array of objects with nested Room and Hotel
+                var apiResponse = JsonConvert.DeserializeObject<List<BookingApiResponse>>(json);
+
+                // Map to BookingItem
+                var bookings = apiResponse?.Select(b =>
+                {
+                    // Convert relative photo path to full URL
+                    var photoUrl = b.Room?.MainPhoto ?? "";
+                    if (!string.IsNullOrEmpty(photoUrl) && !photoUrl.StartsWith("http"))
+                    {
+                        // Remove leading slash if present
+                        photoUrl = photoUrl.TrimStart('/');
+                        photoUrl = $"http://10.0.2.2:5182/{photoUrl}";
+                    }
+                    if (string.IsNullOrEmpty(photoUrl))
+                    {
+                        photoUrl = "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400";
+                    }
+
+                    return new BookingItem
+                    {
+                        BookingId = b.BookingId,
+                        HotelName = b.Hotel?.Name ?? "Unknown Hotel",
+                        RoomName = b.Room?.Name ?? "Unknown Room",
+                        RoomPhoto = photoUrl,
+                        CheckIn = b.CheckIn,
+                        CheckOut = b.CheckOut,
+                        TotalPrice = b.TotalPrice,
+                        StatusString = b.Status,
+                        CreatedAt = b.CreatedAt
+                    };
+                }).ToList() ?? new List<BookingItem>();
+
+                Android.Util.Log.Info("ApiService", $"✅ Parsed {bookings.Count} bookings");
+
+                // Debug: Log first booking details
+                if (bookings.Any())
+                {
+                    var first = bookings.First();
+                    Android.Util.Log.Info("ApiService", $"📋 First booking: ID={first.BookingId}, Hotel={first.HotelName}, Room={first.RoomName}, Photo={first.RoomPhoto}");
+                    Android.Util.Log.Info("ApiService", $"📋 Dates: {first.CheckIn:yyyy-MM-dd} to {first.CheckOut:yyyy-MM-dd}, Total={first.TotalPrice}, Status={first.StatusString}");
+                }
+
+                return bookings;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Android.Util.Log.Error("ApiService", $"❌ API error: {response.StatusCode} - {errorContent}");
+            }
+
+            return new List<BookingItem>();
+        }
+        catch (Exception ex)
+        {
+            Android.Util.Log.Error("ApiService", $"❌ Error getting bookings: {ex.Message}");
+            Android.Util.Log.Error("ApiService", $"Stack trace: {ex.StackTrace}");
+            return new List<BookingItem>();
+        }
+    }
+
+    // ✅ Cancel booking with userId
+    public async Task<bool> CancelBookingAsync(int bookingId, int userId)
+    {
+        try
+        {
+            Android.Util.Log.Info("ApiService", $"Canceling booking {bookingId} for userId: {userId}");
+
+            // Call cancel endpoint (to be implemented in backend)
+            var response = await _httpClient.PostAsync($"BookingsApi/{bookingId}/cancel?userId={userId}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Android.Util.Log.Info("ApiService", "✅ Booking canceled successfully");
+                return true;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Android.Util.Log.Error("ApiService", $"❌ Cancel failed: {response.StatusCode} - {errorContent}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Android.Util.Log.Error("ApiService", $"❌ Error canceling booking: {ex.Message}");
+            return false;
+        }
+    }
+
+    #endregion
+
+    #region Vouchers
+
+    public async Task<List<VoucherModel>> GetAvailableVouchersAsync()
+    {
+        try
+        {
+            // Try to get auth token (optional)
+            var token = await SecureStorage.GetAsync("auth_token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                Android.Util.Log.Info("ApiService", "🔵 Getting vouchers with auth token");
+            }
+            else
+            {
+                Android.Util.Log.Info("ApiService", "🔵 Getting vouchers without auth (all vouchers)");
+            }
+
+            var response = await _httpClient.GetAsync("BookingsApi/available-vouchers");
+
+            Android.Util.Log.Info("ApiService", $"🔵 Vouchers response status: {response.StatusCode}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                Android.Util.Log.Info("ApiService", $"🔵 Vouchers JSON: {json.Substring(0, Math.Min(200, json.Length))}...");
+
+                var vouchers = JsonConvert.DeserializeObject<List<VoucherModel>>(json);
+                Android.Util.Log.Info("ApiService", $"✅ Loaded {vouchers?.Count ?? 0} vouchers");
+                return vouchers ?? new List<VoucherModel>();
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Android.Util.Log.Warn("ApiService", $"⚠️ Vouchers API failed: {response.StatusCode} - {errorContent}");
+            }
+
+            return new List<VoucherModel>();
+        }
+        catch (Exception ex)
+        {
+            Android.Util.Log.Error("ApiService", $"❌ Error getting vouchers: {ex.Message}");
+            Android.Util.Log.Error("ApiService", $"❌ Stack trace: {ex.StackTrace}");
+            return new List<VoucherModel>();
         }
     }
 
