@@ -51,7 +51,10 @@ public partial class LoginViewModel : ObservableObject
             IsLoading = true;
             ErrorMessage = string.Empty;
 
+
+#if ANDROID
             Android.Util.Log.Info("LoginVM", $"🔵 Logging in - Email: {Email}");
+#endif
 
             var request = new LoginRequest
             {
@@ -61,7 +64,10 @@ public partial class LoginViewModel : ObservableObject
 
             var response = await _apiService.LoginAsync(request);
 
+
+#if ANDROID
             Android.Util.Log.Info("LoginVM", $"Response: {Newtonsoft.Json.JsonConvert.SerializeObject(response)}");
+#endif
 
             if (response.Success && response.User != null)
             {
@@ -70,20 +76,29 @@ public partial class LoginViewModel : ObservableObject
                 // Use userId as token (simple approach)
                 await _authService.SaveTokenAsync(response.User.Id.ToString());
 
+
+#if ANDROID
                 Android.Util.Log.Info("LoginVM", $"✅ Login successful - User: {response.User.UserName}");
+#endif
 
                 // Navigate to hotels page
                 await Shell.Current.GoToAsync("///HotelsPage");
             }
             else
             {
+
+#if ANDROID
                 Android.Util.Log.Warn("LoginVM", $"⚠️ Login failed: {response.Message}");
+#endif
                 ErrorMessage = response.Message ?? "Login failed";
             }
         }
         catch (Exception ex)
         {
+
+#if ANDROID
             Android.Util.Log.Error("LoginVM", $"❌ Login error: {ex.Message}");
+#endif
             ErrorMessage = $"Login error: {ex.Message}";
         }
         finally

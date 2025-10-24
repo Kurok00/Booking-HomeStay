@@ -61,14 +61,18 @@ public partial class HotelDetailsViewModel : ObservableObject
 
     partial void OnHotelIdChanged(int value)
     {
+#if ANDROID
         Android.Util.Log.Info("HotelDetailsVM", $"🔵 HotelId changed to: {value}");
+#endif
         if (value > 0)
         {
             _ = LoadHotelDetailsAsync();
         }
         else
         {
+#if ANDROID
             Android.Util.Log.Warn("HotelDetailsVM", $"⚠️ Invalid HotelId: {value}");
+#endif
         }
     }
 
@@ -79,7 +83,9 @@ public partial class HotelDetailsViewModel : ObservableObject
 
         try
         {
+#if ANDROID
             Android.Util.Log.Info("HotelDetailsVM", $"🔵 LoadHotelDetailsAsync started for HotelId: {HotelId}");
+#endif
             IsLoading = true;
             ErrorMessage = string.Empty;
 
@@ -96,15 +102,18 @@ public partial class HotelDetailsViewModel : ObservableObject
 
             if (Hotel == null)
             {
+#if ANDROID
                 Android.Util.Log.Warn("HotelDetailsVM", "⚠️ Hotel is NULL after API call");
+#endif
                 ErrorMessage = "Hotel not found";
             }
             else
             {
+#if ANDROID
                 Android.Util.Log.Info("HotelDetailsVM", $"✅ Hotel loaded: {Hotel.Name} (ID: {Hotel.Id})");
                 Android.Util.Log.Info("HotelDetailsVM", $"✅ Rooms loaded: {Rooms.Count}");
                 Android.Util.Log.Info("HotelDetailsVM", $"✅ Reviews loaded: {Reviews.Count}");
-
+#endif
                 // Notify property changes for gallery
                 OnPropertyChanged(nameof(PhotoUrl1));
                 OnPropertyChanged(nameof(PhotoUrl2));
@@ -115,8 +124,10 @@ public partial class HotelDetailsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("HotelDetailsVM", $"❌ Exception: {ex.Message}");
             Android.Util.Log.Error("HotelDetailsVM", $"❌ Stack: {ex.StackTrace}");
+#endif
             ErrorMessage = $"Failed to load hotel: {ex.Message}";
         }
         finally
@@ -132,8 +143,9 @@ public partial class HotelDetailsViewModel : ObservableObject
 
         try
         {
+#if ANDROID
             Android.Util.Log.Info("HotelDetailsVM", $"🔵 Navigate to RoomDetailsPage - Room: {room.RoomId}, Hotel: {Hotel.Id}");
-
+#endif
             // Navigate to room details page
             var parameters = new Dictionary<string, object>
             {
@@ -145,7 +157,9 @@ public partial class HotelDetailsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("HotelDetailsVM", $"❌ Navigate error: {ex.Message}");
+#endif
             ErrorMessage = $"Navigation failed: {ex.Message}";
             await Shell.Current.DisplayAlert("Error", ErrorMessage, "OK");
         }

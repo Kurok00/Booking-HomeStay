@@ -134,12 +134,16 @@ public partial class BookingViewModel : ObservableObject
                 GuestName = user.FullName ?? user.UserName;
                 GuestPhone = user.Phone ?? "";
 
+#if ANDROID
                 Android.Util.Log.Info("BookingVM", $"✅ Auto-filled guest info - Name: {GuestName}, Phone: {GuestPhone}");
+#endif
             }
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Warn("BookingVM", $"⚠️ Failed to load user info: {ex.Message}");
+#endif
         }
     }
 
@@ -159,7 +163,9 @@ public partial class BookingViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Warn("BookingVM", $"⚠️ Failed to load vouchers: {ex.Message}");
+#endif
         }
     }
 
@@ -264,7 +270,9 @@ public partial class BookingViewModel : ObservableObject
             IsLoading = true;
             ErrorMessage = string.Empty;
 
+#if ANDROID
             Android.Util.Log.Info("BookingVM", $"🔵 Creating booking - Room: {RoomId}, Check-in: {CheckInDate:yyyy-MM-dd}, Check-out: {CheckOutDate:yyyy-MM-dd}");
+#endif
 
             // Get current user ID
             var currentUser = await _authService.GetCurrentUserAsync();
@@ -287,13 +295,17 @@ public partial class BookingViewModel : ObservableObject
                 PaymentMethod = SelectedPaymentMethod?.Code ?? "COD" // ✅ Send payment method
             };
 
+#if ANDROID
             Android.Util.Log.Info("BookingVM", $"📤 Sending booking with UserId: {request.UserId}, PaymentMethod: {request.PaymentMethod}");
+#endif
 
             var response = await _apiService.CreateBookingAsync(request);
 
             if (response.Success)
             {
+#if ANDROID
                 Android.Util.Log.Info("BookingVM", $"✅ Booking created successfully: {response.BookingId}");
+#endif
 
                 var successMessage = $"Your booking has been confirmed.\n\n" +
                     $"Booking ID: {response.BookingId}\n" +
@@ -321,14 +333,18 @@ public partial class BookingViewModel : ObservableObject
             }
             else
             {
+#if ANDROID
                 Android.Util.Log.Warn("BookingVM", $"⚠️ Booking failed: {response.Message}");
+#endif
                 ErrorMessage = response.Message ?? "Booking failed. Please try again.";
                 await Shell.Current.DisplayAlert("Booking Failed", ErrorMessage, "OK");
             }
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("BookingVM", $"❌ Exception: {ex.Message}");
+#endif
             ErrorMessage = $"Error creating booking: {ex.Message}";
             await Shell.Current.DisplayAlert("Error", ErrorMessage, "OK");
         }

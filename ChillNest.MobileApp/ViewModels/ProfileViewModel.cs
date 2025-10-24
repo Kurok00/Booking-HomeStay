@@ -56,15 +56,21 @@ public partial class ProfileViewModel : ObservableObject
         {
             IsLoading = true;
 
+#if ANDROID
             Android.Util.Log.Info("ProfileVM", "🔵 LoadProfileAsync called");
+#endif
 
             // Check if logged in
             IsLoggedIn = await _authService.IsLoggedInAsync();
+#if ANDROID
             Android.Util.Log.Info("ProfileVM", $"IsLoggedIn: {IsLoggedIn}");
+#endif
 
             if (!IsLoggedIn)
             {
+#if ANDROID
                 Android.Util.Log.Info("ProfileVM", "⚠️ User not logged in");
+#endif
                 CurrentUser = null;
                 UserName = string.Empty;
                 FullName = string.Empty;
@@ -75,12 +81,18 @@ public partial class ProfileViewModel : ObservableObject
             }
 
             // Get profile from API
+#if ANDROID
             Android.Util.Log.Info("ProfileVM", "📡 Fetching profile from API...");
+#endif
             var user = await _apiService.GetProfileAsync();
 
             if (user != null)
             {
+#if ANDROID
+#if ANDROID
                 Android.Util.Log.Info("ProfileVM", $"✅ Profile loaded from API: {user.UserName}");
+#endif
+#endif
                 CurrentUser = user;
                 UserName = user.UserName;
                 FullName = user.FullName ?? "";
@@ -93,13 +105,21 @@ public partial class ProfileViewModel : ObservableObject
             }
             else
             {
+#if ANDROID
+#if ANDROID
                 Android.Util.Log.Warn("ProfileVM", "⚠️ API returned null, trying local storage...");
+#endif
+#endif
 
                 // Fallback to local storage
                 var localUser = await _authService.GetCurrentUserAsync();
                 if (localUser != null)
                 {
+#if ANDROID
+#if ANDROID
                     Android.Util.Log.Info("ProfileVM", $"✅ Profile loaded from local storage: {localUser.UserName}");
+#endif
+#endif
                     CurrentUser = localUser;
                     UserName = localUser.UserName;
                     FullName = localUser.FullName ?? "";
@@ -110,21 +130,33 @@ public partial class ProfileViewModel : ObservableObject
                 }
                 else
                 {
+#if ANDROID
+#if ANDROID
                     Android.Util.Log.Error("ProfileVM", "❌ No user data in local storage");
+#endif
+#endif
                     IsLoggedIn = false;
                 }
             }
         }
         catch (Exception ex)
         {
+#if ANDROID
+#if ANDROID
             Android.Util.Log.Error("ProfileVM", $"❌ Failed to load profile: {ex.Message}");
             Android.Util.Log.Error("ProfileVM", $"Stack trace: {ex.StackTrace}");
+#endif
+#endif
 
             // Fallback to local storage
             var localUser = await _authService.GetCurrentUserAsync();
             if (localUser != null)
             {
+#if ANDROID
+#if ANDROID
                 Android.Util.Log.Info("ProfileVM", $"✅ Fallback: Profile loaded from local storage: {localUser.UserName}");
+#endif
+#endif
                 CurrentUser = localUser;
                 UserName = localUser.UserName;
                 FullName = localUser.FullName ?? "";
@@ -135,14 +167,22 @@ public partial class ProfileViewModel : ObservableObject
             }
             else
             {
+#if ANDROID
+#if ANDROID
                 Android.Util.Log.Error("ProfileVM", "❌ Fallback failed: No local user data");
+#endif
+#endif
                 IsLoggedIn = false;
             }
         }
         finally
         {
             IsLoading = false;
+#if ANDROID
+#if ANDROID
             Android.Util.Log.Info("ProfileVM", $"🏁 LoadProfileAsync completed. IsLoggedIn: {IsLoggedIn}");
+#endif
+#endif
         }
     }
 
@@ -217,7 +257,11 @@ public partial class ProfileViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
+#if ANDROID
             Android.Util.Log.Error("ProfileVM", $"❌ Failed to save profile: {ex.Message}");
+#endif
+#endif
             await Shell.Current.DisplayAlert(
                 "Error",
                 $"Failed to update profile: {ex.Message}",
@@ -272,7 +316,11 @@ public partial class ProfileViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
+#if ANDROID
             Android.Util.Log.Error("ProfileVM", $"❌ Logout failed: {ex.Message}");
+#endif
+#endif
         }
         finally
         {

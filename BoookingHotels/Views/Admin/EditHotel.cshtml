@@ -120,14 +120,12 @@
                                     foreach (var p in Model.Photoss)
                                     {
                                         <div class="position-relative photo-item" data-photo-id="@p.PhotoId">
-                                            <img src="@p.Url" class="img-thumbnail" 
-                                                 style="width:150px;height:150px;object-fit:cover;" />
-                                            <button type="button" 
-                                                    class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 delete-photo-btn"
-                                                    data-photo-id="@p.PhotoId"
-                                                    title="Xóa ảnh">
+                                            <img src="@p.Url" class="img-thumbnail replaceable-image" 
+                                                 style="width:150px;height:150px;object-fit:cover;cursor:pointer;" onclick="openReplaceDialog(@p.PhotoId, '@p.Url')" id="photo-img-@p.PhotoId" />
+                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" title="Xóa ảnh" onclick="deletePhoto(@p.PhotoId)">
                                                 <i class="bi bi-trash"></i>
                                             </button>
+                                            <input type="file" style="display:none;" accept="image/*" id="replace-input-@p.PhotoId" name="replacedPhotos[@p.PhotoId]" onchange="previewReplaceImage(@p.PhotoId, this)" />
                                         </div>
                                     }
                                 }
@@ -137,6 +135,67 @@
                                         <i class="bi bi-exclamation-triangle"></i> Chưa có ảnh
                                     </div>
                                 }
+<script>
+function openReplaceDialog(photoId) {
+    var input = document.getElementById('replace-input-' + photoId);
+    if (input) {
+        input.click();
+    }
+}
+function previewReplaceImage(photoId, input) {
+    if (input.files && input.files[0]) {
+        var formData = new FormData();
+        formData.append('photoId', photoId);
+        formData.append('image', input.files[0]);
+        fetch('/Admin/ReplaceHotelPhoto', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.url) {
+                var img = document.getElementById('photo-img-' + photoId);
+                if (img) {
+                    img.src = data.url;
+                }
+                console.log('Đã thay hình thành công:', data.url);
+            } else {
+                alert('Lỗi thay hình: ' + (data.message || 'Không rõ'));
+            }
+        })
+        .catch(err => {
+            alert('Lỗi gửi hình: ' + err);
+        });
+    }
+}
+function deletePhoto(photoId) {
+    var photoDiv = document.querySelector('.photo-item[data-photo-id="' + photoId + '"]');
+    if (photoDiv) {
+        if (confirm('Bạn có chắc muốn xóa hình này?')) {
+            fetch('/Admin/DeleteHotelPhoto', {
+                method: 'POST',
+                body: (() => {
+                    const formData = new FormData();
+                    formData.append('photoId', photoId);
+                    return formData;
+                })()
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    photoDiv.remove();
+                    console.log('Đã xóa hình thành công:', photoId);
+                } else {
+                    alert('Lỗi xóa hình!');
+                }
+            })
+            .catch(err => {
+                alert('Lỗi gửi yêu cầu xóa: ' + err);
+            });
+        }
+    }
+}
+</script>
                             </div>
                         </div>
 

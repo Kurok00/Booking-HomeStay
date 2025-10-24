@@ -70,7 +70,9 @@ public partial class RoomDetailsViewModel : ObservableObject
 
     partial void OnRoomIdChanged(int value)
     {
+#if ANDROID
         Android.Util.Log.Info("RoomDetailsVM", $"🔵 RoomId changed to: {value}");
+#endif
         if (value > 0 && HotelId > 0)
         {
             _ = LoadRoomDetailsAsync();
@@ -79,7 +81,9 @@ public partial class RoomDetailsViewModel : ObservableObject
 
     partial void OnHotelIdChanged(int value)
     {
+#if ANDROID
         Android.Util.Log.Info("RoomDetailsVM", $"🔵 HotelId changed to: {value}");
+#endif
         if (value > 0 && RoomId > 0)
         {
             _ = LoadRoomDetailsAsync();
@@ -113,7 +117,9 @@ public partial class RoomDetailsViewModel : ObservableObject
 
         try
         {
+#if ANDROID
             Android.Util.Log.Info("RoomDetailsVM", $"🔵 Loading room {RoomId} from hotel {HotelId}");
+#endif
             IsLoading = true;
             ErrorMessage = string.Empty;
 
@@ -129,12 +135,16 @@ public partial class RoomDetailsViewModel : ObservableObject
 
             if (Room == null)
             {
+#if ANDROID
                 Android.Util.Log.Warn("RoomDetailsVM", "⚠️ Room is NULL");
+#endif
                 ErrorMessage = "Room not found";
             }
             else
             {
+#if ANDROID
                 Android.Util.Log.Info("RoomDetailsVM", $"✅ Room loaded: {Room.Name}");
+#endif
 
                 // Notify property changes for gallery
                 OnPropertyChanged(nameof(PhotoUrl1));
@@ -146,7 +156,9 @@ public partial class RoomDetailsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("RoomDetailsVM", $"❌ Exception: {ex.Message}");
+#endif
             ErrorMessage = $"Failed to load room: {ex.Message}";
         }
         finally
@@ -166,7 +178,9 @@ public partial class RoomDetailsViewModel : ObservableObject
             var isLoggedIn = await _authService.IsLoggedInAsync();
             if (!isLoggedIn)
             {
+#if ANDROID
                 Android.Util.Log.Warn("RoomDetailsVM", "⚠️ User not logged in");
+#endif
 
                 var shouldLogin = await Shell.Current.DisplayAlert(
                     "Login Required",
@@ -182,7 +196,9 @@ public partial class RoomDetailsViewModel : ObservableObject
                 return;
             }
 
+#if ANDROID
             Android.Util.Log.Info("RoomDetailsVM", $"🔵 Navigate to BookingPage - Room: {RoomId}, Total: {TotalPrice}");
+#endif
 
             // Navigate to booking page directly
             var parameters = new Dictionary<string, object>
@@ -201,7 +217,9 @@ public partial class RoomDetailsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("RoomDetailsVM", $"❌ Navigation error: {ex.Message}");
+#endif
             ErrorMessage = $"Navigation failed: {ex.Message}";
             await Shell.Current.DisplayAlert("Error", ErrorMessage, "OK");
         }

@@ -617,25 +617,31 @@ namespace BoookingHotels.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteHotelPhoto(int photoId)
+        [IgnoreAntiforgeryToken]
+        public IActionResult DeleteHotelPhoto(int? photoId)
         {
-            var photo = _context.Photoss.Find(photoId);
-            if (photo == null)
-            {
-                return Json(new { success = false, message = "Không tìm thấy ảnh" });
-            }
-
             try
             {
-                // Xóa file vật lý
+                // Nếu photoId không bind được, lấy thủ công từ form
+                if (photoId == null || photoId == 0)
+                {
+                    if (Request.HasFormContentType && Request.Form.ContainsKey("photoId"))
+                    {
+                        int.TryParse(Request.Form["photoId"], out var id);
+                        photoId = id;
+                    }
+                }
+                if (photoId == null || photoId == 0)
+                    return Json(new { success = false, message = "Thiếu photoId" });
+
+                var photo = _context.Photoss.Find(photoId);
+                if (photo == null)
+                    return Json(new { success = false, message = "Không tìm thấy ảnh" });
+
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photo.Url.TrimStart('/'));
                 if (System.IO.File.Exists(filePath))
-                {
                     System.IO.File.Delete(filePath);
-                }
 
-                // Xóa record trong database
                 _context.Photoss.Remove(photo);
                 _context.SaveChanges();
 
@@ -643,9 +649,10 @@ namespace BoookingHotels.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+                return Json(new { success = false, message = "EXCEPTION: " + ex.ToString() });
             }
         }
+
         #endregion
 
         #region Rooms
@@ -1416,17 +1423,6 @@ namespace BoookingHotels.Controllers
 
 //            _context.Amenities.Update(model);
 //            _context.SaveChanges();
-//            return RedirectToAction("Amenities");
-//        }
-
-//        public IActionResult DeleteAmenity(int id)
-//        {
-//            var amenity = _context.Amenities.Find(id);
-//            if (amenity != null)
-//            {
-//                _context.Amenities.Remove(amenity);
-//                _context.SaveChanges();
-//            }
 //            return RedirectToAction("Amenities");
 //        }
 

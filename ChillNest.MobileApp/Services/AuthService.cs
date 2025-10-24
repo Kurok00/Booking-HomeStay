@@ -31,7 +31,9 @@ public class AuthService : IAuthService
     public async Task SaveTokenAsync(string token)
     {
         await SecureStorage.SetAsync(TokenKey, token);
+#if ANDROID
         Android.Util.Log.Info("AuthService", $"✅ Token saved");
+#endif
     }
 
     public async Task<User?> GetCurrentUserAsync()
@@ -54,7 +56,9 @@ public class AuthService : IAuthService
     {
         var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
         await SecureStorage.SetAsync(UserKey, json);
+#if ANDROID
         Android.Util.Log.Info("AuthService", $"✅ User saved: {user.UserName}");
+#endif
     }
 
     public async Task LogoutAsync()
@@ -62,6 +66,8 @@ public class AuthService : IAuthService
         SecureStorage.Remove(TokenKey);
         SecureStorage.Remove(UserKey);
         await Task.CompletedTask;
+#if ANDROID
         Android.Util.Log.Info("AuthService", "✅ Logged out");
+#endif
     }
 }

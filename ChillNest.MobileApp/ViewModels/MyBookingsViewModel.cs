@@ -51,13 +51,17 @@ public partial class MyBookingsViewModel : ObservableObject
             var currentUser = await _authService.GetCurrentUserAsync();
             if (currentUser == null)
             {
+#if ANDROID
                 Android.Util.Log.Warn("MyBookingsVM", "User not logged in");
+#endif
                 Bookings.Clear();
                 HasBookings = false;
                 return;
             }
 
+#if ANDROID
             Android.Util.Log.Info("MyBookingsVM", $"Loading bookings for userId: {currentUser.Id}");
+#endif
 
             // Get bookings from API
             var bookingsList = await _apiService.GetUserBookingsAsync(currentUser.Id);
@@ -70,11 +74,15 @@ public partial class MyBookingsViewModel : ObservableObject
 
             HasBookings = Bookings.Any();
 
+#if ANDROID
             Android.Util.Log.Info("MyBookingsVM", $"✅ Loaded {Bookings.Count} bookings");
+#endif
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("MyBookingsVM", $"❌ Error loading bookings: {ex.Message}");
+#endif
             ErrorMessage = "Failed to load bookings. Please try again.";
             HasBookings = false;
         }
@@ -97,7 +105,9 @@ public partial class MyBookingsViewModel : ObservableObject
     {
         if (booking == null) return;
 
+#if ANDROID
         Android.Util.Log.Info("MyBookingsVM", $"Viewing booking details: {booking.BookingId}");
+#endif
 
         // Navigate to booking details (to be implemented)
         await Shell.Current.DisplayAlert(
@@ -158,7 +168,9 @@ public partial class MyBookingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("MyBookingsVM", $"Error canceling booking: {ex.Message}");
+#endif
             await Shell.Current.DisplayAlert("Error", "An error occurred while canceling booking", "OK");
         }
         finally

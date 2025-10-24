@@ -62,13 +62,15 @@ public partial class HotelsViewModel : ObservableObject
     {
         try
         {
+#if ANDROID
             Android.Util.Log.Info("HotelsVM", "🔵 LoadUserInfoAsync called");
-
+#endif
             CurrentUser = await _authService.GetCurrentUserAsync();
             if (CurrentUser != null)
             {
+#if ANDROID
                 Android.Util.Log.Info("HotelsVM", $"✅ User loaded: {CurrentUser.UserName}");
-
+#endif
                 IsUserLoggedIn = true;
 
                 // Check if user has real avatar URL (from /Image/avatars/ folder, not external services)
@@ -77,14 +79,17 @@ public partial class HotelsViewModel : ObservableObject
 
                 HasUserAvatar = hasRealAvatar;
                 HasNoUserAvatar = !hasRealAvatar;
-
+#if ANDROID
                 Android.Util.Log.Info("HotelsVM", $"Avatar URL: {CurrentUser.AvatarUrl}");
                 Android.Util.Log.Info("HotelsVM", $"Avatar Display: {CurrentUser.AvatarDisplay}");
                 Android.Util.Log.Info("HotelsVM", $"HasUserAvatar: {HasUserAvatar}, HasNoUserAvatar: {HasNoUserAvatar}");
+#endif
             }
             else
             {
+#if ANDROID
                 Android.Util.Log.Info("HotelsVM", "⚠️ No user logged in");
+#endif
                 IsUserLoggedIn = false;
                 HasUserAvatar = false;
                 HasNoUserAvatar = true;
@@ -92,7 +97,9 @@ public partial class HotelsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("HotelsVM", $"❌ Error loading user: {ex.Message}");
+#endif
             IsUserLoggedIn = false;
             HasUserAvatar = false;
             HasNoUserAvatar = true;
@@ -127,7 +134,9 @@ public partial class HotelsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("HotelsVM", $"❌ Profile navigation error: {ex.Message}");
+#endif
         }
     }
 
@@ -138,38 +147,48 @@ public partial class HotelsViewModel : ObservableObject
 
         try
         {
+#if ANDROID
             Android.Util.Log.Info("ChillNest", "[HotelsViewModel] Starting to load hotels...");
+#endif
             IsLoading = true;
             ErrorMessage = string.Empty;
             _currentPage = 1;
 
             // Refresh user info when loading hotels
             await LoadUserInfoAsync();
-
+#if ANDROID
             Android.Util.Log.Info("ChillNest", $"[HotelsViewModel] Calling API - Page: {_currentPage}, PageSize: {PageSize}, Search: {SearchText}");
+#endif
             var hotels = await _apiService.GetHotelsAsync(_currentPage, PageSize, string.IsNullOrEmpty(SearchText) ? null : SearchText);
-
+#if ANDROID
             Android.Util.Log.Info("ChillNest", $"[HotelsViewModel] Received {hotels.Count} hotels from API");
-
+#endif
             Hotels.Clear();
             foreach (var hotel in hotels)
             {
                 Hotels.Add(hotel);
+#if ANDROID
                 Android.Util.Log.Debug("ChillNest", $"  Hotel: {hotel.Name} - {hotel.City}");
+#endif
             }
-
+#if ANDROID
             Android.Util.Log.Info("ChillNest", $"[HotelsViewModel] Hotels collection now has {Hotels.Count} items");
+#endif
         }
         catch (Exception ex)
         {
+#if ANDROID
             Android.Util.Log.Error("ChillNest", $"[HotelsViewModel] ERROR: {ex.GetType().Name} - {ex.Message}");
             Android.Util.Log.Error("ChillNest", $"[HotelsViewModel] Stack trace: {ex.StackTrace}");
+#endif
             ErrorMessage = $"Failed to load hotels: {ex.Message}";
         }
         finally
         {
             IsLoading = false;
+#if ANDROID
             Android.Util.Log.Info("ChillNest", $"[HotelsViewModel] LoadHotels completed. IsLoading = {IsLoading}");
+#endif
         }
     }
 
