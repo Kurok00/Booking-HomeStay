@@ -10,15 +10,7 @@ namespace BoookingHotels.Data
             Console.WriteLine("⭐ === BẮT ĐẦU SEED REVIEWS ===");
 
 
-            // Xóa tất cả reviews cũ để tạo lại
-            var existingReviews = await context.Reviews.ToListAsync();
-            if (existingReviews.Any())
-            {
-                Console.WriteLine($"🗑️  Đang xóa {existingReviews.Count} reviews cũ...");
-                context.Reviews.RemoveRange(existingReviews);
-                await context.SaveChangesAsync();
-                Console.WriteLine("✅ Đã xóa reviews cũ");
-            }
+
 
             // Lấy tất cả users (AsNoTracking)
             var users = await context.Users.AsNoTracking().ToListAsync();
@@ -110,21 +102,24 @@ namespace BoookingHotels.Data
             };
 
 
-            Console.WriteLine($"📝 Đang tạo 5 reviews cho mỗi room (tổng {rooms.Count} rooms)...");
+            Console.WriteLine($"📝 Đang tạo review cho các room thiếu review...");
 
-            int skippedRooms = 0;
+            int skippedRooms = 0, addedRooms = 0;
             foreach (var room in rooms)
             {
-                // Nếu user < 5 thì bỏ qua room này
-                if (users.Count < 5)
+                // Chỉ seed nếu room có ít hơn 5 reviews
+                var existingCount = await context.Reviews.CountAsync(r => r.RoomId == room.RoomId);
+                if (existingCount >= 5)
                 {
                     skippedRooms++;
                     continue;
                 }
-                // Mỗi room có 5 reviews từ 5 users khác nhau
-                var shuffledUsers = users.OrderBy(x => random.Next()).Take(5).ToList();
 
-                for (int i = 0; i < 5; i++)
+                // Số review cần thêm
+                int reviewsToAdd = 5 - existingCount;
+                var shuffledUsers = users.OrderBy(x => random.Next()).Take(reviewsToAdd).ToList();
+
+                for (int i = 0; i < reviewsToAdd; i++)
                 {
                     var rating = random.Next(1, 6); // 1-5 stars
                     var commentList = comments[rating];
@@ -136,15 +131,19 @@ namespace BoookingHotels.Data
                         UserId = shuffledUsers[i].UserId,
                         Rating = rating,
                         Comment = comment,
-                        CreatedAt = DateTime.Now.AddDays(-random.Next(1, 365)) // Random date trong năm qua
+                        CreatedAt = DateTime.Now.AddDays(-random.Next(1, 365))
                     });
                 }
+                addedRooms++;
             }
 
-            await context.Reviews.AddRangeAsync(reviews);
-            await context.SaveChangesAsync();
+            if (reviews.Count > 0)
+            {
+                await context.Reviews.AddRangeAsync(reviews);
+                await context.SaveChangesAsync();
+            }
 
-            Console.WriteLine($"✅ Đã tạo {reviews.Count} reviews cho {rooms.Count - skippedRooms} rooms (bỏ qua {skippedRooms} rooms do thiếu user)");
+            Console.WriteLine($"✅ Đã tạo review cho {addedRooms} rooms (bỏ qua {skippedRooms} rooms đã đủ review)");
             Console.WriteLine("⭐ === HOÀN THÀNH SEED REVIEWS ===");
         }
     }

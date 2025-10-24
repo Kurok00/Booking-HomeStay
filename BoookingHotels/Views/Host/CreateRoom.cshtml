@@ -1,50 +1,200 @@
-﻿@model BoookingHotels.Models.Room
+﻿
+@model BoookingHotels.Models.Room
 @{
-    ViewData["Title"] = "Thêm phòng mới";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Thêm Phòng Mới";
 }
 
-<div class="container py-4">
-    <h2 class="mb-4">Thêm phòng mới</h2>
-
-    <form asp-action="CreateRoom" enctype="multipart/form-data" method="post">
-        <input type="hidden" asp-for="HotelId" />
-
-        <div class="mb-3">
-            <label class="form-label">Tên phòng</label>
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-
-   
-
-        <div class="mb-3">
-            <label class="form-label">Giá (VNĐ)</label>
-            <input asp-for="Price" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Sức chứa</label>
-            <input asp-for="Capacity" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Ảnh phòng</label>
-            <input type="file" name="images" multiple class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Tiện nghi</label>
-            @foreach (var amenity in ViewBag.Amenities as List<BoookingHotels.Models.Amenities>)
-            {
-                <div class="form-check">
-                    <input type="checkbox" name="amenityIds" value="@amenity.AmenityId" class="form-check-input" />
-                    <label class="form-check-label">@amenity.Name</label>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient text-white py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-door-open me-2"></i> Thêm Phòng Mới
+                    </h3>
                 </div>
-            }
-        </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateRoom" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
-        <button type="submit" class="btn btn-success">Lưu</button>
-        <a asp-action="MyRooms" asp-route-hotelId="@Model.HotelId" class="btn btn-secondary">Quay lại</a>
-    </form>
+                        <!-- Thông tin cơ bản -->
+                        <div class="section-header mb-3">
+                            <h5 class="text-primary">
+                                <i class="bi bi-info-circle"></i> Thông tin cơ bản
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Hotel -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-building text-primary"></i> Khách sạn 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="HotelId" class="form-select form-select-lg" disabled>
+                                    @if (ViewBag.Hotels != null && ViewBag.Hotels.Count == 1)
+                                    {
+                                        var hotel = ViewBag.Hotels[0];
+                                        <option value="@hotel.HotelId" selected>@hotel.Name</option>
+                                    }
+                                </select>
+                                <input type="hidden" asp-for="HotelId" />
+                                <span asp-validation-for="HotelId" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Room Name -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-door-closed text-info"></i> Tên phòng 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Name" class="form-control form-control-lg" 
+                                       placeholder="VD: Phòng Deluxe Hướng Biển" required />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Chi tiết phòng -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-card-list"></i> Chi tiết phòng
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Capacity -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-people text-success"></i> Sức chứa
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Capacity" type="number" min="1" max="20" 
+                                           class="form-control" placeholder="2" value="2" />
+                                    <span class="input-group-text">người</span>
+                                </div>
+                                <small class="text-muted">Số người tối đa</small>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-cash-coin text-warning"></i> Giá phòng 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Price" type="number" step="10000" 
+                                           class="form-control" placeholder="1000000" required id="priceInput" />
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                                <small class="text-success fw-semibold" id="priceFormatted"></small>
+                            </div>
+
+                            <!-- Size -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-rulers text-secondary"></i> Diện tích
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Size" type="number" min="10" max="500" 
+                                           class="form-control" placeholder="30" />
+                                    <span class="input-group-text">m²</span>
+                                </div>
+                                <small class="text-muted">Diện tích phòng</small>
+                            </div>
+
+                            <!-- Bed Type -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-moon text-primary"></i> Loại giường
+                                </label>
+                                <select asp-for="BedType" class="form-select">
+                                    <option value="">-- Chọn loại giường --</option>
+                                    <option value="Giường đơn">Giường đơn (Single)</option>
+                                    <option value="Giường đôi">Giường đôi (Double)</option>
+                                    <option value="Giường Queen">Giường Queen</option>
+                                    <option value="Giường King">Giường King</option>
+                                    <option value="2 Giường đơn">2 Giường đơn (Twin)</option>
+                                    <option value="2 Giường Queen">2 Giường Queen</option>
+                                </select>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-toggle-on text-success"></i> Trạng thái
+                                </label>
+                                <div class="form-check form-switch mt-2">
+                                    <input asp-for="Status" class="form-check-input" checked style="width: 3em; height: 1.5em;" />
+                                    <label asp-for="Status" class="form-check-label ms-2 fw-bold">Kích hoạt</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ảnh phòng -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-images"></i> Ảnh phòng
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-camera text-secondary"></i> Ảnh phòng
+                            </label>
+                            <input type="file" name="images" class="form-control" multiple accept="image/*" />
+                            <small class="form-text text-muted mt-2 d-block">
+                                <i class="bi bi-info-circle"></i> Chọn nhiều ảnh (JPG, PNG) để showcase phòng
+                            </small>
+                        </div>
+
+                        <!-- Tiện nghi -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary">
+                                <i class="bi bi-sliders"></i> Tiện nghi
+                            </h5>
+                            <hr />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold mb-2">
+                                <i class="bi bi-list-check text-info"></i> Chọn tiện nghi cho phòng
+                            </label>
+                            <div style="max-height: 180px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; padding: 8px; background: #fafbfc;">
+                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-1">
+                                    @if (ViewBag.Amenities is List<BoookingHotels.Models.Amenities> amenities && amenities.Count > 0)
+                                    {
+                                        foreach (var amenity in amenities)
+                                        {
+                                            <div class="col">
+                                                <div class="form-check small" style="padding-left: 1.2em;">
+                                                    <input type="checkbox" name="amenityIds" value="@amenity.AmenityId" class="form-check-input" style="width: 1em; height: 1em; margin-top: 0.1em;" />
+                                                    <label class="form-check-label" style="font-size: 0.95em;">@amenity.Name</label>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-12 text-muted small">Không có tiện nghi nào khả dụng.</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between gap-2 mt-4">
+                            <a asp-action="MyRooms" asp-route-hotelId="@Model.HotelId" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-4">
+                                <i class="bi bi-check-circle"></i> Lưu phòng
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

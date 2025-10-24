@@ -67,7 +67,7 @@
                         <label class="form-label">Khách sạn liên quan (tùy chọn)</label>
                         <select asp-for="HotelId" class="form-select">
                             <option value="">-- Không chọn khách sạn --</option>
-                            @foreach (var hotel in ViewBag.MyHotels)
+                            @foreach (var hotel in (IEnumerable<BoookingHotels.Models.HotelDropdownItem>)ViewBag.MyHotels)
                             {
                                 <option value="@hotel.HotelId">@hotel.Name</option>
                             }
@@ -96,9 +96,6 @@
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
 
 @section Scripts {
     @{

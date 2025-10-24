@@ -1,4 +1,110 @@
-﻿using BoookingHotels.Data;
+﻿namespace BoookingHotels.Controllers
+{
+    [Authorize(Roles = "Host")]
+    public class HostController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public HostController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // ========================= HOTELS =============================
+
+        // Danh sách khách sạn của host hiện tại
+        public IActionResult MyHotels()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var hotels = _context.Hotels
+                .Where(h => h.CreatedBy == userId && h.IsUserHostCreated == true)
+                .OrderByDescending(h => h.CreatedAt)
+                .ToList();
+
+            return View(hotels);
+        }
+
+        // GET: Host/EditHotel
+        public IActionResult EditHotel(int id)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.HotelId == id && h.CreatedBy == userId);
+            if (hotel == null)
+            {
+                TempData["error"] = "Không tìm thấy khách sạn hoặc bạn không có quyền sửa.";
+                return RedirectToAction("MyHotels");
+            }
+            return View(hotel);
+        }
+
+        [HttpPost]
+        public IActionResult EditHotel(BoookingHotels.Models.Hotel model, List<IFormFile> images)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var hotel = _context.Hotels.FirstOrDefault(h => h.HotelId == model.HotelId && h.CreatedBy == userId);
+            if (hotel == null)
+            {
+                TempData["error"] = "Không tìm thấy khách sạn hoặc bạn không có quyền sửa.";
+                return RedirectToAction("MyHotels");
+            }
+            if (!ModelState.IsValid) return View(model);
+
+            hotel.Name = model.Name;
+            hotel.Address = model.Address;
+            hotel.City = model.City;
+            hotel.Country = model.Country;
+            hotel.Description = model.Description;
+            hotel.Status = model.Status;
+            hotel.Latitude = model.Latitude;
+            hotel.Longitude = model.Longitude;
+
+            // Upload new images (optional, can be expanded)
+            if (images != null && images.Count > 0)
+            {
+                var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Image");
+                if (!Directory.Exists(uploadFolder)) Directory.CreateDirectory(uploadFolder);
+                foreach (var img in images)
+                {
+                    if (img.Length > 0)
+                    {
+                        var fileName = Guid.NewGuid() + Path.GetExtension(img.FileName);
+                        var filePath = Path.Combine(uploadFolder, fileName);
+                        using var stream = new FileStream(filePath, FileMode.Create);
+                        img.CopyTo(stream);
+                        _context.Photoss.Add(new Photos
+                        {
+                            HotelId = hotel.HotelId,
+                            Url = "/Image/" + fileName,
+                            SortOrder = 0
+                        });
+                    }
+                }
+            }
+            _context.SaveChanges();
+            TempData["success"] = "Cập nhật khách sạn thành công!";
+            return RedirectToAction("MyHotels");
+        }
+
+        // ...existing code...
+    }
+}
+// GET: Host/DetailHotel
+public IActionResult DetailHotel(int id)
+{
+    var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+    var hotel = _context.Hotels
+        .Include(h => h.Photoss)
+        .Include(h => h.Rooms)
+        .FirstOrDefault(h => h.HotelId == id && h.CreatedBy == userId);
+    if (hotel == null)
+    {
+        TempData["error"] = "Không tìm thấy khách sạn hoặc bạn không có quyền xem.";
+        return RedirectToAction("MyHotels");
+    }
+    return View(hotel);
+}
+using BoookingHotels.Data;
 using BoookingHotels.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -9,6 +9,59 @@ namespace BoookingHotels.Controllers
 {
     public class BlogsController : Controller
     {
+
+        // GET: Blogs/Edit/{id}
+        [HttpGet]
+        [Authorize(Roles = "Reviewer,Host")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var blog = await _db.Blogs.Include(b => b.Hotel).FirstOrDefaultAsync(b => b.BlogId == id);
+            if (blog == null) return NotFound();
+            // Only allow author or host to edit
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (blog.ReviewerId != userId && !User.IsInRole("Admin"))
+                return Forbid();
+            return View(blog);
+        }
+
+        // POST: Blogs/Edit/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Reviewer,Host")]
+        public async Task<IActionResult> Edit(Blog model, IFormFile? imageFile)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var blog = await _db.Blogs.FirstOrDefaultAsync(b => b.BlogId == model.BlogId);
+            if (blog == null) return NotFound();
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (blog.ReviewerId != userId && !User.IsInRole("Admin"))
+                return Forbid();
+
+            blog.Title = model.Title;
+            blog.ShortDescription = model.ShortDescription;
+            blog.Content = model.Content;
+            blog.CreatedDate = DateTime.Now;
+
+            // Handle new thumbnail upload
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "Image/blogs");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+                string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+                {
+                    imageFile.CopyTo(fileStream);
+                }
+                blog.Thumbnail = "/Image/blogs/" + uniqueFileName;
+            }
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Detail", new { id = blog.BlogId });
+        }
         private readonly ApplicationDbContext _db;
         private readonly IWebHostEnvironment _env;
 
@@ -50,7 +103,7 @@ namespace BoookingHotels.Controllers
                 var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
                 var myHotels = _db.Hotels
                     .Where(h => h.CreatedBy == userId)
-                    .Select(h => new { h.HotelId, h.Name })
+                    .Select(h => new BoookingHotels.Models.HotelDropdownItem { HotelId = h.HotelId, Name = h.Name })
                     .ToList();
                 ViewBag.MyHotels = myHotels;
             }
@@ -70,7 +123,7 @@ namespace BoookingHotels.Controllers
                     var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
                     var myHotels = _db.Hotels
                         .Where(h => h.CreatedBy == userId)
-                        .Select(h => new { h.HotelId, h.Name })
+                        .Select(h => new BoookingHotels.Models.HotelDropdownItem { HotelId = h.HotelId, Name = h.Name })
                         .ToList();
                     ViewBag.MyHotels = myHotels;
                 }

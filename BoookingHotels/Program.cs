@@ -1,6 +1,7 @@
 using BoookingHotels.Data;
 using BoookingHotels.Service;
 using BoookingHotels.Services;
+using BoookingHotels.Scripts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
@@ -82,34 +83,78 @@ using (var scope = app.Services.CreateScope())
         if (await context.Database.CanConnectAsync())
         {
             // Cập nhật tên khách sạn cho thực tế hơn  
-            // await HotelNameUpdater.UpdateHotelNamesAsync(context); // Already updated!
+            await HotelNameUpdater.UpdateHotelNamesAsync(context); // Already updated!
 
             // Cập nhật tên và giá phòng theo khách sạn
-            // await RoomNameUpdater.UpdateRoomNamesAsync(context); // Already updated!
-            // await RoomNameUpdater.UpdateRoomPricesAsync(context); // Already updated!
+            await RoomNameUpdater.UpdateRoomNamesAsync(context); // Already updated!
+            await RoomNameUpdater.UpdateRoomPricesAsync(context); // Already updated!
 
             // Cập nhật hình ảnh cho hotels và rooms
-            //await PhotoUpdater.UpdateAllPhotosAsync(context); // Enable real photos from Unsplash!
+            await PhotoUpdater.UpdateAllPhotosAsync(context); // Enable real photos from Unsplash!
 
             // Seed amenities cho tất cả rooms
             //await AmenitySeeder.SeedAmenitiesAndRoomAmenitiesAsync(context);
 
             // Seed reviews cho tất cả rooms (5 reviews mỗi room)
+
+
+
+            // Seed blogs cho các host và hotel của host
+
+            // Seed blogs cho các host và hotel của host
+            if (!context.Blogs.Any())
+            {
+                await BlogSeeder.Seed(context);
+            }
+
+            // Seed reviews cho tất cả rooms (5 reviews mỗi room)
+
+            // Seed reviews cho tất cả rooms (5 reviews mỗi room)
             await ReviewSeeder.SeedReviewsAsync(context);
 
             // Thêm rooms cho các hotels chưa có rooms hoặc có <=1 room
+
             var missingRoomsUpdater = new MissingRoomsUpdater(context);
-            await missingRoomsUpdater.AddMissingRoomsAsync();
+            // Chỉ thêm rooms nếu có hotel thiếu hoặc có <=1 room
+            var hotelsWithFewRooms = context.Hotels
+                .Where(h => !context.Rooms.Any(r => r.HotelId == h.HotelId) || context.Rooms.Count(r => r.HotelId == h.HotelId) <= 1)
+                .ToList();
+            if (hotelsWithFewRooms.Any())
+            {
+                await missingRoomsUpdater.AddMissingRoomsAsync();
+            }
 
             // Cập nhật TẤT CẢ tên phòng sang tiếng Việt
-            await RoomNameVietnameseUpdater.UpdateAllRoomNamesToVietnameseAsync(context);
+
+            // Cập nhật TẤT CẢ tên phòng sang tiếng Việt
+            if (context.Rooms.Any(r => !r.Name.Contains("Phòng")))
+            {
+                await RoomNameVietnameseUpdater.UpdateAllRoomNamesToVietnameseAsync(context);
+            }
 
             // Seed photos cho các rooms (tối thiểu 3 photos mỗi room)
+
             var roomPhotoSeeder = new RoomPhotoSeeder(context);
-            await roomPhotoSeeder.SeedRoomPhotosAsync();
+            // Chỉ seed nếu có room thiếu ảnh
+            var roomsWithFewPhotos = context.Rooms
+                .Where(r => context.Photoss.Count(p => p.RoomId == r.RoomId) < 3)
+                .ToList();
+            if (roomsWithFewPhotos.Any())
+            {
+                await roomPhotoSeeder.SeedRoomPhotosAsync();
+            }
 
             // Seed 20 hotels và 10 rooms cho mỗi host
-            await HostDataSeeder.SeedHostHotelsAndRoomsAsync(context);
+
+            // Count hosts by UserRoles
+            var hostRoleId = context.Roles.FirstOrDefault(r => r.RoleName == "Host")?.RoleId;
+            var hostUserCount = context.UserRoles.Count(ur => ur.RoleId == hostRoleId);
+            // Count hotels created by hosts
+            var hostHotelCount = context.Hotels.Count(h => h.IsUserHostCreated == true);
+            if (hostRoleId != null && hostHotelCount < hostUserCount * 20)
+            {
+                await HostDataSeeder.SeedHostHotelsAndRoomsAsync(context);
+            }
 
             Console.WriteLine("✅ Database connected successfully!");
         }

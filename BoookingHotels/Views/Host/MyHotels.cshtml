@@ -31,7 +31,11 @@
                     {
                         <tr>
                             <td>@h.HotelId</td>
-                            <td>@h.Name</td>
+                            <td>
+                                <a asp-action="Details" asp-controller="Hotels" asp-route-id="@h.HotelId" class="fw-bold text-decoration-none text-primary">
+                                    @h.Name
+                                </a>
+                            </td>
                             <td>@h.City</td>
                             <td>@h.Country</td>
                             <td>

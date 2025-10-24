@@ -9,84 +9,41 @@ namespace BoookingHotels.Data
         {
             try
             {
-                // Xóa photos cũ để thay bằng ảnh thực tế
-                var existingPhotos = await context.Photoss.Where(p => p.HotelId != null).ToListAsync();
+                // Chỉ update nếu có hotel thiếu ảnh
+                var hotels = await context.Hotels.ToListAsync();
+                var hotelsWithFewPhotos = hotels.Where(h => context.Photoss.Count(p => p.HotelId == h.HotelId) < 3).ToList();
+                if (!hotelsWithFewPhotos.Any())
+                {
+                    Console.WriteLine("✅ Tất cả hotels đã có đủ ảnh!");
+                    return;
+                }
+
+                // Xóa photos cũ cho các hotel thiếu ảnh
+                var hotelIdsToUpdate = hotelsWithFewPhotos.Select(h => h.HotelId).ToList();
+                var existingPhotos = await context.Photoss.Where(p => p.HotelId != null && hotelIdsToUpdate.Contains((int)p.HotelId)).ToListAsync();
                 if (existingPhotos.Any())
                 {
                     context.Photoss.RemoveRange(existingPhotos);
                     await context.SaveChangesAsync();
-                    Console.WriteLine($"🗑️  Đã xóa {existingPhotos.Count} ảnh cũ");
+                    Console.WriteLine($"🗑️  Đã xóa {existingPhotos.Count} ảnh cũ cho hotels thiếu ảnh");
                 }
 
-                // Lấy danh sách hotels
-                var hotels = await context.Hotels.ToListAsync();
-                
-                if (!hotels.Any())
-                {
-                    Console.WriteLine("❌ Không có hotel nào để thêm ảnh!");
-                    return;
-                }
-
-                Console.WriteLine($"🔄 Đang thêm ảnh cho {hotels.Count} khách sạn...");
+                Console.WriteLine($"🔄 Đang thêm ảnh cho {hotelsWithFewPhotos.Count} khách sạn...");
 
                 // URLs ảnh thực tế cho từng thành phố
+                // 200+ unique Unsplash hotel images
+                var allHotelPhotos = new List<string>();
+                for (int i = 1; i <= 200; i++)
+                {
+                    allHotelPhotos.Add($"https://source.unsplash.com/800x600/?hotel,building,room,view,city,landscape&sig={i}");
+                }
                 var hotelPhotos = new Dictionary<string, List<string>>
                 {
-                    ["Đà Lạt"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
-                        "https://images.unsplash.com/photo-1578884436442-d1d68d6175a4?w=800",
-                        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
-                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
-                        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
-                        "https://images.unsplash.com/photo-1581739725066-3bb95b516f87?w=800",
-                        "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800",
-                        "https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=800"
-                    },
-                    ["Vũng Tàu"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
-                        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
-                        "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800",
-                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800",
-                        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
-                        "https://images.unsplash.com/photo-1578645510447-e20b4311e3ce?w=800",
-                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
-                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800"
-                    },
-                    ["Phú Quốc"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
-                        "https://images.unsplash.com/photo-1582880121574-da8cb1d08346?w=800",
-                        "https://images.unsplash.com/photo-1578884436442-d1d68d6175a4?w=800",
-                        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
-                        "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
-                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
-                        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
-                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800"
-                    },
-                    ["Đà Nẵng"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1578884436442-d1d68d6175a4?w=800",
-                        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
-                        "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800",
-                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
-                        "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800",
-                        "https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=800",
-                        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
-                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800"
-                    },
-                    ["Nha Trang"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
-                        "https://images.unsplash.com/photo-1582880121574-da8cb1d08346?w=800",
-                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800",
-                        "https://images.unsplash.com/photo-1578645510447-e20b4311e3ce?w=800",
-                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
-                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
-                        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
-                        "https://images.unsplash.com/photo-1578884436442-d1d68d6175a4?w=800"
-                    }
+                    ["Đà Lạt"] = allHotelPhotos,
+                    ["Vũng Tàu"] = allHotelPhotos,
+                    ["Phú Quốc"] = allHotelPhotos,
+                    ["Đà Nẵng"] = allHotelPhotos,
+                    ["Nha Trang"] = allHotelPhotos
                 };
 
                 var photosToAdd = new List<Photos>();
@@ -95,7 +52,7 @@ namespace BoookingHotels.Data
                 foreach (var hotel in hotels)
                 {
                     var city = hotel.City;
-                    
+
                     // Lấy danh sách ảnh cho thành phố
                     List<string> cityPhotos;
                     if (hotelPhotos.ContainsKey(city))
@@ -150,60 +107,40 @@ namespace BoookingHotels.Data
         {
             try
             {
-                // Xóa room photos cũ
-                var existingRoomPhotos = await context.Photoss.Where(p => p.RoomId != null).ToListAsync();
+                // Chỉ update nếu có room thiếu ảnh
+                var rooms = await context.Rooms.Include(r => r.Hotel).Where(r => r.Hotel != null).ToListAsync();
+                var roomsWithFewPhotos = rooms.Where(r => context.Photoss.Count(p => p.RoomId == r.RoomId) < 2).ToList();
+                if (!roomsWithFewPhotos.Any())
+                {
+                    Console.WriteLine("✅ Tất cả rooms đã có đủ ảnh!");
+                    return;
+                }
+
+                // Xóa room photos cũ cho các room thiếu ảnh
+                var roomIdsToUpdate = roomsWithFewPhotos.Select(r => r.RoomId).ToList();
+                var existingRoomPhotos = await context.Photoss.Where(p => p.RoomId != null && roomIdsToUpdate.Contains((int)p.RoomId)).ToListAsync();
                 if (existingRoomPhotos.Any())
                 {
                     context.Photoss.RemoveRange(existingRoomPhotos);
                     await context.SaveChangesAsync();
-                    Console.WriteLine($"🗑️  Đã xóa {existingRoomPhotos.Count} ảnh phòng cũ");
+                    Console.WriteLine($"🗑️  Đã xóa {existingRoomPhotos.Count} ảnh phòng cũ cho rooms thiếu ảnh");
                 }
 
-                // Lấy rooms với hotel
-                var rooms = await context.Rooms
-                    .Include(r => r.Hotel)
-                    .Where(r => r.Hotel != null)
-                    .ToListAsync();
-
-                if (!rooms.Any())
-                {
-                    Console.WriteLine("❌ Không có room nào để thêm ảnh!");
-                    return;
-                }
-
-                Console.WriteLine($"🔄 Đang thêm ảnh cho {rooms.Count} phòng...");
+                Console.WriteLine($"🔄 Đang thêm ảnh cho {roomsWithFewPhotos.Count} phòng...");
 
                 // URLs ảnh phòng theo loại
+                // 200+ unique Unsplash room images
+                var allRoomPhotos = new List<string>();
+                for (int i = 1; i <= 200; i++)
+                {
+                    allRoomPhotos.Add($"https://source.unsplash.com/800x600/?room,bed,interior,apartment,suite,villa&sig={i}");
+                }
                 var roomPhotos = new Dictionary<string, List<string>>
                 {
-                    ["Suite"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800",
-                        "https://images.unsplash.com/photo-1571624436279-b272aff752b5?w=800",
-                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
-                        "https://images.unsplash.com/photo-1578898886161-c4dd46c6c948?w=800"
-                    },
-                    ["Villa"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
-                        "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
-                        "https://images.unsplash.com/photo-1578884436442-d1d68d6175a4?w=800",
-                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
-                    },
-                    ["Room"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800",
-                        "https://images.unsplash.com/photo-1571624436279-b272aff752b5?w=800",
-                        "https://images.unsplash.com/photo-1578898886161-c4dd46c6c948?w=800",
-                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800"
-                    },
-                    ["Apartment"] = new List<string>
-                    {
-                        "https://images.unsplash.com/photo-1560184897-ae75f418493e?w=800",
-                        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800",
-                        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800",
-                        "https://images.unsplash.com/photo-1574180045827-681f8a1a9622?w=800"
-                    }
+                    ["Suite"] = allRoomPhotos,
+                    ["Villa"] = allRoomPhotos,
+                    ["Room"] = allRoomPhotos,
+                    ["Apartment"] = allRoomPhotos
                 };
 
                 var photosToAdd = new List<Photos>();

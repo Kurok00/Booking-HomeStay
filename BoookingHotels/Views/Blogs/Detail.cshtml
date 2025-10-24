@@ -1,4 +1,5 @@
-﻿@model BoookingHotels.Models.Blog
+﻿@using System.Security.Claims
+@model BoookingHotels.Models.Blog
 @{
     ViewData["Title"] = "Chi tiết Blog";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -142,6 +143,12 @@
                     <a asp-action="Index" class="btn btn-outline-primary btn-back px-4">
                         <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
                     </a>
+                    @if ((User.Identity?.IsAuthenticated ?? false) && (Model.ReviewerId == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0") || User.IsInRole("Admin")))
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.BlogId" class="btn btn-warning btn-back px-4 ms-2">
+                            <i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa
+                        </a>
+                    }
                 </div>
             </div>
         </div>

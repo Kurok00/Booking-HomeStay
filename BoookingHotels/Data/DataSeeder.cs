@@ -510,31 +510,34 @@ namespace BoookingHotels.Data
                 .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Host"))
                 .ToListAsync();
 
+            Console.WriteLine($"🔎 Có {hosts.Count} host");
+            int totalHotels = 0, totalBlogs = 0, skippedHotels = 0;
             foreach (var host in hosts)
             {
                 var hotels = await context.Hotels.Where(h => h.CreatedBy == host.UserId).ToListAsync();
+                Console.WriteLine($"👤 Host {host.UserName} ({host.UserId}) có {hotels.Count} hotel");
+                totalHotels += hotels.Count;
                 foreach (var hotel in hotels)
                 {
-                    // Kiểm tra đã có blog cho hotel này chưa
-                    bool hasBlog = await context.Blogs.AnyAsync(b => b.HotelId == hotel.HotelId && b.ReviewerId == host.UserId);
-                    if (!hasBlog)
+                    // Removed hotel count check so blog seeding will run for all hosts
+                    var blog = new Blog
                     {
-                        var blog = new Blog
-                        {
-                            Title = $"Trải nghiệm tại {hotel.Name}",
-                            Content = $"Chia sẻ về khách sạn {hotel.Name} do {host.FullName ?? host.UserName} quản lý.",
-                            ShortDescription = $"Blog review khách sạn {hotel.Name}",
-                            Author = host.FullName ?? host.UserName,
-                            CreatedDate = DateTime.Now.AddDays(-new Random().Next(1, 60)),
-                            ReviewerId = host.UserId,
-                            HotelId = hotel.HotelId
-                        };
-                        await context.Blogs.AddAsync(blog);
-                    }
+                        Title = $"Trải nghiệm tại {hotel.Name}",
+                        Content = $"Chia sẻ về khách sạn {hotel.Name} do {host.FullName ?? host.UserName} quản lý.",
+                        ShortDescription = $"Blog review khách sạn {hotel.Name}",
+                        Author = host.FullName ?? host.UserName,
+                        CreatedDate = DateTime.Now.AddDays(-new Random().Next(1, 60)),
+                        ReviewerId = host.UserId,
+                        HotelId = hotel.HotelId
+                    };
+                    await context.Blogs.AddAsync(blog);
+                    totalBlogs++;
+                    Console.WriteLine($"✅ Thêm blog cho hotel {hotel.HotelId} ({hotel.Name}) của host {host.UserName}");
                 }
             }
 
             await context.SaveChangesAsync();
+            Console.WriteLine($"📊 Tổng số hotel của host: {totalHotels}, blog đã thêm: {totalBlogs}, hotel bị bỏ qua: {skippedHotels}");
         }
     }
 }

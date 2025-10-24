@@ -1,0 +1,56 @@
+@model BoookingHotels.Models.Blog
+@{
+    ViewData["Title"] = "Sửa Blog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="card create-blog-card">
+        <div class="card-header">
+            <i class="fa-solid fa-pen-to-square"></i> Sửa Blog
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Edit" enctype="multipart/form-data" method="post">
+                <input type="hidden" asp-for="BlogId" />
+                <div class="mb-3">
+                    <label class="form-label">Tiêu đề</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mô tả ngắn</label>
+                    <textarea asp-for="ShortDescription" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nội dung</label>
+                    <textarea asp-for="Content" class="form-control" rows="6"></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ảnh minh họa hiện tại</label><br />
+                    @if (!string.IsNullOrEmpty(Model.Thumbnail))
+                    {
+                        <img src="@Model.Thumbnail" alt="Thumbnail" style="max-width:200px;max-height:150px;" />
+                    }
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Thay ảnh minh họa mới (nếu muốn)</label>
+                    <input type="file" name="imageFile" class="form-control" />
+                </div>
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Detail" asp-route-id="@Model.BlogId" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-save"></i> Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
